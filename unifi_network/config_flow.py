@@ -5,8 +5,8 @@ import voluptuous as vol
 from aiohttp import ClientError
 
 from .const import DOMAIN
-from .api import Client
-from .api.api.sites import get_site_overview_page
+from .api_client import Client
+from .api_client.api.sites import get_site_overview_page
 
 _LOGGER = logging.getLogger(__name__)
 

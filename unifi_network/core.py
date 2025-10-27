@@ -4,7 +4,7 @@ from __future__ import annotations
 from homeassistant.core import HomeAssistant
 # UpdateFailed is not required here; coordinators handle update errors
 
-from .api import Client
+from .api_client import Client
 from .coordinator import UnifiDeviceCoordinator
 
 

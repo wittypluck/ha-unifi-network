@@ -7,8 +7,8 @@ from typing import Any, Callable, Coroutine
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from .const import DOMAIN, DEFAULT_UPDATE_INTERVAL
-from .api import Client
-from .api.api.uni_fi_devices import (
+from .api_client import Client
+from .api_client.api.uni_fi_devices import (
     get_device_overview_page,
     get_device_latest_statistics,
 )
