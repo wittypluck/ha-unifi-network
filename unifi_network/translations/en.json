@@ -9,7 +9,8 @@
       "cpu_utilization_pct": { "name": "CPU Utilization" },
       "memory_utilization_pct": { "name": "Memory Utilization" },
       "uplink_rx_rate_bps": { "name": "Uplink RX Rate" },
-      "uplink_tx_rate_bps": { "name": "Uplink TX Rate" }
+      "uplink_tx_rate_bps": { "name": "Uplink TX Rate" },
+      "tx_retries_pct": { "name": "{frequencyGHz}GHz TX Retries" }
     }
   }
 }

@@ -89,6 +89,7 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Store statistics (or None) in a dict by device id
+            # TODO attach stats directly to device objects
             self._latest_stats = {}
             for device, res in zip(devices, results):
                 if isinstance(res, Exception):
