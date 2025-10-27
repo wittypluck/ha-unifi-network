@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant
 # UpdateFailed is not required here; coordinators handle update errors
 
 from .api_client import Client
-from .coordinator import UnifiDeviceCoordinator
+from .coordinator import UnifiDeviceCoordinator, UnifiClientCoordinator
 
 
 class UnifiNetworkCore:
@@ -28,7 +28,13 @@ class UnifiNetworkCore:
             client=self.client,
             site_id=site_id,
         )
+        self.client_coordinator = UnifiClientCoordinator(
+            hass=hass,
+            client=self.client,
+            site_id=site_id,
+        )
             
     async def async_init(self) -> None:
         """Initialize data and start updates."""
         await self.device_coordinator.async_config_entry_first_refresh()
+        await self.client_coordinator.async_config_entry_first_refresh()

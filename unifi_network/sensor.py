@@ -20,6 +20,8 @@ from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.const import UnitOfDataRate
 
+from .coordinator import UnifiDeviceCoordinator
+
 # Subclass SensorEntityDescription to add sensor_type
 @dataclass(frozen=True, kw_only=True)
 class UnifiSensorEntityDescription(SensorEntityDescription):
@@ -30,36 +32,37 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     devices_dict = coordinator.device_coordinator.data or {}
 
     entities: list[SensorEntity] = []
-    for device_id, unifi_device in devices_dict.items():
-        device = unifi_device.overview
+    for device_id, device in devices_dict.items():
+        device_overview = device.overview
         for description in DEVICE_SENSOR_DESCRIPTIONS:
             entities.append(
                 description.sensor_type(
                     coordinator.device_coordinator,
-                    device.id,
-                    device.name,
+                    device_overview.id,
+                    device_overview.name,
                     description,
                 )
             )
         #Check if device has interfaces
-        interfaces = getattr(device, "interfaces", None)
+        interfaces = getattr(device_overview, "interfaces", None)
         if interfaces:
             #Check if device has radio interfaces
             if DeviceOverviewInterfacesItem.RADIOS in interfaces:
                 # Access statistics from UnifiDevice
-                stats = unifi_device.latest_statistics
+                stats = device.latest_statistics
                 if stats:
                     interfaces_obj = getattr(stats, "interfaces", None)
                     if interfaces_obj:
                         for radio in getattr(interfaces_obj, "radios", []):
+                            #Create a set of sensors for each radio frequency
                             frequencyGHz = getattr(radio, "frequency_g_hz", None)
                             if frequencyGHz:
                                 for description in DEVICE_RADIO_SENSOR_DESCRIPTIONS:
                                     entities.append(
                                         description.sensor_type(
                                             coordinator.device_coordinator,
-                                            device.id,
-                                            device.name,
+                                            device_overview.id,
+                                            device_overview.name,
                                             description,
                                             frequencyGHz,
                                         )
@@ -74,7 +77,7 @@ class UnifiDeviceSensor(CoordinatorEntity, SensorEntity):
     _attr_has_entity_name = True
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    def __init__(self, coordinator, device_id: Any, device_name: str, description: SensorEntityDescription):
+    def __init__(self, coordinator: UnifiDeviceCoordinator, device_id: Any, device_name: str, description: SensorEntityDescription):
         CoordinatorEntity.__init__(self, coordinator)
         self.entity_description = description
         self.device_id = device_id
@@ -83,21 +86,18 @@ class UnifiDeviceSensor(CoordinatorEntity, SensorEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device registry information for this device (same as base sensor)."""
-        devices_dict = self.coordinator.data or {}
-        unifi_device = devices_dict.get(self.device_id)
-        if not unifi_device:
+        device = self.coordinator.get_device(self.device_id)
+        if not device:
             return None
-        device = unifi_device.overview
+        device_overview = device.overview
 
-        mac = getattr(device, "mac_address", None)
-        model = getattr(device, "model", None)
-
-        identifiers = {(DOMAIN, str(getattr(device, "id", self.device_id)))}
-        connections = {(CONNECTION_NETWORK_MAC, mac)} if mac else set()
+        model = getattr(device_overview, "model", None)
+        identifiers = {(DOMAIN, self.device_id)}
+        connections = {(CONNECTION_NETWORK_MAC, device.mac)} if device.mac else set()
 
         return DeviceInfo(
             identifiers=identifiers,
-            name=getattr(device, "name", None),
+            name=device.name,
             model=model,
             connections=connections,
         )
@@ -107,12 +107,11 @@ class UnifiDeviceStatisticSensor(UnifiDeviceSensor):
 
     @property
     def native_value(self):
-        # Access UnifiDevice from coordinator data
-        devices_dict = self.coordinator.data or {}
-        unifi_device = devices_dict.get(self.device_id)
-        if not unifi_device or not unifi_device.latest_statistics:
+        # Access UnifiDevice from coordinator accessor
+        device = self.coordinator.get_device(self.device_id)
+        if not device or not device.latest_statistics:
             return None
-        value = getattr(unifi_device.latest_statistics, self.entity_description.key, None)
+        value = getattr(device.latest_statistics, self.entity_description.key, None)
         if value is None or value is UNSET:
             return None
         return value
@@ -122,12 +121,11 @@ class UnifiDeviceUplinkSensor(UnifiDeviceSensor):
 
     @property
     def native_value(self):
-        # Access UnifiDevice from coordinator data
-        devices_dict = self.coordinator.data or {}
-        unifi_device = devices_dict.get(self.device_id)
-        if not unifi_device or not unifi_device.latest_statistics:
+        # Access UnifiDevice from coordinator accessor
+        device = self.coordinator.get_device(self.device_id)
+        if not device or not device.latest_statistics:
             return None
-        uplink_obj = getattr(unifi_device.latest_statistics, "uplink", None)
+        uplink_obj = getattr(device.latest_statistics, "uplink", None)
         if not uplink_obj:
             return None
         value = getattr(uplink_obj, self.entity_description.key, None)
@@ -138,7 +136,7 @@ class UnifiDeviceUplinkSensor(UnifiDeviceSensor):
 class UnifiDeviceRadioSensor(UnifiDeviceSensor):
     """Represents a radio statistic for a Unifi device."""
     
-    def __init__(self, coordinator, device_id: Any, device_name: str, description: SensorEntityDescription, frequencyGHz: float):
+    def __init__(self, coordinator: UnifiDeviceCoordinator, device_id: Any, device_name: str, description: SensorEntityDescription, frequencyGHz: float):
         UnifiDeviceSensor.__init__(self, coordinator, device_id, device_name, description)
         self._frequencyGHz = frequencyGHz
         self._attr_unique_id = f"unifi_device_{device_id}_{frequencyGHz}_{description.key}"
@@ -146,15 +144,14 @@ class UnifiDeviceRadioSensor(UnifiDeviceSensor):
 
     @property
     def native_value(self):
-        # Access UnifiDevice from coordinator data
-        devices_dict = self.coordinator.data or {}
-        unifi_device = devices_dict.get(self.device_id)
-        if not unifi_device or not unifi_device.latest_statistics:
+        # Access UnifiDevice from coordinator accessor
+        device = self.coordinator.get_device(self.device_id)
+        if not device or not device.latest_statistics:
             return None
-        interfaces_obj = getattr(unifi_device.latest_statistics, "interfaces", None)
+        interfaces_obj = getattr(device.latest_statistics, "interfaces", None)
         if not interfaces_obj:
             return None
-        
+        value = None
         for radio in getattr(interfaces_obj, "radios", []):
             frequencyGHz = getattr(radio, "frequency_g_hz", None)
             if frequencyGHz == self._frequencyGHz:
