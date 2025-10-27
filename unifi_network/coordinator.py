@@ -1,5 +1,4 @@
 from __future__ import annotations
-from dataclasses import dataclass
 from datetime import timedelta
 import asyncio
 import logging
@@ -17,73 +16,12 @@ from .api_client.api.clients import (
     get_connected_client_overview_page,
     get_connected_client_details,
 )
-from .api_client.models import (
-    DeviceOverview,
-    LatestStatisticsForADevice,
-    ClientOverview,
-    ClientDetails,
-)
+from .unifi_device import UnifiDevice
+from .unifi_client import UnifiClient
 
 _LOGGER = logging.getLogger(__name__)
 
 
-@dataclass
-class UnifiDevice:
-    """Represents a Unifi device with its overview and statistics."""
-
-    overview: DeviceOverview
-    latest_statistics: LatestStatisticsForADevice | None
-
-    @property
-    def name(self) -> str | None:
-        """Return the device name."""
-        return getattr(self.overview, "name", None)
-
-    @property
-    def ip(self) -> str | None:
-        """Return the device IP address."""
-        return getattr(self.overview, "ip_address", None)
-
-    @property
-    def mac(self) -> str | None:
-        """Return the device MAC address."""
-        return getattr(self.overview, "mac_address", None)
-
-
-@dataclass
-class UnifiClient:
-    """Represents a Unifi client with its overview and details."""
-
-    overview: ClientOverview
-    details: ClientDetails | None
-
-    @property
-    def name(self) -> str | None:
-        """Return the client name."""
-        return getattr(self.overview, "name", None)
-
-    @property
-    def ip(self) -> str | None:
-        """Return the client IP address."""
-        return getattr(self.overview, "ip_address", None)
-
-    @property
-    def mac(self) -> str | None:
-        """Return the MAC address for this client.
-
-        The OpenAPI models keep unrecognized fields in `additional_properties`.
-        UniFi currently exposes the MAC under the key "macAddress".
-        """
-        # Prefer value from overview, then fall back to details if present
-        for src in (self.overview, self.details):
-            if not src:
-                continue
-            additional = getattr(src, "additional_properties", None)
-            if isinstance(additional, dict):
-                mac = additional.get("macAddress")
-                if mac:
-                    return mac
-        return None
 
 
 class UnifiCoordinator(DataUpdateCoordinator):
