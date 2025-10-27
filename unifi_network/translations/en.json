@@ -1,0 +1,15 @@
+{
+  "title": "Unifi Network",
+  "entity": {
+    "sensor": {
+      "uptime_sec": { "name": "Uptime" },
+      "load_average_1_min": { "name": "Load Average 1m" },
+      "load_average_5_min": { "name": "Load Average 5m" },
+      "load_average_15_min": { "name": "Load Average 15m" },
+      "cpu_utilization_pct": { "name": "CPU Utilization" },
+      "memory_utilization_pct": { "name": "Memory Utilization" },
+      "uplink_rx_rate_bps": { "name": "Uplink RX Rate" },
+      "uplink_tx_rate_bps": { "name": "Uplink TX Rate" }
+    }
+  }
+}
