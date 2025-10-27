@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 from datetime import timedelta
 import asyncio
 import logging
@@ -12,8 +13,17 @@ from .api_client.api.uni_fi_devices import (
     get_device_overview_page,
     get_device_latest_statistics,
 )
+from .api_client.models import DeviceOverview, LatestStatisticsForADevice
 
 _LOGGER = logging.getLogger(__name__)
+
+
+@dataclass
+class UnifiDevice:
+    """Represents a Unifi device with its overview and statistics."""
+
+    overview: DeviceOverview
+    latest_statistics: LatestStatisticsForADevice | None
 
 
 class UnifiCoordinator(DataUpdateCoordinator):
@@ -47,8 +57,8 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
     """Coordinator specialized for devices + latest statistics.
 
     This class fetches the device overview page and then retrieves the latest
-    statistics for each device concurrently, storing the statistics in a dict
-    mapping device_id to stats.
+    statistics for each device concurrently, storing both in UnifiDevice objects
+    in a dict mapping device_id to UnifiDevice.
     """
 
     def __init__(self, hass: HomeAssistant, client: Client, site_id: str):
@@ -59,14 +69,9 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
             name="devices",
             update_method=self._fetch_and_merge,
         )
-        self._latest_stats = {}
-
-    @property
-    def latest_stats(self):
-        return self._latest_stats
 
     async def _fetch_and_merge(self):
-        """Fetch devices and their latest statistics, merge and return list."""
+        """Fetch devices and their latest statistics, merge and return dict."""
         try:
             response = await get_device_overview_page.asyncio_detailed(
                 client=self.client, site_id=self.site_id
@@ -88,18 +93,27 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
 
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            # Store statistics (or None) in a dict by device id
-            # TODO attach stats directly to device objects
-            self._latest_stats = {}
+            # Create UnifiDevice objects combining overview and statistics
+            unifi_devices = {}
             for device, res in zip(devices, results):
+                device_id = getattr(device, "id", None)
+                if device_id is None:
+                    _LOGGER.warning("Device without id found, skipping")
+                    continue
+                    
                 if isinstance(res, Exception):
-                    _LOGGER.debug("Failed to fetch stats for device %s: %s", getattr(device, "id", None), res)
-                    self._latest_stats[getattr(device, "id", None)] = None
+                    _LOGGER.debug("Failed to fetch stats for device %s: %s", device_id, res)
+                    stats = None
                 else:
-                    _LOGGER.debug("Fetched stats for device %s: %s", getattr(device, "id", None), res)
-                    self._latest_stats[getattr(device, "id", None)] = res
+                    _LOGGER.debug("Fetched stats for device %s", device_id)
+                    stats = res
+                
+                unifi_devices[device_id] = UnifiDevice(
+                    overview=device,
+                    latest_statistics=stats,
+                )
 
-            return devices
+            return unifi_devices
 
         except Exception as err:
             raise UpdateFailed(f"Error fetching devices or statistics: {err}")

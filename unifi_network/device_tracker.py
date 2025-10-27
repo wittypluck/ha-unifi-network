@@ -15,21 +15,21 @@ from .const import DOMAIN
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     """Set up Unifi device_tracker platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    devices = coordinator.device_coordinator.data or []
+    devices_dict = coordinator.device_coordinator.data or {}
 
     entities: list[UnifiDeviceTracker] = []
-    for device in devices:
-        entities.append(UnifiDeviceTracker(coordinator.device_coordinator, device.id, device.name))
+    for device_id, unifi_device in devices_dict.items():
+        entities.append(UnifiDeviceTracker(coordinator.device_coordinator, device_id, unifi_device.overview.name))
 
     async_add_entities(entities)
 
 
 def _find_device(coordinator, device_id: Any):
     """Find the current device object by id from coordinator data."""
-    devices = coordinator.data or []
-    for d in devices:
-        if getattr(d, "id", None) == device_id:
-            return d
+    devices_dict = coordinator.data or {}
+    unifi_device = devices_dict.get(device_id)
+    if unifi_device:
+        return unifi_device.overview
     return None
 
 
@@ -49,7 +49,7 @@ class UnifiDeviceTracker(CoordinatorEntity):
 
     @property
     def state(self):
-        # coordinator.data is a list of device objects; use _find_device to locate by id
+        # coordinator.data is a dict of device objects; use _find_device to locate by id
         device = _find_device(self.coordinator, self.device_id)
         if not device:
             return "unknown"
