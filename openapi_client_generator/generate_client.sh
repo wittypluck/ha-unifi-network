@@ -16,5 +16,6 @@ openapi-python-client generate --path integration-fix.json --output-path unifi-n
 #Remove old copy of client
 rm -rf ../unifi_network/api_client
 
-#Copy new client
-cp -R unifi-network-api-client/uni_fi_network_api_client ../unifi_network/api_client
+#Move new client
+mv unifi-network-api-client/uni_fi_network_api_client ../unifi_network/api_client
+

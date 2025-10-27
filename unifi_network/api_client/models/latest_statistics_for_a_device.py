@@ -13,8 +13,8 @@ from typing import Union
 import datetime
 
 if TYPE_CHECKING:
-  from ..models.latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
   from ..models.latest_statistics_for_device_interfaces import LatestStatisticsForDeviceInterfaces
+  from ..models.latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
 
 
 
@@ -57,8 +57,8 @@ class LatestStatisticsForADevice:
 
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
         from ..models.latest_statistics_for_device_interfaces import LatestStatisticsForDeviceInterfaces
+        from ..models.latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
         interfaces = self.interfaces.to_dict()
 
         uptime_sec = self.uptime_sec
@@ -116,8 +116,8 @@ class LatestStatisticsForADevice:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
         from ..models.latest_statistics_for_device_interfaces import LatestStatisticsForDeviceInterfaces
+        from ..models.latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
         d = dict(src_dict)
         interfaces = LatestStatisticsForDeviceInterfaces.from_dict(d.pop("interfaces"))
 

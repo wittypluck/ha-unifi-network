@@ -134,6 +134,9 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
+# Generated OpenAPI client
+open_api_client_generator/unifi-network-api-client/
+
 # Environments
 .env
 .envrc
