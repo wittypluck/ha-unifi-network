@@ -49,13 +49,18 @@ Manual install:
 
 ## Configuration (via UI)
 
-1. In Home Assistant, go to Settings → Devices & Services → Add Integration → search for “Unifi Network (Local API)”.
+1. In Home Assistant, go to Settings → Devices & Services → Add Integration → search for "Unifi Network (Local API)".
 
 1. Enter the settings (Base URL: for example `https://<unifi-host-or-ip>/proxy/network/integration`; API Key: create one from UniFi Network → Settings → Integrations → Add Integration → API Key).
 
 1. Select the site you want to add when prompted.
 
-The integration will then create device trackers and sensors for your site’s UniFi devices and connected clients.
+1. Choose which features to enable:
+   - **Track Devices**: Monitor UniFi network devices (switches, access points, gateways)
+   - **Track Clients**: Monitor connected clients (computers, phones, IoT devices)
+   - You can enable one or both features based on your needs.
+
+The integration will then create device trackers and sensors for your selected features. All devices and clients are automatically fetched using pagination to ensure complete discovery.
 
 ## Notes and troubleshooting
 
