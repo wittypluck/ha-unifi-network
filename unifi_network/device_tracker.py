@@ -16,8 +16,8 @@ from .coordinator import UnifiClientCoordinator, UnifiDeviceCoordinator
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     """Set up Unifi device_tracker platform."""
     core = hass.data[DOMAIN][entry.entry_id]
-    devices_dict = core.device_coordinator.data or {}
-    clients_dict = core.client_coordinator.data or {}
+    devices_dict = core.device_coordinator.data if core.device_coordinator and core.device_coordinator.data else {}
+    clients_dict = core.client_coordinator.data if core.client_coordinator and core.client_coordinator.data else {}
 
     entities: list[UnifiDeviceTracker | UnifiClientTracker] = []
     

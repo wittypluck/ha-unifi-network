@@ -29,7 +29,7 @@ class UnifiSensorEntityDescription(SensorEntityDescription):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    devices_dict = coordinator.device_coordinator.data or {}
+    devices_dict = coordinator.device_coordinator.data if coordinator.device_coordinator and coordinator.device_coordinator.data else {}
 
     entities: list[SensorEntity] = []
     for device_id, device in devices_dict.items():
