@@ -18,6 +18,7 @@ from .api_client.api.clients import (
 )
 from .unifi_device import UnifiDevice
 from .unifi_client import UnifiClient
+from .api_helpers import fetch_all_pages
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -76,13 +77,12 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
     async def _fetch_and_merge(self):
         """Fetch devices and their latest statistics, merge and return dict."""
         try:
-            response = await get_device_overview_page.asyncio_detailed(
-                client=self.client, site_id=self.site_id
+            # Fetch all devices using pagination helper
+            device_overviews = await fetch_all_pages(
+                get_device_overview_page.asyncio_detailed,
+                client=self.client,
+                site_id=self.site_id
             )
-            if response is None or response.status_code != 200:
-                raise UpdateFailed(f"Device overview API returned {getattr(response, 'status_code', None)}")
-
-            device_overviews = response.parsed.data or []
 
             # Prepare tasks to fetch statistics for each device concurrently
             tasks = [
@@ -147,13 +147,12 @@ class UnifiClientCoordinator(UnifiCoordinator):
     async def _fetch_and_merge(self):
         """Fetch clients and their details, merge and return dict."""
         try:
-            response = await get_connected_client_overview_page.asyncio_detailed(
-                client=self.client, site_id=self.site_id
+            # Fetch all clients using pagination helper
+            client_overviews = await fetch_all_pages(
+                get_connected_client_overview_page.asyncio_detailed,
+                client=self.client,
+                site_id=self.site_id
             )
-            if response is None or response.status_code != 200:
-                raise UpdateFailed(f"Client overview API returned {getattr(response, 'status_code', None)}")
-
-            client_overviews = response.parsed.data or []
 
             # Prepare tasks to fetch details for each client concurrently
             tasks = [

@@ -1,5 +1,48 @@
 {
   "title": "Unifi Network",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Unifi Network",
+        "description": "Enter your Unifi Network API credentials",
+        "data": {
+          "base_url": "Base URL",
+          "api_key": "API Key"
+        },
+        "data_description": {
+          "base_url": "Base Network API URL (e.g. https://192.168.1.1/proxy/network/integration)",
+          "api_key": "Your Unifi Network API key"
+        }
+      },
+      "select_site": {
+        "title": "Select Site",
+        "description": "Choose which site to monitor",
+        "data": {
+          "site_name": "Site Name"
+        },
+        "data_description": {
+          "site_name": "Select the Unifi site you want to monitor"
+        }
+      },
+      "select_features": {
+        "title": "Select Features",
+        "description": "Choose which features to enable",
+        "data": {
+          "enable_devices": "Track Devices",
+          "enable_clients": "Track Clients"
+        },
+        "data_description": {
+          "enable_devices": "Track Unifi network devices (switches, access points, gateways)",
+          "enable_clients": "Track connected clients (computers, phones, IoT devices)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the Unifi Network API. Please check your URL and API key.",
+      "invalid_site": "Selected site is invalid.",
+      "no_features_selected": "Please select at least one feature to enable."
+    }
+  },
   "entity": {
     "sensor": {
       "uptime_sec": { "name": "Uptime" },

@@ -12,7 +12,13 @@ class UnifiNetworkCore:
     """Core class for Unifi Network integration."""
 
     def __init__(
-        self, hass: HomeAssistant, base_url: str, site_id: str, api_key: str | None = None
+        self,
+        hass: HomeAssistant,
+        base_url: str,
+        site_id: str,
+        api_key: str | None = None,
+        enable_devices: bool = True,
+        enable_clients: bool = True,
     ) -> None:
         """Initialize Unifi Network core."""
         self.hass = hass
@@ -22,19 +28,27 @@ class UnifiNetworkCore:
         headers = {"X-API-Key": api_key} if api_key else None
         self.client = Client(base_url=base_url, headers=headers)
         
-        # Initialize coordinators
-        self.device_coordinator = UnifiDeviceCoordinator(
-            hass=hass,
-            client=self.client,
-            site_id=site_id,
-        )
-        self.client_coordinator = UnifiClientCoordinator(
-            hass=hass,
-            client=self.client,
-            site_id=site_id,
-        )
+        # Initialize coordinators based on enabled features
+        self.device_coordinator = None
+        self.client_coordinator = None
+        
+        if enable_devices:
+            self.device_coordinator = UnifiDeviceCoordinator(
+                hass=hass,
+                client=self.client,
+                site_id=site_id,
+            )
+        
+        if enable_clients:
+            self.client_coordinator = UnifiClientCoordinator(
+                hass=hass,
+                client=self.client,
+                site_id=site_id,
+            )
             
     async def async_init(self) -> None:
         """Initialize data and start updates."""
-        await self.device_coordinator.async_config_entry_first_refresh()
-        await self.client_coordinator.async_config_entry_first_refresh()
+        if self.device_coordinator:
+            await self.device_coordinator.async_config_entry_first_refresh()
+        if self.client_coordinator:
+            await self.client_coordinator.async_config_entry_first_refresh()

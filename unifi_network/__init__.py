@@ -21,6 +21,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         base_url=entry.data["base_url"],
         site_id=entry.data["site_id"],
         api_key=entry.data.get("api_key"),
+        enable_devices=entry.data.get("enable_devices", True),
+        enable_clients=entry.data.get("enable_clients", True),
     )
     await core.async_init()
 
