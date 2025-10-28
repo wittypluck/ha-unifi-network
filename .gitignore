@@ -1,3 +1,11 @@
+# Generated OpenAPI client
+open_api_client_generator/unifi-network-api-client/
+openapi_client_generator/integration-fix.json
+openapi_client_generator/unifi-network-api-client/pyproject.toml
+openapi_client_generator/unifi-network-api-client/README.md
+deploy_custom_integration.sh
+diff_api.sh
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -134,9 +142,6 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Generated OpenAPI client
-open_api_client_generator/unifi-network-api-client/
-
 # Environments
 .env
 .envrc
@@ -208,3 +213,4 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+

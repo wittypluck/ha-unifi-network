@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from .api_client.models import ClientOverview, ClientDetails
 
+from .api_client.models import ClientDetails, ClientOverview
 from .api_client.types import Unset
+
 
 @dataclass
 class UnifiClient:

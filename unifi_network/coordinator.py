@@ -1,28 +1,29 @@
 from __future__ import annotations
-from datetime import timedelta
+
 import asyncio
 import logging
-from typing import Any, Callable, Coroutine
+from collections.abc import Callable, Coroutine
+from datetime import timedelta
+from typing import Any
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from .const import DOMAIN, DEFAULT_UPDATE_INTERVAL
+
 from .api_client import Client
-from .api_client.api.uni_fi_devices import (
-    get_device_overview_page,
-    get_device_latest_statistics,
-)
 from .api_client.api.clients import (
-    get_connected_client_overview_page,
     get_connected_client_details,
+    get_connected_client_overview_page,
 )
-from .unifi_device import UnifiDevice
-from .unifi_client import UnifiClient
+from .api_client.api.uni_fi_devices import (
+    get_device_latest_statistics,
+    get_device_overview_page,
+)
 from .api_helpers import fetch_all_pages
+from .const import DEFAULT_UPDATE_INTERVAL, DOMAIN
+from .unifi_client import UnifiClient
+from .unifi_device import UnifiDevice
 
 _LOGGER = logging.getLogger(__name__)
-
-
 
 
 class UnifiCoordinator(DataUpdateCoordinator):
@@ -34,7 +35,7 @@ class UnifiCoordinator(DataUpdateCoordinator):
         client: Client,
         site_id: str,
         name: str,
-        update_method: Callable[[], Coroutine[Any, Any, Any]]
+        update_method: Callable[[], Coroutine[Any, Any, Any]],
     ):
         """Initialize the coordinator."""
         super().__init__(
@@ -81,7 +82,7 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
             device_overviews = await fetch_all_pages(
                 get_device_overview_page.asyncio_detailed,
                 client=self.client,
-                site_id=self.site_id
+                site_id=self.site_id,
             )
 
             # Prepare tasks to fetch statistics for each device concurrently
@@ -98,28 +99,29 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
 
             # Create UnifiDevice objects combining overview and statistics
             unifi_devices = {}
-            for device_overview, res in zip(device_overviews, results):
+            for device_overview, res in zip(device_overviews, results, strict=False):
                 device_id = getattr(device_overview, "id", None)
                 if device_id is None:
                     _LOGGER.warning("Device without id found, skipping")
                     continue
-                    
+
                 if isinstance(res, Exception):
-                    _LOGGER.debug("Failed to fetch stats for device %s: %s", device_id, res)
+                    _LOGGER.debug(
+                        "Failed to fetch stats for device %s: %s", device_id, res
+                    )
                     stats = None
                 else:
                     _LOGGER.debug("Fetched stats for device %s", device_id)
                     stats = res
-                
+
                 unifi_devices[device_id] = UnifiDevice(
-                    overview=device_overview,
-                    latest_statistics=stats,
+                    overview=device_overview, latest_statistics=stats
                 )
 
             return unifi_devices
 
         except Exception as err:
-            raise UpdateFailed(f"Error fetching devices or statistics: {err}")
+            raise UpdateFailed("Error fetching devices or statistics") from err
 
 
 class UnifiClientCoordinator(UnifiCoordinator):
@@ -151,7 +153,7 @@ class UnifiClientCoordinator(UnifiCoordinator):
             client_overviews = await fetch_all_pages(
                 get_connected_client_overview_page.asyncio_detailed,
                 client=self.client,
-                site_id=self.site_id
+                site_id=self.site_id,
             )
 
             # Prepare tasks to fetch details for each client concurrently
@@ -168,26 +170,26 @@ class UnifiClientCoordinator(UnifiCoordinator):
 
             # Create UnifiClient objects combining overview and details
             unifi_clients = {}
-            for client_overview, res in zip(client_overviews, results):
+            for client_overview, res in zip(client_overviews, results, strict=False):
                 client_id = getattr(client_overview, "id", None)
                 if client_id is None:
                     _LOGGER.warning("Client without id found, skipping")
                     continue
-                    
+
                 if isinstance(res, Exception):
-                    _LOGGER.debug("Failed to fetch details for client %s: %s", client_id, res)
+                    _LOGGER.debug(
+                        "Failed to fetch details for client %s: %s", client_id, res
+                    )
                     details = None
                 else:
                     _LOGGER.debug("Fetched details for client %s", client_id)
                     details = res
-                
+
                 unifi_clients[client_id] = UnifiClient(
-                    overview=client_overview,
-                    details=details,
+                    overview=client_overview, details=details
                 )
 
             return unifi_clients
 
         except Exception as err:
-            raise UpdateFailed(f"Error fetching clients or details: {err}")
-
+            raise UpdateFailed("Error fetching clients or details") from err

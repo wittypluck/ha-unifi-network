@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from .api_client.models import DeviceOverview, LatestStatisticsForADevice
 
+from .api_client.models import DeviceOverview, LatestStatisticsForADevice
 from .api_client.types import Unset
+
 
 @dataclass
 class UnifiDevice:
@@ -9,7 +10,6 @@ class UnifiDevice:
 
     overview: DeviceOverview
     latest_statistics: LatestStatisticsForADevice | None
-
 
     @property
     def name(self) -> str | None:
@@ -19,7 +19,6 @@ class UnifiDevice:
             return None
         return name
 
-
     @property
     def ip(self) -> str | None:
         """Return the device IP address, or None if unset."""
@@ -27,7 +26,6 @@ class UnifiDevice:
         if ip is not None and isinstance(ip, Unset):
             return None
         return ip
-
 
     @property
     def mac(self) -> str | None:

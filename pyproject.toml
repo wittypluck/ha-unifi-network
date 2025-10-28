@@ -1,0 +1,62 @@
+[tool.ruff]
+# Match Home Assistant's formatting style (Black-compatible)
+line-length = 88
+target-version = "py312"
+
+# Exclude generated code and build artifacts from lint/format to avoid churn
+extend-exclude = [
+    
+    "openapi_client_generator/",
+    "unifi_network/api_client/",
+    "**/.venv/",
+    "**/.tox/",
+    "**/.mypy_cache/",
+    "**/__pycache__/",
+]
+
+[tool.ruff.format]
+# Use Black-like formatting defaults
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+
+[tool.ruff.lint]
+# Broad, pragmatic rule set similar to Home Assistant's linting approach
+select = [
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "W",   # pycodestyle warnings
+    "I",   # import sorting
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "G",   # flake8-logging-format
+    "PIE", # flake8-pie
+    "PL",  # Pylint rules via Ruff
+    "PT",  # flake8-pytest-style (safe subset)
+    "PTH", # flake8-use-pathlib
+    "Q",   # flake8-quotes (harmonized with formatter)
+    "RET", # flake8-return
+    "RUF", # Ruff-specific rules
+    "SIM", # flake8-simplify
+    "TRY", # tryceratops
+    "YTT", # flake8-2020 (py3.8+ features)
+]
+ignore = [
+    "E501",   # Line length handled by formatter
+    "COM812", # Trailing comma handled by formatter
+    "ISC001", # Implicit string concatenation/formatter interplay
+    "TRY003", # Allow inline exception messages
+    "TRY300", # No enforced else-after-try style
+    "TRY301", # Don't force abstracting raise into inner function
+    "PLR0913", # Allow more args in dataclass/initializer when pragmatic
+]
+unfixable = [
+    "F401", # Unused imports sometimes indicate public API; avoid auto-fix removal
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests often assert on logs/exceptions and may need broader patterns
+"tests/**" = ["PLR2004", "S101"]

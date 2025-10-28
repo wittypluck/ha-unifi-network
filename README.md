@@ -81,6 +81,34 @@ The integration will then create device trackers and sensors for your selected f
 - Running locally
   - This is a regular Home Assistant custom component; install as described above and restart HA to load changes.
 
+## Code style and formatting
+
+This project uses Ruff for both formatting and linting, aligned with Home Assistant Core's standards:
+
+- Formatting: Black-compatible via `ruff format` with a line length of 88.
+- Imports: Sorted via Ruff's import sorter (`I`).
+- Lint rules: A pragmatic selection similar to Home Assistant Core (see `pyproject.toml`).
+- Generated code is excluded from lint/format to avoid churn: `openapi_client_generator/` and `unifi_network/api_client/`.
+
+Editor setup (VS Code): The workspace sets Ruff as the default Python formatter and organizes imports on save. You can also install the "Ruff" extension by Astral.
+
+Quick commands (optional):
+
+```bash
+# Install Ruff (user env or venv)
+pip install ruff
+
+# Format code
+ruff format
+
+# Lint and auto-fix safe issues
+ruff check --fix
+
+# Enable pre-commit hooks (recommended)
+pip install pre-commit
+pre-commit install
+```
+
 ## Disclaimer
 
 This project is not affiliated with Ubiquiti Inc. Use at your own risk.

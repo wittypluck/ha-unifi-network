@@ -4,30 +4,48 @@ from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
+from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers.entity import DeviceInfo, EntityCategory
-from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 
 from .const import DOMAIN
 from .coordinator import UnifiClientCoordinator, UnifiDeviceCoordinator
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+):
     """Set up Unifi device_tracker platform."""
     core = hass.data[DOMAIN][entry.entry_id]
-    devices_dict = core.device_coordinator.data if core.device_coordinator and core.device_coordinator.data else {}
-    clients_dict = core.client_coordinator.data if core.client_coordinator and core.client_coordinator.data else {}
+    devices_dict = (
+        core.device_coordinator.data
+        if core.device_coordinator and core.device_coordinator.data
+        else {}
+    )
+    clients_dict = (
+        core.client_coordinator.data
+        if core.client_coordinator and core.client_coordinator.data
+        else {}
+    )
 
     entities: list[UnifiDeviceTracker | UnifiClientTracker] = []
-    
+
     # Add device trackers
     for device_id, unifi_device in devices_dict.items():
-        entities.append(UnifiDeviceTracker(core.device_coordinator, device_id, unifi_device.overview.name))
-    
+        entities.append(
+            UnifiDeviceTracker(
+                core.device_coordinator, device_id, unifi_device.overview.name
+            )
+        )
+
     # Add client trackers
     for client_id, unifi_client in clients_dict.items():
-        entities.append(UnifiClientTracker(core.client_coordinator, client_id, unifi_client.overview.name))
+        entities.append(
+            UnifiClientTracker(
+                core.client_coordinator, client_id, unifi_client.overview.name
+            )
+        )
 
     async_add_entities(entities)
 
@@ -39,8 +57,9 @@ class UnifiDeviceTracker(CoordinatorEntity):
     _attr_name = None
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-
-    def __init__(self, coordinator: UnifiDeviceCoordinator, device_id: Any, device_name: str):
+    def __init__(
+        self, coordinator: UnifiDeviceCoordinator, device_id: Any, device_name: str
+    ):
         super().__init__(coordinator)
         self.device_id = device_id
         self.device_name = device_name
@@ -101,7 +120,9 @@ class UnifiClientTracker(CoordinatorEntity):
     _attr_name = None
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    def __init__(self, coordinator: UnifiClientCoordinator, client_id: Any, client_name: str):
+    def __init__(
+        self, coordinator: UnifiClientCoordinator, client_id: Any, client_name: str
+    ):
         super().__init__(coordinator)
         self.client_id = client_id
         self.client_name = client_name
@@ -138,9 +159,4 @@ class UnifiClientTracker(CoordinatorEntity):
         client = self.coordinator.get_client(self.client_id)
         if not client:
             return None
-        return {
-            "ip": client.ip,
-            "mac": client.mac,
-            "source_type": "router",
-        }
-
+        return {"ip": client.ip, "mac": client.mac, "source_type": "router"}

@@ -1,19 +1,23 @@
 from __future__ import annotations
+
 import logging
-from homeassistant import config_entries
-from homeassistant.helpers import selector
+
 import voluptuous as vol
 from aiohttp import ClientError
+from homeassistant import config_entries
+from homeassistant.helpers import selector
 
-from .const import DOMAIN
 from .api_client import Client
 from .api_client.api.sites import get_site_overview_page
 from .api_helpers import fetch_all_pages
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Unifi Network integration."""
+
     VERSION = 1
 
     def __init__(self):
@@ -37,11 +41,10 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 headers = {"X-API-Key": api_key} if api_key else None
                 client = Client(base_url=base_url, headers=headers)
-                
+
                 # Fetch all sites
                 all_sites = await fetch_all_pages(
-                    get_site_overview_page.asyncio_detailed,
-                    client=client
+                    get_site_overview_page.asyncio_detailed, client=client
                 )
 
                 if not all_sites:
@@ -51,18 +54,20 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
                 return await self.async_step_select_site()
 
-            except Exception as err:
-                _LOGGER.exception("Error connecting to Unifi API: %s", err)
+            except Exception:
+                _LOGGER.exception("Error connecting to Unifi API")
                 errors["base"] = "cannot_connect"
 
-        schema = vol.Schema({
-            vol.Required("base_url"): selector.TextSelector(
-                selector.TextSelectorConfig(type=selector.TextSelectorType.URL)
-            ),
-            vol.Required("api_key"): selector.TextSelector(
-                selector.TextSelectorConfig(type=selector.TextSelectorType.TEXT)
-            ),
-        })
+        schema = vol.Schema(
+            {
+                vol.Required("base_url"): selector.TextSelector(
+                    selector.TextSelectorConfig(type=selector.TextSelectorType.URL)
+                ),
+                vol.Required("api_key"): selector.TextSelector(
+                    selector.TextSelectorConfig(type=selector.TextSelectorType.TEXT)
+                ),
+            }
+        )
 
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
 
@@ -77,16 +82,19 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self._selected_site_id = site_id
                 self._selected_site_name = site_name
                 return await self.async_step_select_features()
-            else:
-                errors["base"] = "invalid_site"
+            errors["base"] = "invalid_site"
 
-        schema = vol.Schema({
-            vol.Required("site_name"): selector.SelectSelector(
-                selector.SelectSelectorConfig(options=list(self._sites.keys()))
-            ),
-        })
+        schema = vol.Schema(
+            {
+                vol.Required("site_name"): selector.SelectSelector(
+                    selector.SelectSelectorConfig(options=list(self._sites.keys()))
+                )
+            }
+        )
 
-        return self.async_show_form(step_id="select_site", data_schema=schema, errors=errors)
+        return self.async_show_form(
+            step_id="select_site", data_schema=schema, errors=errors
+        )
 
     async def async_step_select_features(self, user_input=None):
         """Third step: user selects which features to enable."""
@@ -111,9 +119,17 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     },
                 )
 
-        schema = vol.Schema({
-            vol.Optional("enable_devices", default=True): selector.BooleanSelector(),
-            vol.Optional("enable_clients", default=True): selector.BooleanSelector(),
-        })
+        schema = vol.Schema(
+            {
+                vol.Optional(
+                    "enable_devices", default=True
+                ): selector.BooleanSelector(),
+                vol.Optional(
+                    "enable_clients", default=True
+                ): selector.BooleanSelector(),
+            }
+        )
 
-        return self.async_show_form(step_id="select_features", data_schema=schema, errors=errors)
+        return self.async_show_form(
+            step_id="select_features", data_schema=schema, errors=errors
+        )
