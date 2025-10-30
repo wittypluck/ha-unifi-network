@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -20,6 +21,8 @@ from .api_client.models.device_overview_interfaces_item import (
     DeviceOverviewInterfacesItem,
 )
 from .api_client.models.device_overview_state import DeviceOverviewState
+from .api_client.models.port_overview import PortOverview
+from .api_client.models.port_po_e_overview import PortPoEOverview
 from .api_client.types import UNSET
 from .const import DOMAIN
 from .coordinator import UnifiClientCoordinator, UnifiDeviceCoordinator
@@ -186,6 +189,15 @@ class UnifiDevicePortSensor(UnifiDeviceSensor):
     @property
     def native_value(self) -> float | int | str | bool | None:
         """Return the state of the sensor (non-POE keys only)."""
+        port = self._get_port()
+        if port is None:
+            return None
+        value = getattr(port, self.entity_description.key, None)
+        if value is None or value is UNSET:
+            return None
+        return value
+
+    def _get_port(self) -> PortOverview | None:
         device = self.coordinator.get_device(self.device_id)
         if not device or not device.details:
             return None
@@ -197,12 +209,44 @@ class UnifiDevicePortSensor(UnifiDeviceSensor):
             return None
         for port in ports:
             port_idx = getattr(port, "idx", None)
-            if port_idx != self._port_idx:
-                continue
-            value = getattr(port, self.entity_description.key, None)
+            if port_idx == self._port_idx:
+                return port
+        return None
+
+
+class UnifiDevicePortStateSensor(UnifiDevicePortSensor):
+    """Represents the state of a Unifi device port."""
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the port sensor with enum value conversion."""
+        port = self._get_port()
+        if port is None:
+            return None
+        value = getattr(port, self.entity_description.key, None)
         if value is None or value is UNSET:
             return None
-        return value
+        # Convert enum values to readable strings
+        return str(value).lower().replace("_", " ").title()
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Return additional state attributes for the state sensor:
+        Port speed, port max speed.
+        """
+        port = self._get_port()
+        if port is None:
+            return None
+        return {
+            "port_number": port.idx,
+            "port_connector": str(port.connector)
+            if port.connector and port.connector is not UNSET
+            else None,
+            "speed_mbps": None if port.speed_mbps is UNSET else port.speed_mbps,
+            "max_speed_mbps": None
+            if port.max_speed_mbps is UNSET
+            else port.max_speed_mbps,
+        }
 
 
 # POE port sensor descriptions
@@ -228,27 +272,53 @@ class UnifiDevicePortPoeSensor(UnifiDevicePortSensor):
 
     @property
     def native_value(self) -> float | int | str | bool | None:
-        """Return the state of the POE sensor (poe_* keys only)."""
-        device = self.coordinator.get_device(self.device_id)
-        if not device or not device.details:
+        """Return the state of the POE sensor."""
+        poe = self._get_poe()
+        if poe is None:
             return None
-        interfaces_obj = getattr(device.details, "interfaces", None)
-        if not interfaces_obj:
-            return None
-        ports = getattr(interfaces_obj, "ports", [])
-        if not ports or ports is UNSET:
-            return None
-        for port in ports:
-            port_idx = getattr(port, "idx", None)
-            if port_idx != self._port_idx:
-                continue
-            poe_obj = getattr(port, "poe", None)
-            if not poe_obj or poe_obj is UNSET:
-                return None
-            value = getattr(poe_obj, self.entity_description.key, None)
+        value = getattr(poe, self.entity_description.key, None)
         if value is None or value is UNSET:
             return None
         return value
+
+    def _get_poe(self) -> PortPoEOverview | None:
+        port = self._get_port()
+        if port is None:
+            return None
+        poe = getattr(port, "poe", None)
+        if not poe or poe is UNSET:
+            return None
+        return poe
+
+
+class UnifiDevicePortPoeStateSensor(UnifiDevicePortPoeSensor):
+    """Represents the state of a Unifi device port Poe."""
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the port poe with enum value conversion."""
+        poe = self._get_poe()
+        if poe is None:
+            return None
+        value = getattr(poe, self.entity_description.key, None)
+        if value is None or value is UNSET:
+            return None
+        # Convert enum values to readable strings
+        return str(value).lower().replace("_", " ").title()
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Return additional state attributes for the state sensor:
+        Port POE standard, type, and enabled status.
+        """
+        poe = self._get_poe()
+        if poe is None:
+            return None
+        return {
+            "poe_standard": poe.standard,
+            "poe_type": str(poe.type_),
+            "poe_enabled": str(poe.enabled),
+        }
 
 
 class UnifiClientSensor(CoordinatorEntity, SensorEntity):
@@ -414,30 +484,11 @@ DEVICE_RADIO_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
 # Port sensor descriptions
 DEVICE_PORT_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
     UnifiSensorEntityDescription(
-        sensor_type=UnifiDevicePortSensor,
+        sensor_type=UnifiDevicePortStateSensor,
         key="state",
         translation_key="port_state",
         device_class=SensorDeviceClass.ENUM,
         icon="mdi:ethernet",
-        entity_category=EntityCategory.DIAGNOSTIC,
-    ),
-    UnifiSensorEntityDescription(
-        sensor_type=UnifiDevicePortSensor,
-        key="speed_mbps",
-        translation_key="port_speed_mbps",
-        native_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
-        device_class=SensorDeviceClass.DATA_RATE,
-        state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:speedometer",
-        entity_category=EntityCategory.DIAGNOSTIC,
-    ),
-    UnifiSensorEntityDescription(
-        sensor_type=UnifiDevicePortSensor,
-        key="max_speed_mbps",
-        translation_key="port_max_speed_mbps",
-        native_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
-        device_class=SensorDeviceClass.DATA_RATE,
-        icon="mdi:speedometer-medium",
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
 )
@@ -445,15 +496,7 @@ DEVICE_PORT_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
 # Port Poe sensor descriptions
 DEVICE_PORT_POE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
     UnifiSensorEntityDescription(
-        sensor_type=UnifiDevicePortPoeSensor,
-        key="enabled",
-        translation_key="port_poe_enabled",
-        device_class=SensorDeviceClass.ENUM,
-        icon="mdi:power-plug",
-        entity_category=EntityCategory.DIAGNOSTIC,
-    ),
-    UnifiSensorEntityDescription(
-        sensor_type=UnifiDevicePortPoeSensor,
+        sensor_type=UnifiDevicePortPoeStateSensor,
         key="state",
         translation_key="port_poe_state",
         device_class=SensorDeviceClass.ENUM,
