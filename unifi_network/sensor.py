@@ -9,7 +9,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfDataRate
+from homeassistant.const import PERCENTAGE, UnitOfDataRate, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
@@ -244,7 +244,7 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         sensor_type=UnifiDeviceStatisticSensor,
         key="uptime_sec",
         translation_key="uptime_sec",
-        native_unit_of_measurement="s",
+        native_unit_of_measurement=UnitOfTime.SECONDS,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:timer-outline",
     ),
@@ -276,7 +276,7 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         sensor_type=UnifiDeviceStatisticSensor,
         key="cpu_utilization_pct",
         translation_key="cpu_utilization_pct",
-        native_unit_of_measurement="%",
+        native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:cpu-64-bit",
     ),
@@ -284,7 +284,7 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         sensor_type=UnifiDeviceStatisticSensor,
         key="memory_utilization_pct",
         translation_key="memory_utilization_pct",
-        native_unit_of_measurement="%",
+        native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:memory",
     ),
@@ -317,7 +317,7 @@ DEVICE_RADIO_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         sensor_type=UnifiDeviceRadioSensor,
         key="tx_retries_pct",
         translation_key="tx_retries_pct",
-        native_unit_of_measurement="%",
+        native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:wifi-sync",
     ),
