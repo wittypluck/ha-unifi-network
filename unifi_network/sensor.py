@@ -22,7 +22,8 @@ from .api_client.models.device_overview_interfaces_item import (
 from .api_client.models.device_overview_state import DeviceOverviewState
 from .api_client.types import UNSET
 from .const import DOMAIN
-from .coordinator import UnifiDeviceCoordinator
+from .coordinator import UnifiClientCoordinator, UnifiDeviceCoordinator
+from .unifi_client import UnifiClient
 from .unifi_device import UnifiDevice
 
 
@@ -164,6 +165,72 @@ class UnifiDeviceRadioSensor(UnifiDeviceSensor):
         return value
 
 
+class UnifiClientSensor(CoordinatorEntity, SensorEntity):
+    """Represents a specific sensor for a Unifi client."""
+
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    def __init__(
+        self,
+        coordinator: UnifiClientCoordinator,
+        client_id: str,
+        description: SensorEntityDescription,
+    ) -> None:
+        """Initialize the Unifi client sensor."""
+        CoordinatorEntity.__init__(self, coordinator)
+        self.entity_description = description
+        self.client_id = client_id
+        self._attr_unique_id = f"unifi_client_{client_id}_{description.key}"
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device registry information for this client."""
+        client = self.coordinator.get_client(self.client_id)
+        if not client:
+            return None
+        client_overview = client.overview
+
+        client_type = getattr(client_overview, "type_", None)
+        identifiers = {(DOMAIN, self.client_id)}
+        connections = {(CONNECTION_NETWORK_MAC, client.mac)} if client.mac else set()
+
+        return DeviceInfo(
+            identifiers=identifiers,
+            name=client.name,
+            model=client_type,
+            connections=connections,
+        )
+
+    @property
+    def native_value(self) -> float | int | str | None:
+        """Return the state of the sensor."""
+        # Access UnifiClient from coordinator accessor
+        client = self.coordinator.get_client(self.client_id)
+        if not client:
+            return None
+        value = getattr(client.overview, self.entity_description.key, None)
+        if value is None or value is UNSET:
+            return None
+        return value
+
+
+class UnifiClientStateSensor(UnifiClientSensor):
+    """Represents the connection state of a Unifi client.
+
+    This sensor requires custom logic because clients don't have a 'state' field
+    in their overview. Instead, we determine state based on presence in coordinator data.
+    """
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the sensor."""
+        # Access UnifiClient from coordinator accessor
+        client = self.coordinator.get_client(self.client_id)
+        # If client exists in coordinator data, it's connected
+        return "Connected" if client else "Disconnected"
+
+
 # Define sensor descriptions after the sensor classes so referenced classes exist
 DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
     UnifiSensorEntityDescription(
@@ -256,6 +323,25 @@ DEVICE_RADIO_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
     ),
 )
 
+# Client sensor descriptions
+CLIENT_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
+    UnifiSensorEntityDescription(
+        sensor_type=UnifiClientStateSensor,
+        key="state",
+        translation_key="client_state",
+        icon="mdi:connection",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    UnifiSensorEntityDescription(
+        sensor_type=UnifiClientSensor,
+        key="connected_at",
+        translation_key="client_connected_at",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:clock-outline",
+    ),
+)
+
 
 def _create_base_sensors(
     device: UnifiDevice,
@@ -319,19 +405,46 @@ def _create_radio_sensors(
     return entities
 
 
+def _create_client_sensors(
+    client: UnifiClient,
+    client_coordinator: UnifiClientCoordinator,
+    descriptions: tuple[UnifiSensorEntityDescription, ...],
+) -> list[UnifiClientSensor]:
+    """Create sensors for a client."""
+    overview = client.overview
+
+    return [
+        description.sensor_type(
+            client_coordinator,
+            overview.id,
+            description,
+        )
+        for description in descriptions
+    ]
+
+
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up Unifi Network sensors from a config entry."""
     core = hass.data[DOMAIN][entry.entry_id]
     device_coordinator = core.device_coordinator
+    client_coordinator = core.client_coordinator
+
     devices = (
         device_coordinator.data
         if device_coordinator and device_coordinator.data
         else {}
     )
+    clients = (
+        client_coordinator.data
+        if client_coordinator and client_coordinator.data
+        else {}
+    )
 
     entities: list[SensorEntity] = []
+
+    # Add device sensors
     for device in devices.values():
         entities.extend(
             _create_base_sensors(
@@ -347,4 +460,15 @@ async def async_setup_entry(
                 DEVICE_RADIO_SENSOR_DESCRIPTIONS,
             )
         )
+
+    # Add client sensors
+    for client in clients.values():
+        entities.extend(
+            _create_client_sensors(
+                client,
+                client_coordinator,
+                CLIENT_SENSOR_DESCRIPTIONS,
+            )
+        )
+
     async_add_entities(entities)

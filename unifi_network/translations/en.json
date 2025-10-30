@@ -54,7 +54,9 @@
       "memory_utilization_pct": { "name": "Memory Utilization" },
       "uplink_rx_rate_bps": { "name": "Uplink RX Rate" },
       "uplink_tx_rate_bps": { "name": "Uplink TX Rate" },
-      "tx_retries_pct": { "name": "{frequencyGHz}GHz TX Retries" }
+      "tx_retries_pct": { "name": "{frequencyGHz}GHz TX Retries" },
+      "client_state": { "name": "Connection State" },
+      "client_connected_at": { "name": "Connected At" }
     }
   }
 }
