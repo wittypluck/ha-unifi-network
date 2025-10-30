@@ -19,6 +19,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .api_client.models.device_overview_interfaces_item import (
     DeviceOverviewInterfacesItem,
 )
+from .api_client.models.device_overview_state import DeviceOverviewState
 from .api_client.types import UNSET
 from .const import DOMAIN
 from .coordinator import UnifiDeviceCoordinator
@@ -87,6 +88,24 @@ class UnifiDeviceStatisticSensor(UnifiDeviceSensor):
         return value
 
 
+class UnifiDeviceStateSensor(UnifiDeviceSensor):
+    """Represents the state of a Unifi device."""
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the sensor."""
+        # Access UnifiDevice from coordinator accessor
+        device = self.coordinator.get_device(self.device_id)
+        if not device:
+            return None
+        state = getattr(device.overview, "state", None)
+        if state is None or state is UNSET:
+            return None
+        if isinstance(state, DeviceOverviewState):
+            return state.value.lower().replace("_", " ").title()
+        return str(state)
+
+
 class UnifiDeviceUplinkSensor(UnifiDeviceSensor):
     """Represents an uplink statistic for a Unifi device."""
 
@@ -147,6 +166,13 @@ class UnifiDeviceRadioSensor(UnifiDeviceSensor):
 
 # Define sensor descriptions after the sensor classes so referenced classes exist
 DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
+    UnifiSensorEntityDescription(
+        sensor_type=UnifiDeviceStateSensor,
+        key="state",
+        translation_key="state",
+        icon="mdi:state-machine",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
     UnifiSensorEntityDescription(
         sensor_type=UnifiDeviceStatisticSensor,
         key="uptime_sec",

@@ -45,6 +45,7 @@
     },
     "entity": {
       "sensor": {
+        "state": { "name": "State" },
         "uptime_sec": { "name": "Uptime" },
         "load_average_1_min": { "name": "Load Average 1m" },
         "load_average_5_min": { "name": "Load Average 5m" },
