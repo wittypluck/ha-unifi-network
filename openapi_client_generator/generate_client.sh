@@ -1,11 +1,15 @@
 #!/bin/bash
 
-#Remove license and Change frequenceGHz type from string to number:
+#Remove license (empty):
+#Change frequenceGHz type from string to number:
+#Change "Port PoE overview" "type" from string to number:
 jq 'del(.info.license) 
     | walk(if type == "object" and has("frequencyGHz") 
            then .frequencyGHz = {type:"number", "format": "double"} 
-           else . end)' integration.json > integration-fix.json
-
+           else . end) 
+    | walk(if type == "object" and .type == "integer" and (.enum | type == "array") 
+          then .enum |= map(tonumber) 
+          else . end)' integration.json > integration-fix.json
 
 #Remove previous client
 rm -rf unifi-network-api-client

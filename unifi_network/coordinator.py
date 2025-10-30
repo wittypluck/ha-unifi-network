@@ -15,6 +15,7 @@ from .api_client.api.clients import (
     get_connected_client_overview_page,
 )
 from .api_client.api.uni_fi_devices import (
+    get_device_details,
     get_device_latest_statistics,
     get_device_overview_page,
 )
@@ -85,8 +86,8 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
                 site_id=self.site_id,
             )
 
-            # Prepare tasks to fetch statistics for each device concurrently
-            tasks = [
+            # Prepare tasks to fetch statistics and details for each device concurrently
+            stats_tasks = [
                 get_device_latest_statistics.asyncio(
                     site_id=self.site_id,
                     device_id=device_overview.id,
@@ -95,27 +96,54 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
                 for device_overview in device_overviews
             ]
 
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+            details_tasks = [
+                get_device_details.asyncio(
+                    site_id=self.site_id,
+                    device_id=device_overview.id,
+                    client=self.client,
+                )
+                for device_overview in device_overviews
+            ]
 
-            # Create UnifiDevice objects combining overview and statistics
+            stats_results = await asyncio.gather(*stats_tasks, return_exceptions=True)
+            details_results = await asyncio.gather(
+                *details_tasks, return_exceptions=True
+            )
+
+            # Create UnifiDevice objects combining overview, statistics, and details
             unifi_devices = {}
-            for device_overview, res in zip(device_overviews, results, strict=False):
+            for device_overview, stats_res, details_res in zip(
+                device_overviews, stats_results, details_results, strict=False
+            ):
                 device_id = getattr(device_overview, "id", None)
                 if device_id is None:
                     _LOGGER.warning("Device without id found, skipping")
                     continue
 
-                if isinstance(res, Exception):
+                if isinstance(stats_res, Exception):
                     _LOGGER.debug(
-                        "Failed to fetch stats for device %s: %s", device_id, res
+                        "Failed to fetch stats for device %s: %s", device_id, stats_res
                     )
                     stats = None
                 else:
                     _LOGGER.debug("Fetched stats for device %s", device_id)
-                    stats = res
+                    stats = stats_res
+
+                if isinstance(details_res, Exception):
+                    _LOGGER.debug(
+                        "Failed to fetch details for device %s: %s",
+                        device_id,
+                        details_res,
+                    )
+                    details = None
+                else:
+                    _LOGGER.debug("Fetched details for device %s", device_id)
+                    details = details_res
 
                 unifi_devices[device_id] = UnifiDevice(
-                    overview=device_overview, latest_statistics=stats
+                    overview=device_overview,
+                    latest_statistics=stats,
+                    details=details,
                 )
 
             return unifi_devices

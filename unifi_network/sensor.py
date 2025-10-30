@@ -27,7 +27,7 @@ from .unifi_client import UnifiClient
 from .unifi_device import UnifiDevice
 
 
-# Subclass SensorEntityDescription to add sensor_type
+# --- Base classes ---
 @dataclass(frozen=True, kw_only=True)
 class UnifiSensorEntityDescription(SensorEntityDescription):
     """Extended sensor entity description with sensor_type reference."""
@@ -140,7 +140,7 @@ class UnifiDeviceRadioSensor(UnifiDeviceSensor):
         UnifiDeviceSensor.__init__(self, coordinator, device_id, description)
         self._frequency_ghz = frequency_ghz
         self._attr_unique_id = (
-            f"unifi_device_{device_id}_{frequency_ghz}_{description.key}"
+            f"unifi_device_{device_id}_radio_{frequency_ghz}_{description.key}"
         )
         self._attr_translation_placeholders = {"frequencyGHz": str(frequency_ghz)}
 
@@ -160,6 +160,92 @@ class UnifiDeviceRadioSensor(UnifiDeviceSensor):
             if frequency_ghz == self._frequency_ghz:
                 # Found the matching radio
                 value = getattr(radio, self.entity_description.key, None)
+        if value is None or value is UNSET:
+            return None
+        return value
+
+
+class UnifiDevicePortSensor(UnifiDeviceSensor):
+    """Represents a port sensor for a Unifi device."""
+
+    def __init__(
+        self,
+        coordinator: UnifiDeviceCoordinator,
+        device_id: str,
+        description: SensorEntityDescription,
+        port_idx: int,
+    ) -> None:
+        """Initialize the Unifi device port sensor."""
+        UnifiDeviceSensor.__init__(self, coordinator, device_id, description)
+        self._port_idx = port_idx
+        self._attr_unique_id = (
+            f"unifi_device_{device_id}_port_{port_idx}_{description.key}"
+        )
+        self._attr_translation_placeholders = {"portIdx": str(port_idx)}
+
+    @property
+    def native_value(self) -> float | int | str | bool | None:
+        """Return the state of the sensor (non-POE keys only)."""
+        device = self.coordinator.get_device(self.device_id)
+        if not device or not device.details:
+            return None
+        interfaces_obj = getattr(device.details, "interfaces", None)
+        if not interfaces_obj:
+            return None
+        ports = getattr(interfaces_obj, "ports", [])
+        if not ports or ports is UNSET:
+            return None
+        for port in ports:
+            port_idx = getattr(port, "idx", None)
+            if port_idx != self._port_idx:
+                continue
+            value = getattr(port, self.entity_description.key, None)
+        if value is None or value is UNSET:
+            return None
+        return value
+
+
+# POE port sensor descriptions
+
+
+class UnifiDevicePortPoeSensor(UnifiDevicePortSensor):
+    """Represents a POE port sensor for a Unifi device."""
+
+    def __init__(
+        self,
+        coordinator: UnifiDeviceCoordinator,
+        device_id: str,
+        description: SensorEntityDescription,
+        port_idx: int,
+    ) -> None:
+        """Initialize the Unifi device port sensor."""
+        UnifiDevicePortSensor.__init__(
+            self, coordinator, device_id, description, port_idx
+        )
+        self._attr_unique_id = (
+            f"unifi_device_{device_id}_port_{port_idx}_poe_{description.key}"
+        )
+
+    @property
+    def native_value(self) -> float | int | str | bool | None:
+        """Return the state of the POE sensor (poe_* keys only)."""
+        device = self.coordinator.get_device(self.device_id)
+        if not device or not device.details:
+            return None
+        interfaces_obj = getattr(device.details, "interfaces", None)
+        if not interfaces_obj:
+            return None
+        ports = getattr(interfaces_obj, "ports", [])
+        if not ports or ports is UNSET:
+            return None
+        for port in ports:
+            port_idx = getattr(port, "idx", None)
+            if port_idx != self._port_idx:
+                continue
+            poe_obj = getattr(port, "poe", None)
+            if not poe_obj or poe_obj is UNSET:
+                return None
+            value = getattr(poe_obj, self.entity_description.key, None)
         if value is None or value is UNSET:
             return None
         return value
@@ -325,6 +411,57 @@ DEVICE_RADIO_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
     ),
 )
 
+# Port sensor descriptions
+DEVICE_PORT_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
+    UnifiSensorEntityDescription(
+        sensor_type=UnifiDevicePortSensor,
+        key="state",
+        translation_key="port_state",
+        device_class=SensorDeviceClass.ENUM,
+        icon="mdi:ethernet",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    UnifiSensorEntityDescription(
+        sensor_type=UnifiDevicePortSensor,
+        key="speed_mbps",
+        translation_key="port_speed_mbps",
+        native_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
+        device_class=SensorDeviceClass.DATA_RATE,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:speedometer",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    UnifiSensorEntityDescription(
+        sensor_type=UnifiDevicePortSensor,
+        key="max_speed_mbps",
+        translation_key="port_max_speed_mbps",
+        native_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
+        device_class=SensorDeviceClass.DATA_RATE,
+        icon="mdi:speedometer-medium",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+)
+
+# Port Poe sensor descriptions
+DEVICE_PORT_POE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
+    UnifiSensorEntityDescription(
+        sensor_type=UnifiDevicePortPoeSensor,
+        key="enabled",
+        translation_key="port_poe_enabled",
+        device_class=SensorDeviceClass.ENUM,
+        icon="mdi:power-plug",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    UnifiSensorEntityDescription(
+        sensor_type=UnifiDevicePortPoeSensor,
+        key="state",
+        translation_key="port_poe_state",
+        device_class=SensorDeviceClass.ENUM,
+        icon="mdi:power-plug-outline",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+)
+
 # Client sensor descriptions
 CLIENT_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
     UnifiSensorEntityDescription(
@@ -408,6 +545,63 @@ def _create_radio_sensors(
     return entities
 
 
+def _create_port_sensors(
+    device: UnifiDevice,
+    device_coordinator: UnifiDeviceCoordinator,
+    descriptions: tuple[UnifiSensorEntityDescription, ...],
+    poe_descriptions: tuple[
+        UnifiSensorEntityDescription, ...
+    ] = DEVICE_PORT_POE_SENSOR_DESCRIPTIONS,
+) -> list[UnifiDeviceSensor]:
+    """Create port sensors if device has port interfaces in details. POE sensors only if port has POE attribute."""
+    overview = device.overview
+
+    # Check if device has details with ports
+    if not device.details:
+        return []
+
+    interfaces_obj = getattr(device.details, "interfaces", None)
+    if not interfaces_obj:
+        return []
+
+    ports = getattr(interfaces_obj, "ports", [])
+    if not ports or ports is UNSET:
+        return []
+
+    entities: list[UnifiDeviceSensor] = []
+
+    for port in ports:
+        port_idx = getattr(port, "idx", None)
+        if port_idx is None:
+            continue
+
+        # Standard port sensors
+        for description in descriptions:
+            entities.append(
+                description.sensor_type(
+                    device_coordinator,
+                    overview.id,
+                    description,
+                    port_idx,
+                )
+            )
+
+        # POE sensors only if port has poe attribute
+        poe_obj = getattr(port, "poe", None)
+        if poe_obj is not None and poe_obj is not UNSET:
+            for poe_description in poe_descriptions:
+                entities.append(
+                    poe_description.sensor_type(
+                        device_coordinator,
+                        overview.id,
+                        poe_description,
+                        port_idx,
+                    )
+                )
+
+    return entities
+
+
 def _create_client_sensors(
     client: UnifiClient,
     client_coordinator: UnifiClientCoordinator,
@@ -461,6 +655,14 @@ async def async_setup_entry(
                 device,
                 device_coordinator,
                 DEVICE_RADIO_SENSOR_DESCRIPTIONS,
+            )
+        )
+        entities.extend(
+            _create_port_sensors(
+                device,
+                device_coordinator,
+                DEVICE_PORT_SENSOR_DESCRIPTIONS,
+                DEVICE_PORT_POE_SENSOR_DESCRIPTIONS,
             )
         )
 
