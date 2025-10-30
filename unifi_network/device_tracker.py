@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from homeassistant.components.device_tracker import SourceType
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
@@ -15,15 +16,15 @@ from .coordinator import UnifiClientCoordinator, UnifiDeviceCoordinator
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
-):
+) -> None:
     """Set up Unifi device_tracker platform."""
     core = hass.data[DOMAIN][entry.entry_id]
-    devices_dict = (
+    devices = (
         core.device_coordinator.data
         if core.device_coordinator and core.device_coordinator.data
         else {}
     )
-    clients_dict = (
+    clients = (
         core.client_coordinator.data
         if core.client_coordinator and core.client_coordinator.data
         else {}
@@ -32,20 +33,12 @@ async def async_setup_entry(
     entities: list[UnifiDeviceTracker | UnifiClientTracker] = []
 
     # Add device trackers
-    for device_id, unifi_device in devices_dict.items():
-        entities.append(
-            UnifiDeviceTracker(
-                core.device_coordinator, device_id, unifi_device.overview.name
-            )
-        )
+    for device_id in devices:
+        entities.append(UnifiDeviceTracker(core.device_coordinator, device_id))
 
     # Add client trackers
-    for client_id, unifi_client in clients_dict.items():
-        entities.append(
-            UnifiClientTracker(
-                core.client_coordinator, client_id, unifi_client.overview.name
-            )
-        )
+    for client_id in clients:
+        entities.append(UnifiClientTracker(core.client_coordinator, client_id))
 
     async_add_entities(entities)
 
@@ -57,16 +50,13 @@ class UnifiDeviceTracker(CoordinatorEntity):
     _attr_name = None
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    def __init__(
-        self, coordinator: UnifiDeviceCoordinator, device_id: Any, device_name: str
-    ):
+    def __init__(self, coordinator: UnifiDeviceCoordinator, device_id: str) -> None:
         super().__init__(coordinator)
         self.device_id = device_id
-        self.device_name = device_name
         self._attr_unique_id = f"unifi_device_{device_id}_device_tracker"
 
     @property
-    def state(self):
+    def state(self) -> str:
         # Use coordinator accessor to get current device overview
         device = self.coordinator.get_device(self.device_id)
         device_overview = device.overview if device else None
@@ -82,7 +72,7 @@ class UnifiDeviceTracker(CoordinatorEntity):
         return "unknown"
 
     @property
-    def device_info(self):
+    def device_info(self) -> DeviceInfo | None:
         device = self.coordinator.get_device(self.device_id)
         if not device:
             return None
@@ -109,7 +99,7 @@ class UnifiDeviceTracker(CoordinatorEntity):
         return {
             "ip": device_wrapper.ip,
             "mac": device_wrapper.mac,
-            "source_type": "router",
+            "source_type": SourceType.ROUTER,
         }
 
 
@@ -120,22 +110,19 @@ class UnifiClientTracker(CoordinatorEntity):
     _attr_name = None
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    def __init__(
-        self, coordinator: UnifiClientCoordinator, client_id: Any, client_name: str
-    ):
+    def __init__(self, coordinator: UnifiClientCoordinator, client_id: str) -> None:
         super().__init__(coordinator)
         self.client_id = client_id
-        self.client_name = client_name
         self._attr_unique_id = f"unifi_client_{client_id}_device_tracker"
 
     @property
-    def state(self):
+    def state(self) -> str:
         # coordinator.data is a dict of client wrappers; presence implies connected
         client = self.coordinator.get_client(self.client_id)
         return "home" if client else "not_home"
 
     @property
-    def device_info(self):
+    def device_info(self) -> DeviceInfo | None:
         client = self.coordinator.get_client(self.client_id)
         if not client:
             return None
@@ -159,4 +146,4 @@ class UnifiClientTracker(CoordinatorEntity):
         client = self.coordinator.get_client(self.client_id)
         if not client:
             return None
-        return {"ip": client.ip, "mac": client.mac, "source_type": "router"}
+        return {"ip": client.ip, "mac": client.mac, "source_type": SourceType.ROUTER}

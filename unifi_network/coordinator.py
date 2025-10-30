@@ -48,7 +48,7 @@ class UnifiCoordinator(DataUpdateCoordinator):
         self.site_id = site_id
         self._update_method = update_method
 
-    async def _async_update_data(self):
+    async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from API endpoint."""
         return await self._update_method()
 
@@ -70,12 +70,12 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
             update_method=self._fetch_and_merge,
         )
 
-    def get_device(self, device_id: Any) -> UnifiDevice | None:
+    def get_device(self, device_id: str) -> UnifiDevice | None:
         """Return the cached UnifiDevice by id, if present."""
         data = self.data or {}
         return data.get(device_id)
 
-    async def _fetch_and_merge(self):
+    async def _fetch_and_merge(self) -> dict[str, UnifiDevice]:
         """Fetch devices and their latest statistics, merge and return dict."""
         try:
             # Fetch all devices using pagination helper
@@ -141,12 +141,12 @@ class UnifiClientCoordinator(UnifiCoordinator):
             update_method=self._fetch_and_merge,
         )
 
-    def get_client(self, client_id: Any) -> UnifiClient | None:
+    def get_client(self, client_id: str) -> UnifiClient | None:
         """Return the cached UnifiClient by id, if present."""
         data = self.data or {}
         return data.get(client_id)
 
-    async def _fetch_and_merge(self):
+    async def _fetch_and_merge(self) -> dict[str, UnifiClient]:
         """Fetch clients and their details, merge and return dict."""
         try:
             # Fetch all clients using pagination helper

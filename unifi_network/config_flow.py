@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import voluptuous as vol
 from aiohttp import ClientError
 from homeassistant import config_entries
+from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 
 from .api_client import Client
@@ -20,14 +22,16 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._base_url = None
         self._api_key = None
         self._sites = None
         self._selected_site_id = None
         self._selected_site_name = None
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
         """First step: ask for base URL and API key."""
         errors = {}
 
@@ -71,7 +75,9 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
 
-    async def async_step_select_site(self, user_input=None):
+    async def async_step_select_site(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
         """Second step: user chooses one site by name."""
         errors = {}
 
@@ -96,7 +102,9 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="select_site", data_schema=schema, errors=errors
         )
 
-    async def async_step_select_features(self, user_input=None):
+    async def async_step_select_features(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
         """Third step: user selects which features to enable."""
         errors = {}
 

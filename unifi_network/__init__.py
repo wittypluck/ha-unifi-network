@@ -1,20 +1,10 @@
 from __future__ import annotations
 
-###Start debug logging###
-import logging
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, PLATFORMS
 from .core import UnifiNetworkCore
-
-# Enable verbose logging for httpx (used by openapi-python-client)
-httpx_logger = logging.getLogger("httpx")
-httpx_logger.setLevel(logging.DEBUG)
-httpx_logger.addHandler(logging.StreamHandler())
-
-###End debug logging###
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
