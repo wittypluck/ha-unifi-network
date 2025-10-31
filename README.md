@@ -7,9 +7,10 @@ Home Assistant custom integration for UniFi Network that uses UniFi's official I
 - Local polling against the UniFi Network Integration API (no cloud)
 - Config flow in the UI (no YAML)
 - Entity categories marked as Diagnostic
-- Two platforms enabled by default:
+- Three platforms enabled by default:
   - device_tracker
   - sensor
+  - button
 
 ### Entities created
 
@@ -32,6 +33,14 @@ Home Assistant custom integration for UniFi Network that uses UniFi's official I
   - uplink_tx_rate_bps (suggested display as Mbps)
 - Radio statistics (per device, per radio frequency):
   - tx_retries_pct (%) — one sensor per available radio frequency (e.g., 2.4, 5, 6 GHz)
+- Port statistics (per device, per port with POE capability):
+  - port_state (e.g., UP, DOWN)
+  - port_poe_state (e.g., PROVIDING_POWER, OFF)
+
+1. Device buttons
+
+- Port POE controls (per device, per port with POE capability):
+  - port_poe_power_cycle — Button to trigger power cycle action on POE ports
 
 Update interval: 30s by default.
 
