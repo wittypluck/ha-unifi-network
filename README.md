@@ -1,53 +1,81 @@
 # Unifi Network (custom integration)
 
-Home Assistant custom integration for UniFi Network that uses UniFi's official Integration API. It discovers UniFi devices and connected clients, exposes presence (device trackers), and publishes diagnostic sensors for devices and radios.
+Home Assistant custom integration for UniFi Network that uses UniFi's official Integration API. It discovers UniFi devices and connected clients, exposes presence detection (device trackers), and provides comprehensive monitoring sensors and control buttons.
 
 ## What this provides
 
 - Local polling against the UniFi Network Integration API (no cloud)
-- Config flow in the UI (no YAML)
-- Entity categories marked as Diagnostic
-- Three platforms enabled by default:
-  - device_tracker
-  - sensor
-  - button
+- Config flow in the UI (no YAML required)
+- Automatic device and client discovery with pagination support
+- Selective feature enabling (devices and/or clients)
+- Entity categories appropriately marked as Diagnostic or Config
+- Three platforms:
+  - **device_tracker** - Presence detection
+  - **sensor** - Monitoring and diagnostics
+  - **button** - Device controls
 
 ### Entities created
 
-1. Device trackers
+#### Device Trackers
 
-- UniFi device tracker: Reports home/not_home based on device state (ONLINE/OFFLINE). Attributes include ip, mac, source_type=router.
-- UniFi client tracker: Reports home when the client is currently connected; not_home otherwise. Attributes include ip, mac, source_type=router.
+- **UniFi Device Tracker**: Reports `home` when device state is ONLINE, `not_home` when OFFLINE. Attributes include IP address, MAC address, and `source_type=router`.
+- **UniFi Client Tracker**: Reports `home` when client is currently connected, `not_home` otherwise. Attributes include IP address, MAC address, and `source_type=router`.
 
-1. Device sensors
+#### Device Sensors
 
-- Device statistics (per device):
-  - uptime_sec (s)
-  - load_average_1_min
-  - load_average_5_min
-  - load_average_15_min
-  - cpu_utilization_pct (%)
-  - memory_utilization_pct (%)
-- Uplink statistics (per device):
-  - uplink_rx_rate_bps (suggested display as Mbps)
-  - uplink_tx_rate_bps (suggested display as Mbps)
-- Radio statistics (per device, per radio frequency):
-  - tx_retries_pct (%) — one sensor per available radio frequency (e.g., 2.4, 5, 6 GHz)
-- Port statistics (per device, per port with POE capability):
-  - port_state (e.g., UP, DOWN)
-  - port_poe_state (e.g., PROVIDING_POWER, OFF)
+- **Device State**: Current operational state (Online, Offline, etc.)
+- **System Statistics** (per device):
+  - Uptime (timestamp showing when device started)
+  - Load Average (1, 5, and 15 minute averages)
+  - CPU Utilization (%)
+  - Memory Utilization (%)
+  
+- **Uplink Statistics** (per device):
+  - Uplink RX Rate (bps, suggested display as Mbps)
+  - Uplink TX Rate (bps, suggested display as Mbps)
+  
+- **Radio Statistics** (per device, per available radio frequency):
+  - TX Retries (%) — created for each available radio frequency (e.g., 2.4GHz, 5GHz, 6GHz)
+  
+- **Port Statistics** (per device, per physical port):
+  - Port State (Up, Down, etc.) with additional attributes for port details
+  
+- **PoE Port Statistics** (per device, per PoE-capable port):
+  - PoE State (Providing Power, Off, etc.) with PoE standard and type information
 
-1. Device buttons
+#### Client Sensors
 
-- Port POE controls (per device, per port with POE capability):
-  - port_poe_power_cycle — Button to trigger power cycle action on POE ports
+- **Connection State**: Shows if client is Connected or Disconnected
+- **Connected At**: Timestamp of when client connected to network
 
-Update interval: 30s by default.
+#### Device Buttons
+
+- **PoE Port Power Cycle** (per device, per PoE-capable port): Triggers power cycle action on PoE ports. Button is automatically available only for ports with PoE capability.
+
+**Update interval**: 30 seconds by default.
+
+### Future Capabilities
+
+The integration uses a comprehensive API client that supports additional UniFi Network features that could be implemented in future versions:
+
+- Hotspot voucher management (create, delete, monitor vouchers)
+- Guest access controls and authorization
+- Advanced device and client actions beyond PoE control
+- VPN and Teleport client monitoring
+
+Current implementation focuses on core monitoring and basic device control functionality.
 
 ## Requirements
 
-- A UniFi Network Application that exposes the Integration API (UniFi OS / Network Application with Integrations). You will need an API Key created in UniFi Network.
-- Home Assistant with access to your UniFi Network Application over your LAN.
+- **UniFi Network Application**: UniFi OS / Network Application version that supports the Integration API
+  - Must have "Integrations" feature available in Network settings
+  - API Key generation capability (Network → Settings → Integrations → Add Integration → API Key)
+- **Network Access**: Home Assistant must have network access to your UniFi Network Application
+  - Typically runs on port 443 (HTTPS) or 8443
+  - Integration API endpoint: `/proxy/network/integration`
+- **Supported UniFi Devices**: Any UniFi network devices managed by your Network Application
+  - Switches, Access Points, Gateways, etc.
+  - PoE functionality requires PoE-capable switch ports
 
 ## Installation
 
@@ -58,37 +86,77 @@ Manual install:
 
 ## Configuration (via UI)
 
-1. In Home Assistant, go to Settings → Devices & Services → Add Integration → search for "Unifi Network (Local API)".
+1. In Home Assistant, go to **Settings → Devices & Services → Add Integration** → search for "**Unifi Network (Local API)**".
 
-1. Enter the settings (Base URL: for example `https://<unifi-host-or-ip>/proxy/network/integration`; API Key: create one from UniFi Network → Settings → Integrations → Add Integration → API Key).
+2. **Connection Setup**: Enter your UniFi Network API credentials:
+   - **Base URL**: Your UniFi Network Integration API endpoint
+     - Format: `https://<unifi-host-or-ip>/proxy/network/integration`
+     - Example: `https://192.168.1.1/proxy/network/integration`
+   - **API Key**: Create one in UniFi Network → Settings → Integrations → Add Integration → API Key
+   - **Verify SSL Certificate**: Enable for production, disable for self-signed certificates
 
-1. Select the site you want to add when prompted.
+3. **Site Selection**: Choose which UniFi site to monitor from the automatically discovered list.
 
-1. Choose which features to enable:
-   - **Track Devices**: Monitor UniFi network devices (switches, access points, gateways)
-   - **Track Clients**: Monitor connected clients (computers, phones, IoT devices)
-   - You can enable one or both features based on your needs.
+4. **Feature Selection**: Choose which features to enable:
+   - **Track Devices**: Monitor UniFi network infrastructure devices (switches, access points, gateways, etc.)
+   - **Track Clients**: Monitor connected client devices (computers, phones, IoT devices, etc.)
+   - You can enable one or both features based on your monitoring needs
 
-The integration will then create device trackers and sensors for your selected features. All devices and clients are automatically fetched using pagination to ensure complete discovery.
+The integration will automatically discover all devices and clients using API pagination to ensure complete coverage. Entities are created dynamically based on device capabilities (e.g., PoE sensors and buttons only appear for ports with PoE support).
 
 ## Notes and troubleshooting
 
-- SSL: If you use self-signed certificates, ensure your Home Assistant host trusts the UniFi certificate, or use an HTTPS setup with a valid cert.
-- Permissions: The API Key should have sufficient privileges for read access to devices, clients, and statistics.
-- Presence logic:
-  - Devices: ONLINE → home, OFFLINE → not_home.
-  - Clients: Present in the “connected clients” list → home; otherwise not_home.
-- Radio sensors appear only when the device exposes radio interface statistics.
+- **SSL Certificates**: If using self-signed certificates, disable SSL verification in the integration settings or ensure your Home Assistant host trusts the UniFi certificate.
+- **API Permissions**: The API Key should have sufficient privileges for read access to devices, clients, statistics, and port control actions.
+- **Presence Detection Logic**:
+  - **Devices**: ONLINE state → `home`, OFFLINE state → `not_home`
+  - **Clients**: Present in connected clients list → `home`, otherwise → `not_home`
+- **Dynamic Entity Creation**:
+  - Radio sensors only appear for devices that expose radio interface statistics
+  - Port sensors are created for all physical ports on devices with port interfaces
+  - PoE sensors and buttons only appear for ports with PoE capability
+  - Client sensors only appear for currently connected clients
+- **Device Capabilities**: Different UniFi devices expose different sensor sets based on their hardware capabilities (e.g., switches vs access points vs gateways).
+- **Entity Organization**:
+  - Device entities are grouped under their respective UniFi device in the Device Registry
+  - Client entities are grouped under their respective client device
+  - All entities use the device/client name as the device name with specific sensor names
+  - Entity categories are set appropriately (Diagnostic for monitoring, Config for controls)
 
 ## Development
 
-- Code structure
-  - `unifi_network/` contains the custom component logic, coordinators, and entity platforms.
-  - `unifi_network/api_client/` contains the generated UniFi Network Integration API client and models.
-  - Update cadence is controlled in `const.py` (DEFAULT_UPDATE_INTERVAL).
+### Project Structure
 
-- Running locally
-  - This is a regular Home Assistant custom component; install as described above and restart HA to load changes.
+- **`unifi_network/`**: Main integration code
+  - Core integration logic, coordinators, and entity platforms
+  - Entity platforms: `device_tracker.py`, `sensor.py`, `button.py`
+  - Configuration flow: `config_flow.py`
+  - Data coordinators: `coordinator.py`
+  - Device/client wrappers: `unifi_device.py`, `unifi_client.py`
+  
+- **`unifi_network/api_client/`**: Generated API client (excluded from linting/formatting)
+  - Auto-generated from UniFi Network Integration API OpenAPI specification
+  - Models, API endpoints, and type definitions
+  - Located in `openapi_client_generator/` for regeneration scripts
+
+- **`unifi_network/translations/`**: Internationalization files
+  - Entity names, configuration flow text
+  - Currently supports English (`en.json`)
+
+### Configuration
+
+- **Update interval**: Controlled by `DEFAULT_UPDATE_INTERVAL` in `const.py` (30 seconds)
+- **Platforms**: Defined in `PLATFORMS` in `const.py` (sensor, device_tracker, button)
+- **Domain**: `unifi_network`
+
+### Local Development
+
+This is a standard Home Assistant custom component. For development:
+
+1. Install in Home Assistant as described above
+2. Make code changes
+3. Restart Home Assistant to reload the integration
+4. Use Home Assistant logs to debug issues
 
 ## Code style and formatting
 
