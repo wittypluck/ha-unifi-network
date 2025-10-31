@@ -25,6 +25,7 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self) -> None:
         self._base_url = None
         self._api_key = None
+        self._verify_ssl = True
         self._sites = None
         self._selected_site_id = None
         self._selected_site_name = None
@@ -38,13 +39,17 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             base_url = user_input["base_url"]
             api_key = user_input["api_key"]
+            verify_ssl = user_input.get("verify_ssl", True)
             self._base_url = base_url
             self._api_key = api_key
+            self._verify_ssl = verify_ssl
 
             # Try to fetch sites using pagination helper
             try:
                 headers = {"X-API-Key": api_key} if api_key else None
-                client = Client(base_url=base_url, headers=headers)
+                client = Client(
+                    base_url=base_url, headers=headers, verify_ssl=verify_ssl
+                )
 
                 # Fetch all sites
                 all_sites = await fetch_all_pages(
@@ -70,6 +75,7 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required("api_key"): selector.TextSelector(
                     selector.TextSelectorConfig(type=selector.TextSelectorType.TEXT)
                 ),
+                vol.Optional("verify_ssl", default=True): selector.BooleanSelector(),
             }
         )
 
@@ -120,6 +126,7 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     data={
                         "base_url": self._base_url,
                         "api_key": self._api_key,
+                        "verify_ssl": self._verify_ssl,
                         "site_id": self._selected_site_id,
                         "site_name": self._selected_site_name,
                         "enable_devices": enable_devices,

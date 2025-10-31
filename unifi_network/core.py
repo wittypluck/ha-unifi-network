@@ -20,6 +20,7 @@ class UnifiNetworkCore:
         api_key: str | None = None,
         enable_devices: bool = True,
         enable_clients: bool = True,
+        verify_ssl: bool = True,
     ) -> None:
         """Initialize Unifi Network core."""
         self.hass = hass
@@ -27,7 +28,7 @@ class UnifiNetworkCore:
 
         # Initialize API client
         headers = {"X-API-Key": api_key} if api_key else None
-        self.client = Client(base_url=base_url, headers=headers)
+        self.client = Client(base_url=base_url, headers=headers, verify_ssl=verify_ssl)
 
         # Initialize coordinators based on enabled features
         self.device_coordinator = None

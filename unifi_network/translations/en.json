@@ -7,11 +7,13 @@
         "description": "Enter your Unifi Network API credentials",
         "data": {
           "base_url": "Base URL",
-          "api_key": "API Key"
+          "api_key": "API Key",
+          "verify_ssl": "Verify SSL Certificate"
         },
         "data_description": {
           "base_url": "Base Network API URL (e.g. https://192.168.1.1/proxy/network/integration)",
-          "api_key": "Your Unifi Network API key"
+          "api_key": "Your Unifi Network API key",
+          "verify_ssl": "Verify SSL certificate. Disable for self-signed certificates or testing."
         }
       },
       "select_site": {
