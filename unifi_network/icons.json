@@ -1,0 +1,65 @@
+{
+  "entity": {
+    "sensor": {
+      "device_state": {
+        "default": "mdi:help-network-outline",
+        "state": {
+          "Online": "mdi:check-network-outline",
+          "O`ffline": "mdi:network-off-outline",
+          "Updating": "mdi:plus-network-outline"
+        }
+      },
+      "uptime_sec": {
+        "default": "mdi:timer-outline"
+      },
+      "load_average_1_min": {
+        "default": "mdi:chart-line"
+      },
+      "load_average_5_min": {
+        "default": "mdi:chart-line"
+      },
+      "load_average_15_min": {
+        "default": "mdi:chart-line"
+      },
+      "cpu_utilization_pct": {
+        "default": "mdi:cpu-64-bit"
+      },
+      "memory_utilization_pct": {
+        "default": "mdi:memory"
+      },
+      "uplink_rx_rate_bps": {
+        "default": "mdi:download"
+      },
+      "uplink_tx_rate_bps": {
+        "default": "mdi:upload"
+      },
+      "tx_retries_pct": {
+        "default": "mdi:wifi-sync"
+      },
+      "port_state": {
+        "default": "mdi:ethernet",
+        "state": {
+          "Up": "mdi:ethernet",
+          "Down": "mdi:ethernet-off"
+        }
+      },
+      "port_poe_state": {
+        "default": "mdi:power-plug-outline",
+        "state": {
+          "Up": "mdi:power-plug-outline",
+          "Down": "mdi:power-plug-off-outline"
+        }
+      },
+      "client_state": {
+        "default": "mdi:connection",
+        "state": {
+          "Connected": "mdi:lan-connect",
+          "Disconnected": "mdi:lan-disconnect"
+        }
+      },
+      "client_connected_at": {
+        "default": "mdi:clock-outline"
+      }
+    }
+  }
+}

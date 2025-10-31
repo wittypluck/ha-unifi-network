@@ -45,7 +45,7 @@
     },
     "entity": {
       "sensor": {
-        "state": { "name": "State" },
+        "device_state": { "name": "State" },
         "uptime_sec": { "name": "Uptime" },
         "load_average_1_min": { "name": "Load Average 1m" },
         "load_average_5_min": { "name": "Load Average 5m" },
@@ -56,9 +56,6 @@
         "uplink_tx_rate_bps": { "name": "Uplink TX Rate" },
         "tx_retries_pct": { "name": "{frequencyGHz}GHz TX Retries" },
         "port_state": { "name": "Port {portIdx} State" },
-        "port_speed_mbps": { "name": "Port {portIdx} Speed" },
-        "port_max_speed_mbps": { "name": "Port {portIdx} Max Speed" },
-        "port_poe_enabled": { "name": "Port {portIdx} PoE Enabled" },
         "port_poe_state": { "name": "Port {portIdx} PoE State" },
         "client_state": { "name": "Connection State" },
         "client_connected_at": { "name": "Connected At" }

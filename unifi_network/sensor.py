@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -16,6 +17,7 @@ from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt as dt_util
 
 from .api_client.models.device_overview_interfaces_item import (
     DeviceOverviewInterfacesItem,
@@ -35,7 +37,9 @@ from .unifi_device import UnifiDevice
 class UnifiSensorEntityDescription(SensorEntityDescription):
     """Extended sensor entity description with sensor_type reference."""
 
-    sensor_type: type[UnifiDeviceSensor]  # reference to the class to instantiate
+    sensor_type: type[
+        UnifiDeviceSensor | UnifiClientSensor
+    ]  # reference to the class to instantiate
 
 
 class UnifiDeviceSensor(CoordinatorEntity, SensorEntity):
@@ -108,6 +112,22 @@ class UnifiDeviceStateSensor(UnifiDeviceSensor):
         if isinstance(state, DeviceOverviewState):
             return state.value.lower().replace("_", " ").title()
         return str(state)
+
+
+class UnifiDeviceUptimeSensor(UnifiDeviceSensor):
+    """Represents an uptime sensor for a Unifi device."""
+
+    @property
+    def native_value(self) -> float | int | str | None:
+        """Return the state of the sensor."""
+        # Access UnifiDevice from coordinator accessor
+        device = self.coordinator.get_device(self.device_id)
+        if not device or not device.latest_statistics:
+            return None
+        uptime_sec = device.latest_statistics.uptime_sec
+        if uptime_sec is None or uptime_sec is UNSET:
+            return None
+        return dt_util.now() - timedelta(seconds=uptime_sec)
 
 
 class UnifiDeviceUplinkSensor(UnifiDeviceSensor):
@@ -392,19 +412,14 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
     UnifiSensorEntityDescription(
         sensor_type=UnifiDeviceStateSensor,
         key="state",
-        translation_key="state",
+        translation_key="device_state",
         device_class=SensorDeviceClass.ENUM,
-        icon="mdi:state-machine",
-        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     UnifiSensorEntityDescription(
-        sensor_type=UnifiDeviceStatisticSensor,
+        sensor_type=UnifiDeviceUptimeSensor,
         key="uptime_sec",
         translation_key="uptime_sec",
-        native_unit_of_measurement=UnitOfTime.SECONDS,
-        device_class=SensorDeviceClass.DURATION,
-        state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:timer-outline",
+        device_class=SensorDeviceClass.TIMESTAMP,
     ),
     UnifiSensorEntityDescription(
         sensor_type=UnifiDeviceStatisticSensor,
@@ -412,7 +427,6 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         translation_key="load_average_1_min",
         native_unit_of_measurement=None,
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:chart-line",
     ),
     UnifiSensorEntityDescription(
         sensor_type=UnifiDeviceStatisticSensor,
@@ -420,7 +434,6 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         translation_key="load_average_5_min",
         native_unit_of_measurement=None,
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:chart-line",
     ),
     UnifiSensorEntityDescription(
         sensor_type=UnifiDeviceStatisticSensor,
@@ -428,7 +441,6 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         translation_key="load_average_15_min",
         native_unit_of_measurement=None,
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:chart-line",
     ),
     UnifiSensorEntityDescription(
         sensor_type=UnifiDeviceStatisticSensor,
@@ -436,7 +448,6 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         translation_key="cpu_utilization_pct",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:cpu-64-bit",
     ),
     UnifiSensorEntityDescription(
         sensor_type=UnifiDeviceStatisticSensor,
@@ -444,7 +455,6 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         translation_key="memory_utilization_pct",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:memory",
     ),
     UnifiSensorEntityDescription(
         sensor_type=UnifiDeviceUplinkSensor,
@@ -453,9 +463,7 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfDataRate.BITS_PER_SECOND,
         suggested_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
         device_class=SensorDeviceClass.DATA_RATE,
-        entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:download",
     ),
     UnifiSensorEntityDescription(
         sensor_type=UnifiDeviceUplinkSensor,
@@ -464,9 +472,7 @@ DEVICE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfDataRate.BITS_PER_SECOND,
         suggested_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
         device_class=SensorDeviceClass.DATA_RATE,
-        entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:upload",
     ),
 )
 # Define sensor descriptions after the sensor classes so referenced classes exist
@@ -477,7 +483,6 @@ DEVICE_RADIO_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         translation_key="tx_retries_pct",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:wifi-sync",
     ),
 )
 
@@ -488,8 +493,6 @@ DEVICE_PORT_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         key="state",
         translation_key="port_state",
         device_class=SensorDeviceClass.ENUM,
-        icon="mdi:ethernet",
-        entity_category=EntityCategory.DIAGNOSTIC,
     ),
 )
 
@@ -500,8 +503,6 @@ DEVICE_PORT_POE_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = 
         key="state",
         translation_key="port_poe_state",
         device_class=SensorDeviceClass.ENUM,
-        icon="mdi:power-plug-outline",
-        entity_category=EntityCategory.DIAGNOSTIC,
     ),
 )
 
@@ -512,16 +513,12 @@ CLIENT_SENSOR_DESCRIPTIONS: tuple[UnifiSensorEntityDescription, ...] = (
         key="state",
         translation_key="client_state",
         device_class=SensorDeviceClass.ENUM,
-        icon="mdi:connection",
-        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     UnifiSensorEntityDescription(
         sensor_type=UnifiClientSensor,
         key="connected_at",
         translation_key="client_connected_at",
         device_class=SensorDeviceClass.TIMESTAMP,
-        entity_category=EntityCategory.DIAGNOSTIC,
-        icon="mdi:clock-outline",
     ),
 )
 
