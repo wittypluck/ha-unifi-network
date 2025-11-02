@@ -63,7 +63,8 @@
       "client_connected_at": { "name": "Connected At" }
     },
     "button": {
-      "port_poe_power_cycle": { "name": "Port {portIdx} PoE Power Cycle" }
+      "port_poe_power_cycle": { "name": "Port {portIdx} PoE Power Cycle" },
+      "device_restart": { "name": "Restart Device" }
     }
   }
 }

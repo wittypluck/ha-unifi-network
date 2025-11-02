@@ -12,7 +12,11 @@ from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from .api_client.api.uni_fi_devices.execute_device_action import (
+    asyncio_detailed as device_action_detailed,
+)
 from .api_client.api.uni_fi_devices.execute_port_action import asyncio_detailed
+from .api_client.models.device_action_request import DeviceActionRequest
 from .api_client.models.port_action_request import PortActionRequest
 from .api_client.types import UNSET
 from .const import DOMAIN
@@ -26,7 +30,15 @@ _LOGGER = logging.getLogger(__name__)
 class UnifiButtonEntityDescription(ButtonEntityDescription):
     """Extended button entity description with button_type reference."""
 
-    button_type: type[UnifiDevicePortPoeButton]
+    button_type: type[UnifiDevicePortPoeButton | UnifiDeviceActionButton]
+
+
+@dataclass(frozen=True, kw_only=True)
+class UnifiDeviceActionButtonDescription(ButtonEntityDescription):
+    """Extended button entity description for device actions."""
+
+    button_type: type[UnifiDeviceActionButton]
+    action: str
 
 
 class UnifiDevicePortPoeButton(CoordinatorEntity, ButtonEntity):
@@ -149,6 +161,114 @@ class UnifiDevicePortPoeButton(CoordinatorEntity, ButtonEntity):
             )
 
 
+class UnifiDeviceActionButton(CoordinatorEntity, ButtonEntity):
+    """Represents a device action button for Unifi devices (restart, delete, etc.)."""
+
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(
+        self,
+        coordinator: UnifiDeviceCoordinator,
+        device_id: str,
+        description: UnifiDeviceActionButtonDescription,
+    ) -> None:
+        """Initialize the Unifi device action button."""
+        CoordinatorEntity.__init__(self, coordinator)
+        self.entity_description = description
+        self.device_id = device_id
+        self.action = description.action
+        self._attr_unique_id = f"unifi_device_{device_id}_{description.key}"
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device registry information for this device."""
+        device = self.coordinator.get_device(self.device_id)
+        if not device:
+            return None
+        device_overview = device.overview
+
+        model = getattr(device_overview, "model", None)
+        identifiers = {(DOMAIN, self.device_id)}
+        connections = {(CONNECTION_NETWORK_MAC, device.mac)} if device.mac else set()
+
+        return DeviceInfo(
+            identifiers=identifiers,
+            name=device.name,
+            model=model,
+            connections=connections,
+        )
+
+    @property
+    def available(self) -> bool:
+        """Return if button is available."""
+        if not super().available:
+            return False
+
+        device = self.coordinator.get_device(self.device_id)
+        if not device:
+            return False
+
+        # Check device state - some actions may not be available in certain states
+        device_overview = device.overview
+        state = getattr(device_overview, "state", None)
+
+        # Restart action is only available when device is online
+        if self.action == "RESTART":
+            return state == "ONLINE"
+
+        return True
+
+    async def async_press(self) -> None:
+        """Handle the button press to trigger device action."""
+        try:
+            device = self.coordinator.get_device(self.device_id)
+            if not device:
+                _LOGGER.error("Device %s not found", self.device_id)
+                return
+
+            # Get the API client from coordinator
+            api_client = self.coordinator.client
+            if not api_client:
+                _LOGGER.error("API client not available")
+                return
+
+            # Create the device action request
+            action_request = DeviceActionRequest(action=self.action)
+
+            # Execute the device action using the API client
+            response = await device_action_detailed(
+                site_id=self.coordinator.site_id,
+                device_id=device.overview.id,
+                client=api_client,
+                body=action_request,
+            )
+
+            if response.status_code == HTTPStatus.OK:
+                _LOGGER.info(
+                    "Successfully triggered %s action for device %s",
+                    self.action,
+                    self.device_id,
+                )
+                # For delete/forget actions, the device might be removed from the site
+                # For restart, refresh device data after action
+                await self.coordinator.async_request_refresh()
+            else:
+                _LOGGER.error(
+                    "Failed to trigger %s action for device %s: HTTP %s",
+                    self.action,
+                    self.device_id,
+                    response.status_code,
+                )
+
+        except Exception:
+            _LOGGER.exception(
+                "Error triggering %s action for device %s",
+                self.action,
+                self.device_id,
+            )
+
+
 # Define button descriptions
 DEVICE_PORT_POE_BUTTON_DESCRIPTIONS: tuple[UnifiButtonEntityDescription, ...] = (
     UnifiButtonEntityDescription(
@@ -156,6 +276,17 @@ DEVICE_PORT_POE_BUTTON_DESCRIPTIONS: tuple[UnifiButtonEntityDescription, ...] = 
         key="power_cycle",
         translation_key="port_poe_power_cycle",
         icon="mdi:power-cycle",
+    ),
+)
+
+DEVICE_ACTION_BUTTON_DESCRIPTIONS: tuple[UnifiDeviceActionButtonDescription, ...] = (
+    UnifiDeviceActionButtonDescription(
+        button_type=UnifiDeviceActionButton,
+        key="restart",
+        action="RESTART",
+        translation_key="device_restart",
+        icon="mdi:restart",
+        entity_category=EntityCategory.CONFIG,
     ),
 )
 
@@ -203,6 +334,28 @@ def _create_port_poe_buttons(
     return entities
 
 
+def _create_device_action_buttons(
+    device: UnifiDevice,
+    device_coordinator: UnifiDeviceCoordinator,
+    descriptions: tuple[UnifiDeviceActionButtonDescription, ...],
+) -> list[UnifiDeviceActionButton]:
+    """Create device action buttons for device management operations."""
+    overview = device.overview
+
+    entities: list[UnifiDeviceActionButton] = []
+
+    for description in descriptions:
+        entities.append(
+            description.button_type(
+                device_coordinator,
+                overview.id,
+                description,
+            )
+        )
+
+    return entities
+
+
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
@@ -225,6 +378,16 @@ async def async_setup_entry(
                 device,
                 device_coordinator,
                 DEVICE_PORT_POE_BUTTON_DESCRIPTIONS,
+            )
+        )
+
+    # Add device action buttons
+    for device in devices.values():
+        entities.extend(
+            _create_device_action_buttons(
+                device,
+                device_coordinator,
+                DEVICE_ACTION_BUTTON_DESCRIPTIONS,
             )
         )
 

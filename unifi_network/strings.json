@@ -61,6 +61,10 @@
         "port_poe_state": { "name": "Port {portIdx} PoE State" },
         "client_state": { "name": "Connection State" },
         "client_connected_at": { "name": "Connected At" }
+      },
+      "button": {
+        "port_poe_power_cycle": { "name": "Port {portIdx} PoE Power Cycle" },
+        "device_restart": { "name": "Restart Device" }
       }
     }
 }
