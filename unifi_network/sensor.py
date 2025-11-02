@@ -127,7 +127,9 @@ class UnifiDeviceUptimeSensor(UnifiDeviceSensor):
         uptime_sec = device.latest_statistics.uptime_sec
         if uptime_sec is None or uptime_sec is UNSET:
             return None
-        return dt_util.now() - timedelta(seconds=uptime_sec)
+        boot_time = dt_util.now() - timedelta(seconds=uptime_sec)
+        # Return boot time rounded to the nearest minute
+        return boot_time.replace(second=0, microsecond=0)
 
 
 class UnifiDeviceUplinkSensor(UnifiDeviceSensor):
