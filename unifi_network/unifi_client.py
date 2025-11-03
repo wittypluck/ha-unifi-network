@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from .api_client.models import ClientDetails, ClientOverview
 from .api_client.types import Unset
@@ -10,6 +11,7 @@ class UnifiClient:
 
     overview: ClientOverview
     details: ClientDetails | None
+    last_seen: datetime | None = None
 
     @property
     def name(self) -> str | None:
@@ -46,3 +48,16 @@ class UnifiClient:
                 if mac:
                     return mac
         return None
+
+    def update(self, other: "UnifiClient") -> None:
+        """Update this client instance with data from another UnifiClient instance.
+
+        Args:
+            other: Another UnifiClient instance to update from
+        """
+        if not isinstance(other, UnifiClient):
+            raise TypeError("Can only update from another UnifiClient instance")
+
+        self.overview = other.overview
+        self.details = other.details
+        self.last_seen = other.last_seen

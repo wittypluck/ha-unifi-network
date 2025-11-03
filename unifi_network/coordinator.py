@@ -8,6 +8,7 @@ from typing import Any
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .api_client import Client
 from .api_client.api.clients import (
@@ -168,11 +169,12 @@ class UnifiClientCoordinator(UnifiCoordinator):
             name="clients",
             update_method=self._fetch_and_merge,
         )
+        # Keep track of all clients ever seen
+        self.known_clients: dict[str, UnifiClient] = {}
 
     def get_client(self, client_id: str) -> UnifiClient | None:
-        """Return the cached UnifiClient by id, if present."""
-        data = self.data or {}
-        return data.get(client_id)
+        """Return the cached UnifiClient by id, even if offline."""
+        return self.known_clients.get(client_id)
 
     async def _fetch_and_merge(self) -> dict[str, UnifiClient]:
         """Fetch clients and their details, merge and return dict."""
@@ -197,7 +199,10 @@ class UnifiClientCoordinator(UnifiCoordinator):
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Create UnifiClient objects combining overview and details
-            unifi_clients = {}
+            unifi_clients: dict[str, UnifiClient] = {}
+            now = dt_util.now()
+
+            # unifi_clients = {}
             for client_overview, res in zip(client_overviews, results, strict=False):
                 client_id = getattr(client_overview, "id", None)
                 if client_id is None:
@@ -213,9 +218,16 @@ class UnifiClientCoordinator(UnifiCoordinator):
                     _LOGGER.debug("Fetched details for client %s", client_id)
                     details = res
 
-                unifi_clients[client_id] = UnifiClient(
-                    overview=client_overview, details=details
-                )
+                client = UnifiClient(overview=client_overview, details=details)
+                client.last_seen = now
+
+                unifi_clients[client_id] = client
+
+                # Merge into known_clients
+                if client_id in self.known_clients:
+                    self.known_clients[client_id].update(client)
+                else:
+                    self.known_clients[client_id] = client
 
             return unifi_clients
 

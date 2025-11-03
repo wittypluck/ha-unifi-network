@@ -55,7 +55,7 @@ class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
     _attr_has_entity_name = True
     _attr_name = None
     _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_source_type = SourceType.ROUTER  # Mark this as router-based tracking
+    _attr_source_type = SourceType.ROUTER
 
     def __init__(self, coordinator: UnifiClientCoordinator, client_id: str) -> None:
         super().__init__(coordinator)
@@ -70,7 +70,7 @@ class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
     @property
     def state(self) -> str:
         # coordinator.data is a dict of client wrappers; presence implies connected
-        client = self.coordinator.get_client(self.client_id)
+        client = self.coordinator.data.get(self.client_id)
         return "home" if client else "not_home"
 
     @property
@@ -96,7 +96,12 @@ class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
         client = self.coordinator.get_client(self.client_id)
         if not client:
             return None
-        attrs = {"mac": client.mac, "ip": client.ip}
+
+        attrs = {
+            "mac": client.mac,
+            "ip": client.ip,
+            "last_seen": client.last_seen,
+        }
 
         connected_at = getattr(client.overview, "connected_at", None)
         if connected_at is not None and connected_at is not UNSET:
