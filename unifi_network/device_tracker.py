@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.device_tracker import SourceType
+from homeassistant.components.device_tracker import SourceType, TrackerEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
@@ -10,8 +10,9 @@ from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from .api_client.types import UNSET
 from .const import DOMAIN
-from .coordinator import UnifiClientCoordinator, UnifiDeviceCoordinator
+from .coordinator import UnifiClientCoordinator
 
 
 async def async_setup_entry(
@@ -19,101 +20,52 @@ async def async_setup_entry(
 ) -> None:
     """Set up Unifi device_tracker platform."""
     core = hass.data[DOMAIN][entry.entry_id]
-    devices = (
-        core.device_coordinator.data
-        if core.device_coordinator and core.device_coordinator.data
-        else {}
-    )
-    clients = (
-        core.client_coordinator.data
-        if core.client_coordinator and core.client_coordinator.data
-        else {}
-    )
+    coordinator = core.client_coordinator
 
-    entities: list[UnifiDeviceTracker | UnifiClientTracker] = []
+    # Keep track of client IDs that already got entities
+    tracked_clients: set[str] = set()
 
-    # Add device trackers
-    for device_id in devices:
-        entities.append(UnifiDeviceTracker(core.device_coordinator, device_id))
+    def _discover_new_clients() -> None:
+        """Check coordinator data and add entities for new clients."""
+        if not coordinator.data:
+            return
 
-    # Add client trackers
-    for client_id in clients:
-        entities.append(UnifiClientTracker(core.client_coordinator, client_id))
+        new_entities = []
 
-    async_add_entities(entities)
+        for client_id in coordinator.data:
+            if client_id in tracked_clients:
+                continue
 
+            new_entities.append(UnifiClientTracker(coordinator, client_id))
+            tracked_clients.add(client_id)
 
-class UnifiDeviceTracker(CoordinatorEntity):
-    """Represents a Unifi device tracker (state based on device status)."""
+        if new_entities:
+            async_add_entities(new_entities)
 
-    _attr_has_entity_name = True
-    _attr_name = None
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    # Add initial clients
+    _discover_new_clients()
 
-    def __init__(self, coordinator: UnifiDeviceCoordinator, device_id: str) -> None:
-        super().__init__(coordinator)
-        self.device_id = device_id
-        self._attr_unique_id = f"unifi_device_{device_id}_device_tracker"
-
-    @property
-    def state(self) -> str:
-        # Use coordinator accessor to get current device overview
-        device = self.coordinator.get_device(self.device_id)
-        device_overview = device.overview if device else None
-        if not device_overview:
-            return "unknown"
-        device_state = getattr(device_overview, "state", None)
-        if device_state is None:
-            return "unknown"
-        if device_state == "ONLINE":
-            return "home"
-        if device_state == "OFFLINE":
-            return "not_home"
-        return "unknown"
-
-    @property
-    def device_info(self) -> DeviceInfo | None:
-        device = self.coordinator.get_device(self.device_id)
-        if not device:
-            return None
-        device_overview = device.overview
-        identifiers = {(DOMAIN, self.device_id)}
-        connections = {(CONNECTION_NETWORK_MAC, device.mac)} if device.mac else set()
-        return DeviceInfo(
-            identifiers=identifiers,
-            name=device.name,
-            model=getattr(device_overview, "model", None),
-            connections=connections,
-        )
-
-    @property
-    def extra_state_attributes(self) -> dict[str, Any] | None:
-        """Return additional state attributes for the device tracker.
-
-        Include IP address, MAC and source_type so other integrations and
-        automations can rely on them.
-        """
-        device_wrapper = self.coordinator.get_device(self.device_id)
-        if not device_wrapper:
-            return None
-        return {
-            "ip": device_wrapper.ip,
-            "mac": device_wrapper.mac,
-            "source_type": SourceType.ROUTER,
-        }
+    # Add new clients whenever coordinator updates
+    coordinator.async_add_listener(_discover_new_clients)
 
 
-class UnifiClientTracker(CoordinatorEntity):
+class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
     """Represents a Unifi client tracker (state based on client connection status)."""
 
     _attr_has_entity_name = True
     _attr_name = None
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_source_type = SourceType.ROUTER  # Mark this as router-based tracking
 
     def __init__(self, coordinator: UnifiClientCoordinator, client_id: str) -> None:
         super().__init__(coordinator)
         self.client_id = client_id
         self._attr_unique_id = f"unifi_client_{client_id}_device_tracker"
+
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Enable new trackers by default."""
+        return True
 
     @property
     def state(self) -> str:
@@ -126,24 +78,28 @@ class UnifiClientTracker(CoordinatorEntity):
         client = self.coordinator.get_client(self.client_id)
         if not client:
             return None
-        client_type = getattr(client.overview, "type_", None)
-        identifiers = {(DOMAIN, self.client_id)}
-        connections = {(CONNECTION_NETWORK_MAC, client.mac)} if client.mac else set()
+
         return DeviceInfo(
-            identifiers=identifiers,
+            identifiers={(DOMAIN, self.client_id)},
             name=client.name,
-            model=client_type,
-            connections=connections,
+            model=getattr(client.overview, "type_", None),
+            connections={(CONNECTION_NETWORK_MAC, client.mac)} if client.mac else set(),
+            manufacturer=getattr(client, "vendor", None),
         )
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return additional state attributes for the client tracker.
 
-        Include IP address, MAC and source_type so other integrations and
-        automations can rely on them.
+        Include IP address, MAC and connected_at time.
         """
         client = self.coordinator.get_client(self.client_id)
         if not client:
             return None
-        return {"ip": client.ip, "mac": client.mac, "source_type": SourceType.ROUTER}
+        attrs = {"mac": client.mac, "ip": client.ip}
+
+        connected_at = getattr(client.overview, "connected_at", None)
+        if connected_at is not None and connected_at is not UNSET:
+            attrs["connected_at"] = connected_at
+
+        return attrs
