@@ -404,7 +404,7 @@ class UnifiClientStateSensor(UnifiClientSensor):
     def native_value(self) -> str | None:
         """Return the state of the sensor."""
         # Access UnifiClient from coordinator accessor
-        client = self.coordinator.get_client(self.client_id)
+        client = self.coordinator.data.get(self.client_id)
         # If client exists in coordinator data, it's connected
         return "Connected" if client else "Disconnected"
 
