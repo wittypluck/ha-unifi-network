@@ -202,7 +202,6 @@ class UnifiClientCoordinator(UnifiCoordinator):
             unifi_clients: dict[str, UnifiClient] = {}
             now = dt_util.now()
 
-            # unifi_clients = {}
             for client_overview, res in zip(client_overviews, results, strict=False):
                 client_id = getattr(client_overview, "id", None)
                 if client_id is None:
