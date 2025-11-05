@@ -30,11 +30,11 @@
         "title": "Select Features",
         "description": "Choose which features to enable",
         "data": {
-          "enable_devices": "Unifi Devices sensors",
+          "enable_devices": "Unifi Devices sensors and actions",
           "enable_clients": "Track Clients"
         },
         "data_description": {
-          "enable_devices": "Create sensors for Unifi network devices (switches, access points, gateways)",
+          "enable_devices": "Create sensors and actions for Unifi network devices (switches, access points, gateways)",
           "enable_clients": "Track connected clients (computers, phones, IoT devices)"
         }
       }
