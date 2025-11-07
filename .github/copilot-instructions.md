@@ -17,6 +17,35 @@ This is a **Home Assistant custom integration** for UniFi Network that provides 
 - Buttons (PoE port power cycle, device actions)
 - Config flow (no YAML required)
 
+## Home Assistant Standards
+
+**CRITICAL:** This is a **Home Assistant custom integration**. All code changes MUST follow Home Assistant coding standards and best practices as documented in the [Home Assistant Developer Documentation](https://developers.home-assistant.io/).
+
+**Key Home Assistant Requirements:**
+- Use async/await patterns (all I/O operations must be async)
+- Use `CoordinatorEntity` for entities that poll data
+- Implement proper `DeviceInfo` with identifiers and connections
+- Use `config_flow` for UI-based configuration (no YAML)
+- Follow entity naming conventions (`_attr_has_entity_name = True`)
+- Set appropriate entity categories (DIAGNOSTIC, CONFIG)
+- Handle exceptions gracefully and log appropriately
+- Use Home Assistant helpers (`dt_util`, `device_registry`, etc.)
+- Respect the integration manifest structure (`manifest.json`)
+- Use translation files (`strings.json`, `translations/*.json`)
+
+**Integration Structure Requirements:**
+- Entry point: `async_setup_entry()` in `__init__.py`
+- Cleanup: `async_unload_entry()` in `__init__.py`
+- Platforms loaded via `async_forward_entry_setups()`
+- Data stored in `hass.data[DOMAIN][entry.entry_id]`
+- Coordinators for data fetching (not direct API calls in entities)
+
+**Reference Documentation:**
+- Integration setup: https://developers.home-assistant.io/docs/creating_component_index
+- Config flow: https://developers.home-assistant.io/docs/config_entries_config_flow_handler
+- Entity platform: https://developers.home-assistant.io/docs/core/entity
+- Data coordinator: https://developers.home-assistant.io/docs/integration_fetching_data
+
 ## Project Architecture
 
 ### Directory Structure
@@ -133,6 +162,8 @@ This is a pure Python integration with no build/compilation step. The code is us
 ## Development Workflow
 
 ### Making Code Changes
+
+**IMPORTANT:** When making any code changes, ensure they follow Home Assistant coding standards and best practices. Reference the [Home Assistant Developer Documentation](https://developers.home-assistant.io/) for guidance on integration structure, async patterns, entity implementation, and data coordinators.
 
 1. **ALWAYS run linting BEFORE making changes** to understand baseline:
    ```bash
