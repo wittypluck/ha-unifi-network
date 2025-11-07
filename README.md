@@ -18,8 +18,7 @@ Home Assistant custom integration for UniFi Network that uses UniFi's official I
 
 #### Device Trackers
 
-- **UniFi Device Tracker**: Reports `home` when device state is ONLINE, `not_home` when OFFLINE. Attributes include IP address, MAC address, and `source_type=router`.
-- **UniFi Client Tracker**: Reports `home` when client is currently connected, `not_home` otherwise. Attributes include IP address, MAC address, and `source_type=router`.
+- **UniFi Client Tracker**: Reports `home` when client is currently connected, `not_home` otherwise. Attributes include IP address, MAC address, last seen timestamp, and `source_type=router`.
 
 #### Device Sensors
 
@@ -43,14 +42,10 @@ Home Assistant custom integration for UniFi Network that uses UniFi's official I
 - **PoE Port Statistics** (per device, per PoE-capable port):
   - PoE State (Providing Power, Off, etc.) with PoE standard and type information
 
-#### Client Sensors
-
-- **Connection State**: Shows if client is Connected or Disconnected
-- **Connected At**: Timestamp of when client connected to network
-
 #### Device Buttons
 
 - **PoE Port Power Cycle** (per device, per PoE-capable port): Triggers power cycle action on PoE ports. Button is automatically available only for ports with PoE capability.
+- **Restart Device** (per device): Triggers a restart action on the device. Button is only available when device is online.
 
 **Update interval**: 30 seconds by default.
 
@@ -109,13 +104,12 @@ The integration will automatically discover all devices and clients using API pa
 - **SSL Certificates**: If using self-signed certificates, disable SSL verification in the integration settings or ensure your Home Assistant host trusts the UniFi certificate.
 - **API Permissions**: The API Key should have sufficient privileges for read access to devices, clients, statistics, and port control actions.
 - **Presence Detection Logic**:
-  - **Devices**: ONLINE state → `home`, OFFLINE state → `not_home`
   - **Clients**: Present in connected clients list → `home`, otherwise → `not_home`
 - **Dynamic Entity Creation**:
   - Radio sensors only appear for devices that expose radio interface statistics
   - Port sensors are created for all physical ports on devices with port interfaces
   - PoE sensors and buttons only appear for ports with PoE capability
-  - Client sensors only appear for currently connected clients
+  - Client trackers are created for all connected clients
 - **Device Capabilities**: Different UniFi devices expose different sensor sets based on their hardware capabilities (e.g., switches vs access points vs gateways).
 - **Entity Organization**:
   - Device entities are grouped under their respective UniFi device in the Device Registry
