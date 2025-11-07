@@ -285,9 +285,8 @@ Ruff automatically organizes imports. The standard order is:
 
 ### Device Tracker Platform (`device_tracker.py`)
 
-- `UnifiDeviceTracker`: Reports `home` when device state is `ONLINE`, `not_home` otherwise
 - `UnifiClientTracker`: Reports `home` when client is in connected clients list, `not_home` otherwise
-- Both set `source_type = SourceType.ROUTER`
+- Sets `source_type = SourceType.ROUTER`
 
 ### Button Platform (`button.py`)
 
