@@ -41,6 +41,7 @@ Tests handling of:
 
 - **`test_api_helpers.py`** - Tests for API helper functions (pagination, error handling)
 - **`test_unifi_device.py`** - Tests for UnifiDevice wrapper (handling missing data)
+- **`test_unifi_client.py`** - Tests for UnifiClient wrapper (client properties, MAC handling, DeviceInfo)
 - **`test_coordinator.py`** - Tests for data coordinators (API failure scenarios)
 
 ### Support Files

@@ -38,19 +38,24 @@ jobs:
       - name: Check test file count
         run: |
           echo "Total test files: $(find tests/ -name 'test_*.py' | wc -l)"
-          echo "Total tests: $(python -m pytest tests/ --collect-only -q | grep '::' | wc -l)"
+          echo "Total tests: $(python -m pytest tests/ --collect-only -q | awk '{s+=$2} END {print s}')"
 
       - name: Validate test requirements coverage
         run: |
           echo "✅ Validating test coverage for requirements:"
-          echo "1. No exceptions when selecting only one feature during configuration"
-          python -m pytest tests/test_simple_validation.py::TestBasicValidation::test_config_flow_feature_validation -v
-          python -m pytest tests/test_simple_validation.py::TestBasicValidation::test_single_feature_configurations -v
-
-          echo "2. No exception if API calls fail"
+          echo "1. No exception if API calls fail"
           python -m pytest tests/test_api_helpers.py::TestFetchAllPages::test_http_error_response -v
+          python -m pytest tests/test_api_helpers.py::TestFetchAllPages::test_none_response -v
           python -m pytest tests/test_coordinator.py::TestUnifiDeviceCoordinator::test_fetch_devices_api_failure -v
+          python -m pytest tests/test_coordinator.py::TestUnifiClientCoordinator::test_fetch_clients_api_failure -v
 
-          echo "3. No exception if missing information in API responses"
+          echo "2. No exception if missing information in API responses"
           python -m pytest tests/test_unifi_device.py::TestUnifiDevice::test_device_with_unset_values -v
+          python -m pytest tests/test_unifi_device.py::TestUnifiDevice::test_device_with_missing_attributes -v
           python -m pytest tests/test_api_helpers.py::TestFetchAllPages::test_missing_data_attribute -v
+          python -m pytest tests/test_coordinator.py::TestUnifiDeviceCoordinator::test_fetch_devices_with_statistics_failure -v
+
+          echo "3. UniFi client handling and data processing"
+          python -m pytest tests/test_unifi_client.py::TestUnifiClient::test_client_id_property -v
+          python -m pytest tests/test_unifi_client.py::TestUnifiClient::test_mac_priority_overview_over_details -v
+          python -m pytest tests/test_unifi_client.py::TestUnifiClient::test_device_info_with_complete_data -v
