@@ -46,6 +46,23 @@ class UnifiDevice:
         return mac
 
     @property
+    def firmware_version(self) -> str | None:
+        """Return the device firmware version, or None if not available."""
+        if not self.details:
+            return None
+        firmware_version = getattr(self.details, "firmware_version", None)
+        if firmware_version is not None and isinstance(firmware_version, Unset):
+            return None
+        return firmware_version
+
+    @property
+    def firmware_updatable(self) -> bool:
+        """Return whether the device firmware can be updated."""
+        if not self.details:
+            return False
+        return getattr(self.details, "firmware_updatable", False)
+
+    @property
     def device_info(self) -> DeviceInfo:
         """Return DeviceInfo for this UniFi device with manufacturer set."""
         model = getattr(self.overview, "model", None)

@@ -63,6 +63,9 @@
     "button": {
       "port_poe_power_cycle": { "name": "Port {portIdx} PoE Power Cycle" },
       "device_restart": { "name": "Restart Device" }
+    },
+    "update": {
+      "firmware_update": { "name": "Firmware Update" }
     }
   }
 }

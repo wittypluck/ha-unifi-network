@@ -1,5 +1,5 @@
 DOMAIN = "unifi_network"
-PLATFORMS = ["sensor", "device_tracker", "button"]
+PLATFORMS = ["sensor", "device_tracker", "button", "update"]
 DEFAULT_UPDATE_INTERVAL = 30  # seconds
 
 ATTR_MANUFACTURER = "Ubiquiti Networks"
