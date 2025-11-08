@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Create release zip
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create integration zip
+        run: |
+          cd unifi_network
+          zip -r ../unifi_network.zip . -x "__pycache__/*" "*/__pycache__/*" "*.pyc"
+          cd ..
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./unifi_network.zip
+          asset_name: unifi_network.zip
+          asset_content_type: application/zip
