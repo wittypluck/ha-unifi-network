@@ -5,7 +5,6 @@ from typing import Any
 from homeassistant.components.device_tracker import SourceType, TrackerEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -79,13 +78,7 @@ class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
         if not client:
             return None
 
-        return DeviceInfo(
-            identifiers={(DOMAIN, client.id)},
-            name=client.name,
-            model=getattr(client.overview, "type_", None),
-            connections={(CONNECTION_NETWORK_MAC, client.mac)} if client.mac else set(),
-            manufacturer=getattr(client, "vendor", None),
-        )
+        return client.device_info
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:

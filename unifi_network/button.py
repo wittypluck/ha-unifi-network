@@ -7,7 +7,6 @@ from http import HTTPStatus
 from homeassistant.components.button import ButtonEntity, ButtonEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -70,18 +69,8 @@ class UnifiDevicePortPoeButton(CoordinatorEntity, ButtonEntity):
         device = self.coordinator.get_device(self.device_id)
         if not device:
             return None
-        device_overview = device.overview
 
-        model = getattr(device_overview, "model", None)
-        identifiers = {(DOMAIN, self.device_id)}
-        connections = {(CONNECTION_NETWORK_MAC, device.mac)} if device.mac else set()
-
-        return DeviceInfo(
-            identifiers=identifiers,
-            name=device.name,
-            model=model,
-            connections=connections,
-        )
+        return device.device_info
 
     @property
     def available(self) -> bool:
@@ -186,18 +175,8 @@ class UnifiDeviceActionButton(CoordinatorEntity, ButtonEntity):
         device = self.coordinator.get_device(self.device_id)
         if not device:
             return None
-        device_overview = device.overview
 
-        model = getattr(device_overview, "model", None)
-        identifiers = {(DOMAIN, self.device_id)}
-        connections = {(CONNECTION_NETWORK_MAC, device.mac)} if device.mac else set()
-
-        return DeviceInfo(
-            identifiers=identifiers,
-            name=device.name,
-            model=model,
-            connections=connections,
-        )
+        return device.device_info
 
     @property
     def available(self) -> bool:

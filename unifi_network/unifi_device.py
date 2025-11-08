@@ -1,7 +1,11 @@
 from dataclasses import dataclass
 
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
+from homeassistant.helpers.entity import DeviceInfo
+
 from .api_client.models import DeviceDetails, DeviceOverview, LatestStatisticsForADevice
 from .api_client.types import Unset
+from .const import ATTR_MANUFACTURER, DOMAIN
 
 
 @dataclass
@@ -40,3 +44,18 @@ class UnifiDevice:
         if mac is not None and isinstance(mac, Unset):
             return None
         return mac
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return DeviceInfo for this UniFi device with manufacturer set."""
+        model = getattr(self.overview, "model", None)
+        identifiers = {(DOMAIN, self.id)}
+        connections = {(CONNECTION_NETWORK_MAC, self.mac)} if self.mac else set()
+
+        return DeviceInfo(
+            identifiers=identifiers,
+            name=self.name,
+            model=model,
+            manufacturer=ATTR_MANUFACTURER,
+            connections=connections,
+        )

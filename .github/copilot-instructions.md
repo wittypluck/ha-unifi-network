@@ -5,12 +5,14 @@
 This is a **Home Assistant custom integration** for UniFi Network that provides local polling against the UniFi Network Integration API. The project is approximately 1MB in size and consists of ~1,800 lines of Python code (excluding auto-generated API client).
 
 **Key Technologies:**
+
 - **Language:** Python 3.12+
 - **Framework:** Home Assistant Custom Component
 - **API Client:** Auto-generated OpenAPI client (excluded from linting)
 - **Linting/Formatting:** Ruff (Black-compatible, 88 char line length)
 
 **Main Features:**
+
 - Device and client discovery with pagination
 - Device tracker (presence detection)
 - Sensors (device state, system stats, uplink stats, radio stats, port stats, PoE stats, client connection)
@@ -22,6 +24,7 @@ This is a **Home Assistant custom integration** for UniFi Network that provides 
 **CRITICAL:** This is a **Home Assistant custom integration**. All code changes MUST follow Home Assistant coding standards and best practices as documented in the [Home Assistant Developer Documentation](https://developers.home-assistant.io/).
 
 **Key Home Assistant Requirements:**
+
 - Use async/await patterns (all I/O operations must be async)
 - Use `CoordinatorEntity` for entities that poll data
 - Implement proper `DeviceInfo` with identifiers and connections
@@ -34,6 +37,7 @@ This is a **Home Assistant custom integration** for UniFi Network that provides 
 - Use translation files (`strings.json`, `translations/*.json`)
 
 **Integration Structure Requirements:**
+
 - Entry point: `async_setup_entry()` in `__init__.py`
 - Cleanup: `async_unload_entry()` in `__init__.py`
 - Platforms loaded via `async_forward_entry_setups()`
@@ -41,6 +45,7 @@ This is a **Home Assistant custom integration** for UniFi Network that provides 
 - Coordinators for data fetching (not direct API calls in entities)
 
 **Reference Documentation:**
+
 - Integration setup: https://developers.home-assistant.io/docs/creating_component_index
 - Config flow: https://developers.home-assistant.io/docs/config_entries_config_flow_handler
 - Entity platform: https://developers.home-assistant.io/docs/core/entity
@@ -90,38 +95,56 @@ This is a **Home Assistant custom integration** for UniFi Network that provides 
 ### Source File Summary
 
 **Core Integration Files:**
+
 - `__init__.py`: Entry point, async_setup_entry, async_unload_entry, device removal
 - `core.py`: UnifiNetworkCore class, initializes API client and coordinators
 - `const.py`: DOMAIN="unifi_network", PLATFORMS=["sensor", "device_tracker", "button"], DEFAULT_UPDATE_INTERVAL=30
 
 **Data Management:**
+
 - `coordinator.py`: UnifiDeviceCoordinator and UnifiClientCoordinator (fetch data every 30s)
 - `unifi_device.py`: UnifiDevice wrapper combining overview, statistics, and details
 - `unifi_client.py`: UnifiClient wrapper combining overview and details
 - `api_helpers.py`: fetch_all_pages() for paginated API calls
 
 **Entity Platforms:**
+
 - `sensor.py`: Device sensors (state, uptime, load, CPU, memory, uplink rates, radio stats, port states, PoE states), client sensors (connection state, connected_at)
 - `device_tracker.py`: Device and client presence detection (home/not_home)
 - `button.py`: PoE port power cycle buttons, device action buttons
 
 **Configuration:**
+
 - `config_flow.py`: Multi-step config flow (credentials → site selection → feature selection)
 
 ## Build and Validation Commands
 
 ### Prerequisites
 
-**ALWAYS install Ruff before running any linting or formatting:**
-```bash
-pip install ruff
-```
+**ALWAYS use a Python virtual environment for all Python commands:**
+
+1. **Create and activate a virtual environment** (if not already done):
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Linux/macOS
+   # or
+   venv\Scripts\activate     # On Windows
+   ```
+
+2. **Install Ruff in the virtual environment:**
+   ```bash
+   pip install ruff
+   ```
+
+**CRITICAL:** All Python-related commands (pip, ruff, pre-commit, etc.) should be run within the activated virtual environment. This prevents system-wide package installation issues and ensures consistent tool versions.
 
 ### Linting (ALWAYS run before committing)
 
 ```bash
 ruff check
 ```
+
 - Runs in < 5 seconds
 - Checks all Python files except `openapi_client_generator/` and `unifi_network/api_client/`
 - Auto-fixes safe issues with: `ruff check --fix`
@@ -132,6 +155,7 @@ ruff check
 ```bash
 ruff format
 ```
+
 - Runs in < 5 seconds
 - Black-compatible formatting with 88 character line length
 - Formats all Python files except generated API client
@@ -139,11 +163,15 @@ ruff format
 
 ### Pre-commit Hooks (Optional but Recommended)
 
+**Ensure virtual environment is activated first:**
+
 ```bash
+source venv/bin/activate  # Activate venv first
 pip install pre-commit
 pre-commit install
 pre-commit run --all-files
 ```
+
 - **NOTE:** Pre-commit setup may timeout on first run due to network issues downloading dependencies
 - If pre-commit fails with timeout, manually run `ruff format` and `ruff check --fix` instead
 - Pre-commit runs automatically on git commit after installation
@@ -151,6 +179,7 @@ pre-commit run --all-files
 ### No Automated Tests
 
 **This repository has NO test suite.** Do not attempt to run pytest or any test commands. Validation is done through:
+
 1. Ruff linting (code quality)
 2. Ruff formatting (code style)
 3. Manual testing in Home Assistant environment
@@ -165,21 +194,29 @@ This is a pure Python integration with no build/compilation step. The code is us
 
 **IMPORTANT:** When making any code changes, ensure they follow Home Assistant coding standards and best practices. Reference the [Home Assistant Developer Documentation](https://developers.home-assistant.io/) for guidance on integration structure, async patterns, entity implementation, and data coordinators.
 
-1. **ALWAYS run linting BEFORE making changes** to understand baseline:
+1. **ALWAYS activate virtual environment first:**
+
+   ```bash
+   source venv/bin/activate  # Ensure venv is active
+   ```
+
+2. **ALWAYS run linting BEFORE making changes** to understand baseline:
+
    ```bash
    ruff check
    ruff format --check
    ```
 
-2. Make your changes to files in `unifi_network/` (NOT in `api_client/` or `openapi_client_generator/`)
+3. Make your changes to files in `unifi_network/` (NOT in `api_client/` or `openapi_client_generator/`)
 
-3. **ALWAYS run linting AFTER changes:**
+4. **ALWAYS run linting AFTER changes:**
+
    ```bash
    ruff check --fix
    ruff format
    ```
 
-4. **Verify no errors:**
+5. **Verify no errors:**
    ```bash
    ruff check  # Should output: "All checks passed!"
    ```
@@ -187,21 +224,25 @@ This is a pure Python integration with no build/compilation step. The code is us
 ### File Modification Guidelines
 
 **DO modify:**
+
 - Any `.py` file in `unifi_network/` root (excluding `api_client/`)
 - Translation files in `unifi_network/translations/`
 - Documentation files (README.md, etc.)
 
 **DO NOT modify:**
+
 - Files in `unifi_network/api_client/` (auto-generated)
 - Files in `openapi_client_generator/unifi-network-api-client/` (auto-generated)
 - `pyproject.toml` (unless changing lint rules, which is rare)
 
 **Regenerating API Client (rare):**
 If UniFi API spec changes, run:
+
 ```bash
 cd openapi_client_generator
 ./generate_client.sh
 ```
+
 This requires `openapi-python-client` and `jq` installed. **Only do this if explicitly asked.**
 
 ## Code Style Guidelines
@@ -209,6 +250,7 @@ This requires `openapi-python-client` and `jq` installed. **Only do this if expl
 ### Import Organization
 
 Ruff automatically organizes imports. The standard order is:
+
 1. `from __future__ import annotations` (if using type hints)
 2. Standard library imports
 3. Third-party imports (homeassistant, etc.)
@@ -238,24 +280,30 @@ Ruff automatically organizes imports. The standard order is:
 ## Common Issues and Solutions
 
 ### Issue: Ruff reports "Line too long"
+
 **Solution:** Ruff format handles line length automatically. Run `ruff format`.
 
 ### Issue: Import sorting errors
+
 **Solution:** Run `ruff check --fix` to auto-fix import order.
 
 ### Issue: "Cannot import from api_client"
+
 **Cause:** API client might not be generated or corrupted.
 **Solution:** Verify `unifi_network/api_client/` exists and contains Python files. If missing, ask maintainer to regenerate.
 
 ### Issue: VS Code not formatting on save
+
 **Solution:** Install "Ruff" extension by Astral and reload window. Settings are already configured in `.vscode/settings.json`.
 
 ### Issue: Pre-commit timeout
+
 **Solution:** This is a known network issue. Skip pre-commit and run `ruff format` and `ruff check --fix` manually.
 
 ## CI/CD Information
 
 **There are NO GitHub Actions workflows** in this repository. All validation is manual:
+
 - Run `ruff check` before committing
 - Run `ruff format` before committing
 - Test in Home Assistant development environment
@@ -265,6 +313,7 @@ Ruff automatically organizes imports. The standard order is:
 ### Sensor Platform (`sensor.py`)
 
 **Device Sensors:**
+
 - State sensor (device online/offline)
 - System statistics (uptime, load_average_1/5/15, cpu_utilization, memory_utilization)
 - Uplink statistics (uplink_rx_rate, uplink_tx_rate in bps)
@@ -273,10 +322,12 @@ Ruff automatically organizes imports. The standard order is:
 - PoE port sensors (per PoE port: poe_state)
 
 **Client Sensors:**
+
 - Connection state (Connected/Disconnected)
 - Connected at timestamp
 
 **Key Classes:**
+
 - `UnifiSensorEntityDescription`: Base description with `sensor_type` reference
 - `UnifiDeviceSensor`: Base class for device sensors
 - `UnifiDeviceStatisticSensor`: Reads from `device.latest_statistics`
@@ -299,6 +350,7 @@ Ruff automatically organizes imports. The standard order is:
 ### Enable Debug Logging
 
 Add to Home Assistant `configuration.yaml`:
+
 ```yaml
 logger:
   default: warning
@@ -315,12 +367,14 @@ logger:
 ## Trust These Instructions
 
 **These instructions have been validated** by:
+
 - Running `ruff check` on the codebase (all checks passed)
 - Running `ruff format --check` (all files formatted)
 - Exploring all configuration files and source code
 - Testing Ruff commands on sample files
 
 **Only search/explore if:**
+
 - Information here is incomplete for your specific task
 - You encounter an error contradicting these instructions
 - You need to understand implementation details not covered here

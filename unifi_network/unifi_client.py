@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
+from homeassistant.helpers.entity import DeviceInfo
+
 from .api_client.models import ClientDetails, ClientOverview
 from .api_client.types import Unset
+from .const import DOMAIN
 
 
 @dataclass
@@ -53,6 +57,20 @@ class UnifiClient:
                 if mac:
                     return mac
         return None
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return DeviceInfo for this UniFi client with vendor as manufacturer."""
+        identifiers = {(DOMAIN, self.id)}
+        connections = {(CONNECTION_NETWORK_MAC, self.mac)} if self.mac else set()
+
+        return DeviceInfo(
+            identifiers=identifiers,
+            name=self.name,
+            model=getattr(self.overview, "type_", None),
+            manufacturer=getattr(self, "vendor", None),
+            connections=connections,
+        )
 
     def update(self, other: "UnifiClient") -> None:
         """Update this client instance with data from another UnifiClient instance.
