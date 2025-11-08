@@ -1,0 +1,56 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-test.txt
+
+      - name: Check code formatting
+        run: |
+          ruff format --check --diff
+
+      - name: Lint code
+        run: |
+          ruff check --output-format=github
+
+      - name: Run tests with coverage info
+        run: |
+          python -m pytest tests/ -v --asyncio-mode=auto --tb=short
+
+      - name: Check test file count
+        run: |
+          echo "Total test files: $(find tests/ -name 'test_*.py' | wc -l)"
+          echo "Total tests: $(python -m pytest tests/ --collect-only -q | grep '::' | wc -l)"
+
+      - name: Validate test requirements coverage
+        run: |
+          echo "✅ Validating test coverage for requirements:"
+          echo "1. No exceptions when selecting only one feature during configuration"
+          python -m pytest tests/test_simple_validation.py::TestBasicValidation::test_config_flow_feature_validation -v
+          python -m pytest tests/test_simple_validation.py::TestBasicValidation::test_single_feature_configurations -v
+
+          echo "2. No exception if API calls fail"
+          python -m pytest tests/test_api_helpers.py::TestFetchAllPages::test_http_error_response -v
+          python -m pytest tests/test_coordinator.py::TestUnifiDeviceCoordinator::test_fetch_devices_api_failure -v
+
+          echo "3. No exception if missing information in API responses"
+          python -m pytest tests/test_unifi_device.py::TestUnifiDevice::test_device_with_unset_values -v
+          python -m pytest tests/test_api_helpers.py::TestFetchAllPages::test_missing_data_attribute -v

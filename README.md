@@ -1,5 +1,8 @@
 # Unifi Network (custom integration)
 
+[![Tests](https://github.com/wittypluck/ha-unifi-network/actions/workflows/tests.yml/badge.svg)](https://github.com/wittypluck/ha-unifi-network/actions/workflows/tests.yml)
+[![Code Quality](https://github.com/wittypluck/ha-unifi-network/actions/workflows/quality.yml/badge.svg)](https://github.com/wittypluck/ha-unifi-network/actions/workflows/quality.yml)
+
 Home Assistant custom integration for UniFi Network that uses UniFi's official Integration API. It discovers UniFi devices and connected clients, exposes presence detection (device trackers), and provides comprehensive monitoring sensors and control buttons.
 
 ## What this provides
