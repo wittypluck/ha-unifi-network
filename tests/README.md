@@ -81,11 +81,12 @@ python -m pytest tests/test_coordinator.py -v --asyncio-mode=auto
 
 ## Test Results Summary
 
-✅ **39 tests passing** across 4 test files
+✅ **53 tests passing** across 4 test files
 
 - `test_api_helpers.py`: 10 tests (pagination, HTTP errors, malformed responses)
 - `test_coordinator.py`: 15 tests (API failures, partial data, error propagation)
 - `test_unifi_device.py`: 9 tests (Unset values, missing attributes, device info)
+- `test_unifi_client.py`: 19 tests (client properties, MAC prioritization, DeviceInfo generation)
 
 ## Key Validated Scenarios
 
