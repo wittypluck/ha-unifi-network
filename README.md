@@ -9,16 +9,18 @@ Home Assistant custom integration for UniFi Network that uses UniFi's official I
 - Automatic device and client discovery with pagination support
 - Selective feature enabling (devices and/or clients)
 - Entity categories appropriately marked as Diagnostic or Config
-- Three platforms:
-  - **device_tracker** - Presence detection
-  - **sensor** - Monitoring and diagnostics
-  - **button** - Device controls
+- Service for cleaning up stale client devices from device registry
+- Four platforms:
+  - **device_tracker** - Presence detection for clients
+  - **sensor** - Monitoring and diagnostics for devices
+  - **button** - Device and port controls
+  - **update** - Firmware update information
 
 ### Entities created
 
 #### Device Trackers
 
-- **UniFi Client Tracker**: Reports `home` when client is currently connected, `not_home` otherwise. Attributes include IP address, MAC address, last seen timestamp, connected at timestamp (when available), and `source_type=router`.
+- **UniFi Client Tracker**: Reports `home` when client is currently connected, `not_home` otherwise. Attributes include IP address, MAC address, last seen timestamp, connected at timestamp (when available), and `source_type=router`. Automatically created for all discovered clients when client tracking is enabled.
 
 #### Device Sensors
 
@@ -46,6 +48,14 @@ Home Assistant custom integration for UniFi Network that uses UniFi's official I
 
 - **PoE Port Power Cycle** (per device, per PoE-capable port): Triggers power cycle action on PoE ports. Button is automatically available only for ports with PoE capability.
 - **Restart Device** (per device): Triggers a restart action on the device. Button is only available when device is online.
+
+#### Update Entities
+
+- **Firmware Update** (per device): Shows current firmware version and indicates if firmware updates are available. Displays "Unknown" for latest version when an update is available (UniFi API doesn't provide specific version information). Note: Firmware installation through Home Assistant is not supported - use the UniFi Network Application for updates.
+
+#### Services
+
+- **Remove Stale Clients** (`unifi_network.remove_stale_clients`): Removes devices from the Home Assistant device registry that are no longer in the known clients or devices list. Useful for cleaning up devices that were previously tracked but are no longer present in the UniFi network. Can target specific config entries or process all UniFi Network integrations.
 
 **Update interval**: 30 seconds by default.
 
@@ -93,11 +103,11 @@ Manual install:
 3. **Site Selection**: Choose which UniFi site to monitor from the automatically discovered list.
 
 4. **Feature Selection**: Choose which features to enable:
-   - **Track Devices**: Monitor UniFi network infrastructure devices (switches, access points, gateways, etc.)
-   - **Track Clients**: Monitor connected client devices (computers, phones, IoT devices, etc.)
+   - **Unifi Devices sensors and actions**: Monitor UniFi network infrastructure devices (switches, access points, gateways, etc.) with comprehensive sensors, buttons, and firmware update information
+   - **Track Clients**: Monitor connected client devices (computers, phones, IoT devices, etc.) with device tracker entities
    - You can enable one or both features based on your monitoring needs
 
-The integration will automatically discover all devices and clients using API pagination to ensure complete coverage. Entities are created dynamically based on device capabilities (e.g., PoE sensors and buttons only appear for ports with PoE support).
+The integration will automatically discover all devices and clients using API pagination to ensure complete coverage. Entities are created dynamically based on device capabilities (e.g., PoE sensors and buttons only appear for ports with PoE support, radio sensors only for devices with wireless radios).
 
 ## Notes and troubleshooting
 
@@ -106,16 +116,18 @@ The integration will automatically discover all devices and clients using API pa
 - **Presence Detection Logic**:
   - **Clients**: Present in connected clients list → `home`, otherwise → `not_home`
 - **Dynamic Entity Creation**:
-  - Radio sensors only appear for devices that expose radio interface statistics
-  - Port sensors are created for all physical ports on devices with port interfaces
+  - Radio sensors only appear for devices that expose radio interface statistics (Access Points, Gateways with Wi-Fi)
+  - Port sensors are created for all physical ports on devices with port interfaces (Switches, Gateways)
   - PoE sensors and buttons only appear for ports with PoE capability
-  - Client trackers are created for all connected clients
+  - Client trackers are created for all connected clients and automatically updated as new clients connect
+  - Update entities show firmware information for all devices with available firmware data
 - **Device Capabilities**: Different UniFi devices expose different sensor sets based on their hardware capabilities (e.g., switches vs access points vs gateways).
 - **Entity Organization**:
   - Device entities are grouped under their respective UniFi device in the Device Registry
   - Client entities are grouped under their respective client device
   - All entities use the device/client name as the device name with specific sensor names
   - Entity categories are set appropriately (Diagnostic for monitoring, Config for controls)
+- **Service Usage**: Use the `unifi_network.remove_stale_clients` service to clean up the device registry when clients are no longer present in your network
 
 ## Development
 
@@ -123,10 +135,11 @@ The integration will automatically discover all devices and clients using API pa
 
 - **`unifi_network/`**: Main integration code
   - Core integration logic, coordinators, and entity platforms
-  - Entity platforms: `device_tracker.py`, `sensor.py`, `button.py`
+  - Entity platforms: `device_tracker.py`, `sensor.py`, `button.py`, `update.py`
   - Configuration flow: `config_flow.py`
   - Data coordinators: `coordinator.py`
   - Device/client wrappers: `unifi_device.py`, `unifi_client.py`
+  - Services: `services.py` (stale client cleanup)
   
 - **`unifi_network/api_client/`**: Generated API client (excluded from linting/formatting)
   - Auto-generated from UniFi Network Integration API OpenAPI specification
@@ -140,8 +153,9 @@ The integration will automatically discover all devices and clients using API pa
 ### Configuration
 
 - **Update interval**: Controlled by `DEFAULT_UPDATE_INTERVAL` in `const.py` (30 seconds)
-- **Platforms**: Defined in `PLATFORMS` in `const.py` (sensor, device_tracker, button)
+- **Platforms**: Defined in `PLATFORMS` in `const.py` (sensor, device_tracker, button, update)
 - **Domain**: `unifi_network`
+- **Services**: `remove_stale_clients` for device registry cleanup
 
 ### Local Development
 
