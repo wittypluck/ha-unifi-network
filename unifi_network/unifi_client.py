@@ -14,6 +14,11 @@ class UnifiClient:
     last_seen: datetime | None = None
 
     @property
+    def id(self) -> str:
+        """Return the client ID as a string."""
+        return str(self.overview.id)
+
+    @property
     def name(self) -> str | None:
         """Return the client name, or None if unset."""
         name = getattr(self.overview, "name", None)

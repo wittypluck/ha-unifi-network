@@ -6,6 +6,7 @@ from homeassistant.helpers.device_registry import DeviceEntry
 
 from .const import DOMAIN, PLATFORMS
 from .core import UnifiNetworkCore
+from .services import async_register_services, async_unregister_services
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -23,6 +24,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = core
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    # Register services (only once, not per config entry)
+    async_register_services(hass)
+
     return True
 
 
@@ -31,6 +36,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
+
+        # Remove service if this is the last config entry
+        if not hass.data[DOMAIN]:
+            async_unregister_services(hass)
+
     return unload_ok
 
 

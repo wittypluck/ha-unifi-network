@@ -1,0 +1,10 @@
+remove_stale_clients:
+  name: Remove stale Unifi clients
+  description: Remove devices from the Home Assistant device registry that are no longer in the known clients list
+  fields:
+    config_entry_id:
+      name: Config Entry ID or Name
+      description: The config entry ID (UUID) or name/title to remove stale clients from. If not provided, all UniFi Network integrations will be processed.
+      required: false
+      selector:
+        text:

@@ -445,13 +445,11 @@ def _create_base_sensors(
     device_coordinator: UnifiDeviceCoordinator,
     descriptions: tuple[UnifiSensorEntityDescription, ...],
 ) -> list[UnifiDeviceSensor]:
-    """Create standard sensors for a device."""
-    overview = device.overview
-
+    """Create base sensors for a Unifi device."""
     return [
         description.sensor_type(
             device_coordinator,
-            overview.id,
+            device.id,
             description,
         )
         for description in descriptions
@@ -464,9 +462,7 @@ def _create_radio_sensors(
     descriptions: tuple[UnifiSensorEntityDescription, ...],
 ) -> list[UnifiDeviceSensor]:
     """Create radio frequency sensors if radio interface statistics are available."""
-    overview = device.overview
-
-    interfaces = getattr(overview, "interfaces", None)
+    interfaces = getattr(device.overview, "interfaces", None)
     if not interfaces or DeviceOverviewInterfacesItem.RADIOS not in interfaces:
         return []
 
@@ -493,7 +489,7 @@ def _create_radio_sensors(
             entities.append(
                 description.sensor_type(
                     device_coordinator,
-                    overview.id,
+                    device.id,
                     description,
                     frequency,
                 )
@@ -511,8 +507,6 @@ def _create_port_sensors(
     ] = DEVICE_PORT_POE_SENSOR_DESCRIPTIONS,
 ) -> list[UnifiDeviceSensor]:
     """Create port sensors if device has port interfaces in details. POE sensors only if port has POE attribute."""
-    overview = device.overview
-
     # Check if device has details with ports
     if not device.details:
         return []
@@ -537,7 +531,7 @@ def _create_port_sensors(
             entities.append(
                 description.sensor_type(
                     device_coordinator,
-                    overview.id,
+                    device.id,
                     description,
                     port_idx,
                 )
@@ -550,7 +544,7 @@ def _create_port_sensors(
                 entities.append(
                     poe_description.sensor_type(
                         device_coordinator,
-                        overview.id,
+                        device.id,
                         poe_description,
                         port_idx,
                     )

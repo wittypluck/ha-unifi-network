@@ -131,7 +131,7 @@ class UnifiDevicePortPoeButton(CoordinatorEntity, ButtonEntity):
             # Execute the port action using the API client
             response = await asyncio_detailed(
                 site_id=self.coordinator.site_id,
-                device_id=device.overview.id,
+                device_id=device.overview.id,  # API expects UUID, not string
                 port_idx=self.port_idx,
                 client=api_client,
                 body=action_request,
@@ -239,7 +239,7 @@ class UnifiDeviceActionButton(CoordinatorEntity, ButtonEntity):
             # Execute the device action using the API client
             response = await device_action_detailed(
                 site_id=self.coordinator.site_id,
-                device_id=device.overview.id,
+                device_id=device.overview.id,  # API expects UUID, not string
                 client=api_client,
                 body=action_request,
             )
@@ -297,8 +297,6 @@ def _create_port_poe_buttons(
     descriptions: tuple[UnifiButtonEntityDescription, ...],
 ) -> list[UnifiDevicePortPoeButton]:
     """Create POE port buttons for device ports that have POE capability."""
-    overview = device.overview
-
     # Check if device has details with ports
     if not device.details:
         return []
@@ -325,7 +323,7 @@ def _create_port_poe_buttons(
                 entities.append(
                     description.button_type(
                         device_coordinator,
-                        overview.id,
+                        device.id,
                         description,
                         port_idx,
                     )
@@ -340,15 +338,13 @@ def _create_device_action_buttons(
     descriptions: tuple[UnifiDeviceActionButtonDescription, ...],
 ) -> list[UnifiDeviceActionButton]:
     """Create device action buttons for device management operations."""
-    overview = device.overview
-
     entities: list[UnifiDeviceActionButton] = []
 
     for description in descriptions:
         entities.append(
             description.button_type(
                 device_coordinator,
-                overview.id,
+                device.id,
                 description,
             )
         )

@@ -13,6 +13,11 @@ class UnifiDevice:
     details: DeviceDetails | None
 
     @property
+    def id(self) -> str:
+        """Return the device ID as a string."""
+        return str(self.overview.id)
+
+    @property
     def name(self) -> str | None:
         """Return the device name."""
         name = getattr(self.overview, "name", None)

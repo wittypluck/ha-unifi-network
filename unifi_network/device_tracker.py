@@ -80,7 +80,7 @@ class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
             return None
 
         return DeviceInfo(
-            identifiers={(DOMAIN, self.client_id)},
+            identifiers={(DOMAIN, client.id)},
             name=client.name,
             model=getattr(client.overview, "type_", None),
             connections={(CONNECTION_NETWORK_MAC, client.mac)} if client.mac else set(),
