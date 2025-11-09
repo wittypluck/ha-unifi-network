@@ -121,7 +121,7 @@ Current implementation focuses on core monitoring and basic device control funct
    - **Base URL**: Your UniFi Network Integration API endpoint
      - Format: `https://<unifi-host-or-ip>/proxy/network/integration`
      - Example: `https://192.168.1.1/proxy/network/integration`
-   - **API Key**: Create one in UniFi Network → Settings → Integrations → Add Integration → API Key
+   - **API Key**: Create one in UniFi Network → Settings → Control Plane → Integrations → API Key
    - **Verify SSL Certificate**: Enable for production, disable for self-signed certificates
 
 3. **Site Selection**: Choose which UniFi site to monitor from the automatically discovered list.
