@@ -17,9 +17,9 @@ rm -rf unifi-network-api-client
 #Generate new client
 openapi-python-client generate --path integration-fix.json --output-path unifi-network-api-client
 
-#Remove old copy of client
-rm -rf ../unifi_network/api_client
+#Remove old copy of client (moved under custom_components for HACS)
+rm -rf ../custom_components/unifi_network/api_client
 
-#Move new client
-mv unifi-network-api-client/uni_fi_network_api_client ../unifi_network/api_client
+#Move new client to HACS-compliant path
+mv unifi-network-api-client/uni_fi_network_api_client ../custom_components/unifi_network/api_client
 
