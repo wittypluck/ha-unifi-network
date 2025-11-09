@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.httpx_client import create_async_httpx_client
 
 from .api_client import Client
 from .coordinator import UnifiClientCoordinator, UnifiDeviceCoordinator
@@ -25,9 +26,20 @@ class UnifiNetworkCore:
         self.hass = hass
         self.site_id = site_id
 
-        # Initialize API client
-        headers = {"X-API-Key": api_key} if api_key else None
-        self.client = Client(base_url=base_url, headers=headers, verify_ssl=verify_ssl)
+        # Create httpx client using Home Assistant helper to avoid SSL blocking
+        async_httpx_client = create_async_httpx_client(
+            hass,
+            verify_ssl=verify_ssl,
+            base_url=base_url,
+        )
+
+        # Add API headers to the client
+        if api_key:
+            async_httpx_client.headers.update({"X-API-Key": api_key})
+
+        # Initialize API client and set httpx client
+        self.client = Client(base_url=base_url)
+        self.client.set_async_httpx_client(async_httpx_client)
 
         # Initialize coordinators based on enabled features
         self.device_coordinator = None

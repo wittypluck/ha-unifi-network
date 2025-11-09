@@ -125,6 +125,11 @@ update_coordinator.CoordinatorEntity = Mock()
 update_coordinator.DataUpdateCoordinator = MockUpdateCoordinator
 update_coordinator.UpdateFailed = UpdateFailed
 
+# Mock httpx_client helper
+httpx_client = Mock()
+httpx_client.get_async_client = Mock()
+httpx_client.create_async_httpx_client = Mock()
+
 # Mock homeassistant modules
 homeassistant = Mock()
 homeassistant.config_entries = config_entries
@@ -133,6 +138,7 @@ homeassistant.components.sensor = sensor
 homeassistant.const = const
 homeassistant.helpers.entity = entity
 homeassistant.helpers.entity_platform = entity_platform
+homeassistant.helpers.httpx_client = httpx_client
 homeassistant.helpers.update_coordinator = update_coordinator
 homeassistant.util.dt = dt_util
 
@@ -147,6 +153,7 @@ sys.modules["homeassistant.components.sensor"] = sensor
 sys.modules["homeassistant.helpers"] = Mock()
 sys.modules["homeassistant.helpers.entity"] = entity
 sys.modules["homeassistant.helpers.entity_platform"] = entity_platform
+sys.modules["homeassistant.helpers.httpx_client"] = httpx_client
 sys.modules["homeassistant.helpers.update_coordinator"] = update_coordinator
 sys.modules["homeassistant.helpers.selector"] = Mock()
 sys.modules["homeassistant.helpers.device_registry"] = Mock()
