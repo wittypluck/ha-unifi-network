@@ -7,8 +7,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from unifi_network.api_client.types import Unset
-from unifi_network.unifi_client import UnifiClient
+from custom_components.unifi_network.api_client.types import Unset
+from custom_components.unifi_network.unifi_client import UnifiClient
 
 
 class TestUnifiClient:

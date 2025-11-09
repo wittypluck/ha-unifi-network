@@ -9,7 +9,7 @@ import pytest
 
 # Import conftest to set up mocks
 import tests.conftest  # noqa: F401
-from unifi_network.api_helpers import fetch_all_pages
+from custom_components.unifi_network.api_helpers import fetch_all_pages
 
 
 class MockResponse:

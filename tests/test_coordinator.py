@@ -10,7 +10,10 @@ import pytest
 import tests.conftest
 
 # Now import the modules after mocks are set up
-from unifi_network.coordinator import UnifiClientCoordinator, UnifiDeviceCoordinator
+from custom_components.unifi_network.coordinator import (
+    UnifiClientCoordinator,
+    UnifiDeviceCoordinator,
+)
 
 
 @pytest.fixture
@@ -104,15 +107,15 @@ class TestUnifiDeviceCoordinator:
         """Test successful device fetching."""
         with (
             patch(
-                "unifi_network.coordinator.fetch_all_pages",
+                "custom_components.unifi_network.coordinator.fetch_all_pages",
                 return_value=[mock_device_overview],
             ),
             patch(
-                "unifi_network.coordinator.get_device_latest_statistics.asyncio",
+                "custom_components.unifi_network.coordinator.get_device_latest_statistics.asyncio",
                 return_value=mock_device_statistics,
             ),
             patch(
-                "unifi_network.coordinator.get_device_details.asyncio",
+                "custom_components.unifi_network.coordinator.get_device_details.asyncio",
                 return_value=mock_device_details,
             ),
         ):
@@ -131,7 +134,7 @@ class TestUnifiDeviceCoordinator:
         mock_device.id = None
 
         with patch(
-            "unifi_network.coordinator.fetch_all_pages",
+            "custom_components.unifi_network.coordinator.fetch_all_pages",
             return_value=[mock_device],
         ):
             result = await device_coordinator._fetch_and_merge()
@@ -144,15 +147,15 @@ class TestUnifiDeviceCoordinator:
         """Test device fetching when statistics call fails."""
         with (
             patch(
-                "unifi_network.coordinator.fetch_all_pages",
+                "custom_components.unifi_network.coordinator.fetch_all_pages",
                 return_value=[mock_device_overview],
             ),
             patch(
-                "unifi_network.coordinator.get_device_latest_statistics.asyncio",
+                "custom_components.unifi_network.coordinator.get_device_latest_statistics.asyncio",
                 side_effect=Exception("Statistics failed"),
             ),
             patch(
-                "unifi_network.coordinator.get_device_details.asyncio",
+                "custom_components.unifi_network.coordinator.get_device_details.asyncio",
                 return_value=mock_device_details,
             ),
         ):
@@ -170,15 +173,15 @@ class TestUnifiDeviceCoordinator:
         """Test device fetching when details call fails."""
         with (
             patch(
-                "unifi_network.coordinator.fetch_all_pages",
+                "custom_components.unifi_network.coordinator.fetch_all_pages",
                 return_value=[mock_device_overview],
             ),
             patch(
-                "unifi_network.coordinator.get_device_latest_statistics.asyncio",
+                "custom_components.unifi_network.coordinator.get_device_latest_statistics.asyncio",
                 return_value=mock_device_statistics,
             ),
             patch(
-                "unifi_network.coordinator.get_device_details.asyncio",
+                "custom_components.unifi_network.coordinator.get_device_details.asyncio",
                 side_effect=Exception("Details failed"),
             ),
         ):
@@ -194,7 +197,7 @@ class TestUnifiDeviceCoordinator:
         """Test device fetching when main API call fails."""
         with (
             patch(
-                "unifi_network.coordinator.fetch_all_pages",
+                "custom_components.unifi_network.coordinator.fetch_all_pages",
                 side_effect=Exception("API failed"),
             ),
             pytest.raises(tests.conftest.UpdateFailed),
@@ -234,11 +237,11 @@ class TestUnifiClientCoordinator:
         """Test successful client fetching."""
         with (
             patch(
-                "unifi_network.coordinator.fetch_all_pages",
+                "custom_components.unifi_network.coordinator.fetch_all_pages",
                 return_value=[mock_client_overview],
             ),
             patch(
-                "unifi_network.coordinator.get_connected_client_details.asyncio",
+                "custom_components.unifi_network.coordinator.get_connected_client_details.asyncio",
                 return_value=mock_client_details,
             ),
         ):
@@ -257,7 +260,7 @@ class TestUnifiClientCoordinator:
         mock_client.id = None
 
         with patch(
-            "unifi_network.coordinator.fetch_all_pages",
+            "custom_components.unifi_network.coordinator.fetch_all_pages",
             return_value=[mock_client],
         ):
             result = await client_coordinator._fetch_and_merge()
@@ -270,11 +273,11 @@ class TestUnifiClientCoordinator:
         """Test client fetching when details call fails."""
         with (
             patch(
-                "unifi_network.coordinator.fetch_all_pages",
+                "custom_components.unifi_network.coordinator.fetch_all_pages",
                 return_value=[mock_client_overview],
             ),
             patch(
-                "unifi_network.coordinator.get_connected_client_details.asyncio",
+                "custom_components.unifi_network.coordinator.get_connected_client_details.asyncio",
                 side_effect=Exception("Details failed"),
             ),
         ):
@@ -289,7 +292,7 @@ class TestUnifiClientCoordinator:
         """Test client fetching when main API call fails."""
         with (
             patch(
-                "unifi_network.coordinator.fetch_all_pages",
+                "custom_components.unifi_network.coordinator.fetch_all_pages",
                 side_effect=Exception("API failed"),
             ),
             pytest.raises(tests.conftest.UpdateFailed),
@@ -307,11 +310,11 @@ class TestUnifiClientCoordinator:
 
         with (
             patch(
-                "unifi_network.coordinator.fetch_all_pages",
+                "custom_components.unifi_network.coordinator.fetch_all_pages",
                 return_value=[mock_client_overview],
             ),
             patch(
-                "unifi_network.coordinator.get_connected_client_details.asyncio",
+                "custom_components.unifi_network.coordinator.get_connected_client_details.asyncio",
                 return_value=mock_client_details,
             ),
         ):

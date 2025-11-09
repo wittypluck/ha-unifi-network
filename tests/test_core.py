@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from unifi_network.core import UnifiNetworkCore
+from custom_components.unifi_network.core import UnifiNetworkCore
 
 
 @pytest.fixture
@@ -23,10 +23,10 @@ def mock_httpx_client():
     return AsyncMock()
 
 
-@patch("unifi_network.core.create_async_httpx_client")
-@patch("unifi_network.core.Client")
-@patch("unifi_network.core.UnifiDeviceCoordinator")
-@patch("unifi_network.core.UnifiClientCoordinator")
+@patch("custom_components.unifi_network.core.create_async_httpx_client")
+@patch("custom_components.unifi_network.core.Client")
+@patch("custom_components.unifi_network.core.UnifiDeviceCoordinator")
+@patch("custom_components.unifi_network.core.UnifiClientCoordinator")
 @pytest.mark.asyncio
 async def test_init_creates_client_and_async_init_refreshes_coordinators(
     mock_client_coordinator,
@@ -83,10 +83,10 @@ async def test_init_creates_client_and_async_init_refreshes_coordinators(
     mock_client_coordinator_instance.async_config_entry_first_refresh.assert_called_once()
 
 
-@patch("unifi_network.core.create_async_httpx_client")
-@patch("unifi_network.core.Client")
-@patch("unifi_network.core.UnifiDeviceCoordinator")
-@patch("unifi_network.core.UnifiClientCoordinator")
+@patch("custom_components.unifi_network.core.create_async_httpx_client")
+@patch("custom_components.unifi_network.core.Client")
+@patch("custom_components.unifi_network.core.UnifiDeviceCoordinator")
+@patch("custom_components.unifi_network.core.UnifiClientCoordinator")
 @pytest.mark.asyncio
 async def test_init_respects_verify_ssl_false(
     mock_client_coordinator,
@@ -145,8 +145,8 @@ async def test_init_respects_verify_ssl_false(
     mock_client_coordinator_instance.async_config_entry_first_refresh.assert_called_once()
 
 
-@patch("unifi_network.core.create_async_httpx_client")
-@patch("unifi_network.core.Client")
+@patch("custom_components.unifi_network.core.create_async_httpx_client")
+@patch("custom_components.unifi_network.core.Client")
 @pytest.mark.asyncio
 async def test_init_without_coordinators(
     mock_client_class,
@@ -200,8 +200,8 @@ async def test_init_without_coordinators(
     # This completes successfully without any coordinator operations
 
 
-@patch("unifi_network.core.create_async_httpx_client")
-@patch("unifi_network.core.Client")
+@patch("custom_components.unifi_network.core.create_async_httpx_client")
+@patch("custom_components.unifi_network.core.Client")
 @pytest.mark.asyncio
 async def test_init_without_api_key(
     mock_client_class,

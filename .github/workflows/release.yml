@@ -17,9 +17,9 @@ jobs:
 
       - name: Create integration zip
         run: |
-          cd unifi_network
-          zip -r ../unifi_network.zip . -x "__pycache__/*" "*/__pycache__/*" "*.pyc"
-          cd ..
+          cd custom_components/unifi_network
+          zip -r ../../unifi_network.zip . -x "__pycache__/*" "*/__pycache__/*" "*.pyc"
+          cd ../..
 
       - name: Upload release asset
         env:

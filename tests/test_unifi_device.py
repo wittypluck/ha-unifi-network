@@ -8,10 +8,10 @@ import pytest
 
 # Import conftest to set up mocks
 import tests.conftest  # noqa: F401
-from unifi_network.api_client.types import Unset
+from custom_components.unifi_network.api_client.types import Unset
 
 # Remove unused imports - ATTR_MANUFACTURER, DOMAIN not needed in simplified tests
-from unifi_network.unifi_device import UnifiDevice
+from custom_components.unifi_network.unifi_device import UnifiDevice
 
 
 class TestUnifiDevice:
@@ -105,7 +105,10 @@ class TestUnifiDevice:
                 return default
             return Mock()
 
-        with patch("unifi_network.unifi_device.getattr", side_effect=mock_getattr):
+        with patch(
+            "custom_components.unifi_network.unifi_device.getattr",
+            side_effect=mock_getattr,
+        ):
             device = UnifiDevice(
                 overview=overview, latest_statistics=None, details=None
             )
@@ -179,7 +182,10 @@ class TestUnifiDevice:
                 return default
             return Mock()
 
-        with patch("unifi_network.unifi_device.getattr", side_effect=mock_getattr):
+        with patch(
+            "custom_components.unifi_network.unifi_device.getattr",
+            side_effect=mock_getattr,
+        ):
             device = UnifiDevice(
                 overview=basic_device_overview, latest_statistics=None, details=details
             )

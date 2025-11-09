@@ -7,7 +7,7 @@ target-version = "py312"
 extend-exclude = [
     
     "openapi_client_generator/",
-    "unifi_network/api_client/",
+    "custom_components/unifi_network/api_client/",
     "**/.venv/",
     "**/.tox/",
     "**/.mypy_cache/",

@@ -87,10 +87,31 @@ Current implementation focuses on core monitoring and basic device control funct
 
 ## Installation
 
-Manual install:
+> Note: HACS installation via the default store is not available yet. You can install manually (see below). If you want to use HACS today, add this repository as a Custom Repository in HACS.
 
-1. Copy the `unifi_network` folder into your Home Assistant config directory under `custom_components` (final path: `<config>/custom_components/unifi_network`).
-1. Restart Home Assistant.
+### HACS (Recommended)
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=wittypluck&repository=ha-unifi-network&category=integration)
+
+1. Ensure you have [HACS](https://hacs.xyz/) installed in your Home Assistant instance
+2. Add this repository as a custom repository in HACS:
+   - Open HACS in Home Assistant
+   - Click on "Integrations"
+   - Click the three dots in the top right corner
+   - Select "Custom repositories"
+   - Add the repository URL: `https://github.com/wittypluck/ha-unifi-network`
+   - Select category: "Integration"
+   - Click "Add"
+3. Search for "Unifi Network (Local API)" in HACS
+4. Click "Download"
+5. Restart Home Assistant
+6. Go to **Settings → Devices & Services → Add Integration** and search for "Unifi Network (Local API)"
+
+### Manual Installation
+
+1. Copy the `custom_components/unifi_network` folder from this repository to your Home Assistant config directory under `custom_components` (final path: `<config>/custom_components/unifi_network`).
+2. Restart Home Assistant.
+3. Go to **Settings → Devices & Services → Add Integration** and search for "Unifi Network (Local API)".
 
 ## Configuration (via UI)
 
