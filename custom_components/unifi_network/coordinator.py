@@ -189,22 +189,23 @@ class UnifiClientCoordinator(UnifiCoordinator):
             )
 
             # Prepare tasks to fetch details for each client concurrently
-            tasks = [
-                get_connected_client_details.asyncio(
-                    site_id=self.site_id,
-                    client_id=client_overview.id,
-                    client=self.client,
-                )
-                for client_overview in client_overviews
-            ]
+            # tasks = [
+            #    get_connected_client_details.asyncio(
+            #        site_id=self.site_id,
+            #        client_id=client_overview.id,
+            #        client=self.client,
+            #    )
+            #    for client_overview in client_overviews
+            # ]
 
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+            # results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Create UnifiClient objects combining overview and details
             unifi_clients: dict[str, UnifiClient] = {}
             now = dt_util.now()
 
-            for client_overview, res in zip(client_overviews, results, strict=False):
+            # for client_overview, res in zip(client_overviews, results, strict=False):
+            for client_overview in client_overviews:
                 if not hasattr(client_overview, "id") or client_overview.id is None:
                     _LOGGER.warning("Client without id found, skipping")
                     continue
@@ -212,14 +213,14 @@ class UnifiClientCoordinator(UnifiCoordinator):
                 client = UnifiClient(overview=client_overview, details=None)
                 client_id = client.id  # Always a string via the property
 
-                if isinstance(res, Exception):
-                    _LOGGER.debug(
-                        "Failed to fetch details for client %s: %s", client_id, res
-                    )
-                    client.details = None
-                else:
-                    _LOGGER.debug("Fetched details for client %s", client_id)
-                    client.details = res
+                # if isinstance(res, Exception):
+                #    _LOGGER.debug(
+                #        "Failed to fetch details for client %s: %s", client_id, res
+                #    )
+                #    client.details = None
+                # else:
+                #    _LOGGER.debug("Fetched details for client %s", client_id)
+                #    client.details = res
 
                 client.last_seen = now
 
