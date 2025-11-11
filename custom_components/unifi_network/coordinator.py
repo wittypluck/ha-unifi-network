@@ -11,10 +11,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from homeassistant.util import dt as dt_util
 
 from .api_client import Client
-from .api_client.api.clients import (
-    get_connected_client_details,
-    get_connected_client_overview_page,
-)
+from .api_client.api.clients import get_connected_client_overview_page
 from .api_client.api.uni_fi_devices import (
     get_device_details,
     get_device_latest_statistics,

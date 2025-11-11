@@ -240,10 +240,10 @@ class TestUnifiClientCoordinator:
                 "custom_components.unifi_network.coordinator.fetch_all_pages",
                 return_value=[mock_client_overview],
             ),
-            patch(
-                "custom_components.unifi_network.coordinator.get_connected_client_details.asyncio",
-                return_value=mock_client_details,
-            ),
+            #            patch(
+            #                "custom_components.unifi_network.coordinator.get_connected_client_details.asyncio",
+            #                return_value=mock_client_details,
+            #            ),
         ):
             result = await client_coordinator._fetch_and_merge()
 
@@ -251,7 +251,7 @@ class TestUnifiClientCoordinator:
         assert "client-456" in result
         client = result["client-456"]
         assert client.overview == mock_client_overview
-        assert client.details == mock_client_details
+        # assert client.details == mock_client_details
         assert client.last_seen is not None
 
     async def test_fetch_clients_with_missing_id(self, client_coordinator):
@@ -267,26 +267,26 @@ class TestUnifiClientCoordinator:
 
         assert len(result) == 0
 
-    async def test_fetch_clients_with_details_failure(
-        self, client_coordinator, mock_client_overview
-    ):
-        """Test client fetching when details call fails."""
-        with (
-            patch(
-                "custom_components.unifi_network.coordinator.fetch_all_pages",
-                return_value=[mock_client_overview],
-            ),
-            patch(
-                "custom_components.unifi_network.coordinator.get_connected_client_details.asyncio",
-                side_effect=Exception("Details failed"),
-            ),
-        ):
-            result = await client_coordinator._fetch_and_merge()
+    # async def test_fetch_clients_with_details_failure(
+    #    self, client_coordinator, mock_client_overview
+    # ):
+    #    """Test client fetching when details call fails."""
+    #    with (
+    #        patch(
+    #            "custom_components.unifi_network.coordinator.fetch_all_pages",
+    #            return_value=[mock_client_overview],
+    #        ),
+    #        patch(
+    #            "custom_components.unifi_network.coordinator.get_connected_client_details.asyncio",
+    #            side_effect=Exception("Details failed"),
+    #        ),
+    #    ):
+    #        result = await client_coordinator._fetch_and_merge()
 
-        assert len(result) == 1
-        client = result["client-456"]
-        assert client.overview == mock_client_overview
-        assert client.details is None
+    #    assert len(result) == 1
+    #    client = result["client-456"]
+    #    assert client.overview == mock_client_overview
+    #    assert client.details is None
 
     async def test_fetch_clients_api_failure(self, client_coordinator):
         """Test client fetching when main API call fails."""
@@ -313,10 +313,10 @@ class TestUnifiClientCoordinator:
                 "custom_components.unifi_network.coordinator.fetch_all_pages",
                 return_value=[mock_client_overview],
             ),
-            patch(
-                "custom_components.unifi_network.coordinator.get_connected_client_details.asyncio",
-                return_value=mock_client_details,
-            ),
+            # patch(
+            #    "custom_components.unifi_network.coordinator.get_connected_client_details.asyncio",
+            #    return_value=mock_client_details,
+            # ),
         ):
             result = await client_coordinator._fetch_and_merge()
 
