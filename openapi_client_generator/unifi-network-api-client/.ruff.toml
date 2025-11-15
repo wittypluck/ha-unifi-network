@@ -1,0 +1,2 @@
+[lint]
+ignore = ["UP007"]  # Allow Union[X, Y] instead of X | Y in generated code
