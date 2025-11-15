@@ -8,9 +8,7 @@ from ...types import Response, UNSET
 from ... import errors
 
 from ...models.device_action_request import DeviceActionRequest
-from typing import cast
 from uuid import UUID
-
 
 
 def _get_kwargs(
@@ -18,22 +16,18 @@ def _get_kwargs(
     device_id: UUID,
     *,
     body: DeviceActionRequest,
-
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
-
-    
-
-    
-
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/v1/sites/{site_id}/devices/{device_id}/actions".format(site_id=site_id,device_id=device_id,),
+        "url": "/v1/sites/{site_id}/devices/{device_id}/actions".format(
+            site_id=site_id,
+            device_id=device_id,
+        ),
     }
 
     _kwargs["json"] = body.to_dict()
-
 
     headers["Content-Type"] = "application/json"
 
@@ -41,8 +35,9 @@ def _get_kwargs(
     return _kwargs
 
 
-
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Any]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[Any]:
     if response.status_code == 200:
         return None
 
@@ -52,7 +47,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Any]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[Any]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -67,9 +64,8 @@ def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
     body: DeviceActionRequest,
-
 ) -> Response[Any]:
-    """ Execute Device Action
+    """Execute Device Action
 
      Perform an action on an specific adopted device. The request body must include the action name and
     any applicable input arguments.
@@ -85,14 +81,12 @@ def sync_detailed(
 
     Returns:
         Response[Any]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-device_id=device_id,
-body=body,
-
+        device_id=device_id,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -108,9 +102,8 @@ async def asyncio_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
     body: DeviceActionRequest,
-
 ) -> Response[Any]:
-    """ Execute Device Action
+    """Execute Device Action
 
      Perform an action on an specific adopted device. The request body must include the action name and
     any applicable input arguments.
@@ -126,19 +119,14 @@ async def asyncio_detailed(
 
     Returns:
         Response[Any]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-device_id=device_id,
-body=body,
-
+        device_id=device_id,
+        body=body,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
-

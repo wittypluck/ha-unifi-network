@@ -13,27 +13,22 @@ from typing import cast
 from uuid import UUID
 
 
-
-
-
-
 T = TypeVar("T", bound="DeviceOverview")
-
 
 
 @_attrs_define
 class DeviceOverview:
-    """ 
-        Attributes:
-            id (UUID):
-            name (str):  Example: IW HD.
-            model (str):  Example: UHDIW.
-            mac_address (str):  Example: 94:2a:6f:26:c6:ca.
-            ip_address (str):  Example: 192.168.1.55.
-            state (DeviceOverviewState):
-            features (list[DeviceOverviewFeaturesItem]):
-            interfaces (list[DeviceOverviewInterfacesItem]):
-     """
+    """
+    Attributes:
+        id (UUID):
+        name (str):  Example: IW HD.
+        model (str):  Example: UHDIW.
+        mac_address (str):  Example: 94:2a:6f:26:c6:ca.
+        ip_address (str):  Example: 192.168.1.55.
+        state (DeviceOverviewState):
+        features (list[DeviceOverviewFeaturesItem]):
+        interfaces (list[DeviceOverviewInterfacesItem]):
+    """
 
     id: UUID
     name: str
@@ -44,10 +39,6 @@ class DeviceOverview:
     features: list[DeviceOverviewFeaturesItem]
     interfaces: list[DeviceOverviewInterfacesItem]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         id = str(self.id)
@@ -67,40 +58,32 @@ class DeviceOverview:
             features_item = features_item_data.value
             features.append(features_item)
 
-
-
         interfaces = []
         for interfaces_item_data in self.interfaces:
             interfaces_item = interfaces_item_data.value
             interfaces.append(interfaces_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "id": id,
-            "name": name,
-            "model": model,
-            "macAddress": mac_address,
-            "ipAddress": ip_address,
-            "state": state,
-            "features": features,
-            "interfaces": interfaces,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "name": name,
+                "model": model,
+                "macAddress": mac_address,
+                "ipAddress": ip_address,
+                "state": state,
+                "features": features,
+                "interfaces": interfaces,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
         id = UUID(d.pop("id"))
-
-
-
 
         name = d.pop("name")
 
@@ -112,28 +95,19 @@ class DeviceOverview:
 
         state = DeviceOverviewState(d.pop("state"))
 
-
-
-
         features = []
         _features = d.pop("features")
-        for features_item_data in (_features):
+        for features_item_data in _features:
             features_item = DeviceOverviewFeaturesItem(features_item_data)
-
-
 
             features.append(features_item)
 
-
         interfaces = []
         _interfaces = d.pop("interfaces")
-        for interfaces_item_data in (_interfaces):
+        for interfaces_item_data in _interfaces:
             interfaces_item = DeviceOverviewInterfacesItem(interfaces_item_data)
 
-
-
             interfaces.append(interfaces_item)
-
 
         device_overview = cls(
             id=id,
@@ -145,7 +119,6 @@ class DeviceOverview:
             features=features,
             interfaces=interfaces,
         )
-
 
         device_overview.additional_properties = d
         return device_overview

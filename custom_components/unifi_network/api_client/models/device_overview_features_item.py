@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class DeviceOverviewFeaturesItem(str, Enum):
     ACCESSPOINT = "accessPoint"
     GATEWAY = "gateway"

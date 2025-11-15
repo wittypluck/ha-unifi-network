@@ -6,33 +6,27 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from typing import Union
-
-
-
-
 
 
 T = TypeVar("T", bound="HotspotVoucherCreationRequest")
 
 
-
 @_attrs_define
 class HotspotVoucherCreationRequest:
-    """ 
-        Attributes:
-            name (str): Voucher note, duplicated across all generated vouchers
-            time_limit_minutes (int): How long (in minutes) the voucher will provide access to the network since
-                authorization of the first guest.
-                Subsequently connected guests, if allowed, will share the same expiration time.
-            count (Union[Unset, int]): Number of vouchers to generate Default: 1.
-            authorized_guest_limit (Union[Unset, int]): (Optional) limit for how many different guests can use the same
-                voucher to authorize network access Example: 1.
-            data_usage_limit_m_bytes (Union[Unset, int]): (Optional) data usage limit in megabytes
-            rx_rate_limit_kbps (Union[Unset, int]): (Optional) download rate limit in kilobits per second
-            tx_rate_limit_kbps (Union[Unset, int]): (Optional) upload rate limit in kilobits per second
-     """
+    """
+    Attributes:
+        name (str): Voucher note, duplicated across all generated vouchers
+        time_limit_minutes (int): How long (in minutes) the voucher will provide access to the network since
+            authorization of the first guest.
+            Subsequently connected guests, if allowed, will share the same expiration time.
+        count (Union[Unset, int]): Number of vouchers to generate Default: 1.
+        authorized_guest_limit (Union[Unset, int]): (Optional) limit for how many different guests can use the same
+            voucher to authorize network access Example: 1.
+        data_usage_limit_m_bytes (Union[Unset, int]): (Optional) data usage limit in megabytes
+        rx_rate_limit_kbps (Union[Unset, int]): (Optional) download rate limit in kilobits per second
+        tx_rate_limit_kbps (Union[Unset, int]): (Optional) upload rate limit in kilobits per second
+    """
 
     name: str
     time_limit_minutes: int
@@ -42,10 +36,6 @@ class HotspotVoucherCreationRequest:
     rx_rate_limit_kbps: Union[Unset, int] = UNSET
     tx_rate_limit_kbps: Union[Unset, int] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         name = self.name
@@ -62,13 +52,14 @@ class HotspotVoucherCreationRequest:
 
         tx_rate_limit_kbps = self.tx_rate_limit_kbps
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "name": name,
-            "timeLimitMinutes": time_limit_minutes,
-        })
+        field_dict.update(
+            {
+                "name": name,
+                "timeLimitMinutes": time_limit_minutes,
+            }
+        )
         if count is not UNSET:
             field_dict["count"] = count
         if authorized_guest_limit is not UNSET:
@@ -81,8 +72,6 @@ class HotspotVoucherCreationRequest:
             field_dict["txRateLimitKbps"] = tx_rate_limit_kbps
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -110,7 +99,6 @@ class HotspotVoucherCreationRequest:
             rx_rate_limit_kbps=rx_rate_limit_kbps,
             tx_rate_limit_kbps=tx_rate_limit_kbps,
         )
-
 
         hotspot_voucher_creation_request.additional_properties = d
         return hotspot_voucher_creation_request

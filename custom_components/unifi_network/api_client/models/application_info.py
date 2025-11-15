@@ -7,42 +7,31 @@ from attrs import field as _attrs_field
 from ..types import UNSET, Unset
 
 
-
-
-
-
-
 T = TypeVar("T", bound="ApplicationInfo")
-
 
 
 @_attrs_define
 class ApplicationInfo:
-    """ 
-        Attributes:
-            application_version (str):  Example: 9.1.0.
-     """
+    """
+    Attributes:
+        application_version (str):  Example: 9.1.0.
+    """
 
     application_version: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
         application_version = self.application_version
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "applicationVersion": application_version,
-        })
+        field_dict.update(
+            {
+                "applicationVersion": application_version,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -52,7 +41,6 @@ class ApplicationInfo:
         application_info = cls(
             application_version=application_version,
         )
-
 
         application_info.additional_properties = d
         return application_info

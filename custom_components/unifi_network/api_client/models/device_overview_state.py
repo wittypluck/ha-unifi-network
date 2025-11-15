@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class DeviceOverviewState(str, Enum):
     ADOPTING = "ADOPTING"
     CONNECTION_INTERRUPTED = "CONNECTION_INTERRUPTED"

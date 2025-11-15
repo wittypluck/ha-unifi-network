@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class PortPoEOverviewState(str, Enum):
     DOWN = "DOWN"
     LIMITED = "LIMITED"

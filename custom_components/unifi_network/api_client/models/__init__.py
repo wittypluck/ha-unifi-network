@@ -1,4 +1,4 @@
-""" Contains all the data models used in inputs/outputs """
+"""Contains all the data models used in inputs/outputs"""
 
 from .application_info import ApplicationInfo
 from .client_action_request import ClientActionRequest
@@ -26,14 +26,18 @@ from .guest_access_details import GuestAccessDetails
 from .guest_access_overview import GuestAccessOverview
 from .guest_access_unauthorization_response import GuestAccessUnauthorizationResponse
 from .guest_authorization_details import GuestAuthorizationDetails
-from .guest_authorization_details_authorization_method import GuestAuthorizationDetailsAuthorizationMethod
+from .guest_authorization_details_authorization_method import (
+    GuestAuthorizationDetailsAuthorizationMethod,
+)
 from .guest_authorization_usage_details import GuestAuthorizationUsageDetails
 from .hotspot_voucher_creation_request import HotspotVoucherCreationRequest
 from .hotspot_voucher_detail_page import HotspotVoucherDetailPage
 from .hotspot_voucher_details import HotspotVoucherDetails
 from .integration_voucher_creation_result_dto import IntegrationVoucherCreationResultDto
 from .latest_statistics_for_a_device import LatestStatisticsForADevice
-from .latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
+from .latest_statistics_for_a_device_uplink_interface import (
+    LatestStatisticsForADeviceUplinkInterface,
+)
 from .latest_statistics_for_device_interfaces import LatestStatisticsForDeviceInterfaces
 from .latest_statistics_for_wireless_radio import LatestStatisticsForWirelessRadio
 from .local_client_access_details import LocalClientAccessDetails

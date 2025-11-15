@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class PortPoEOverviewStandard(str, Enum):
     VALUE_0 = "802.3af"
     VALUE_1 = "802.3at"

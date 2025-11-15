@@ -6,7 +6,6 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from dateutil.parser import isoparse
 from typing import cast
 from typing import Union
@@ -14,37 +13,32 @@ from uuid import UUID
 import datetime
 
 
-
-
-
-
 T = TypeVar("T", bound="HotspotVoucherDetails")
-
 
 
 @_attrs_define
 class HotspotVoucherDetails:
-    """ 
-        Attributes:
-            id (UUID):
-            created_at (datetime.datetime):
-            name (str): Voucher note, may contain duplicate values across multiple vouchers Example: hotel-guest.
-            code (str): Secret code to active the voucher using the Hotspot portal Example: 4861409510.
-            authorized_guest_count (int): For how many guests the voucher has been used to authorize network access
-            expired (bool): Whether the voucher has been expired and can no longer be used to authorize network access
-            time_limit_minutes (int): How long (in minutes) the voucher will provide access to the network since
-                authorization of the first guest.
-                Subsequently connected guests, if allowed, will share the same expiration time. Example: 1440.
-            authorized_guest_limit (Union[Unset, int]): (Optional) limit for how many different guests can use the same
-                voucher to authorize network access Example: 1.
-            activated_at (Union[Unset, datetime.datetime]): (Optional) timestamp when the voucher has been activated
-                (authorization time of the first guest)
-            expires_at (Union[Unset, datetime.datetime]): (Optional) timestamp when the voucher will become expired. All
-                guests using the voucher will be unauthorized from network access
-            data_usage_limit_m_bytes (Union[Unset, int]): (Optional) data usage limit in megabytes Example: 1024.
-            rx_rate_limit_kbps (Union[Unset, int]): (Optional) download rate limit in kilobits per second Example: 1000.
-            tx_rate_limit_kbps (Union[Unset, int]): (Optional) upload rate limit in kilobits per second Example: 1000.
-     """
+    """
+    Attributes:
+        id (UUID):
+        created_at (datetime.datetime):
+        name (str): Voucher note, may contain duplicate values across multiple vouchers Example: hotel-guest.
+        code (str): Secret code to active the voucher using the Hotspot portal Example: 4861409510.
+        authorized_guest_count (int): For how many guests the voucher has been used to authorize network access
+        expired (bool): Whether the voucher has been expired and can no longer be used to authorize network access
+        time_limit_minutes (int): How long (in minutes) the voucher will provide access to the network since
+            authorization of the first guest.
+            Subsequently connected guests, if allowed, will share the same expiration time. Example: 1440.
+        authorized_guest_limit (Union[Unset, int]): (Optional) limit for how many different guests can use the same
+            voucher to authorize network access Example: 1.
+        activated_at (Union[Unset, datetime.datetime]): (Optional) timestamp when the voucher has been activated
+            (authorization time of the first guest)
+        expires_at (Union[Unset, datetime.datetime]): (Optional) timestamp when the voucher will become expired. All
+            guests using the voucher will be unauthorized from network access
+        data_usage_limit_m_bytes (Union[Unset, int]): (Optional) data usage limit in megabytes Example: 1024.
+        rx_rate_limit_kbps (Union[Unset, int]): (Optional) download rate limit in kilobits per second Example: 1000.
+        tx_rate_limit_kbps (Union[Unset, int]): (Optional) upload rate limit in kilobits per second Example: 1000.
+    """
 
     id: UUID
     created_at: datetime.datetime
@@ -60,10 +54,6 @@ class HotspotVoucherDetails:
     rx_rate_limit_kbps: Union[Unset, int] = UNSET
     tx_rate_limit_kbps: Union[Unset, int] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         id = str(self.id)
@@ -96,18 +86,19 @@ class HotspotVoucherDetails:
 
         tx_rate_limit_kbps = self.tx_rate_limit_kbps
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "id": id,
-            "createdAt": created_at,
-            "name": name,
-            "code": code,
-            "authorizedGuestCount": authorized_guest_count,
-            "expired": expired,
-            "timeLimitMinutes": time_limit_minutes,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "createdAt": created_at,
+                "name": name,
+                "code": code,
+                "authorizedGuestCount": authorized_guest_count,
+                "expired": expired,
+                "timeLimitMinutes": time_limit_minutes,
+            }
+        )
         if authorized_guest_limit is not UNSET:
             field_dict["authorizedGuestLimit"] = authorized_guest_limit
         if activated_at is not UNSET:
@@ -123,20 +114,12 @@ class HotspotVoucherDetails:
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
         id = UUID(d.pop("id"))
 
-
-
-
         created_at = isoparse(d.pop("createdAt"))
-
-
-
 
         name = d.pop("name")
 
@@ -152,23 +135,17 @@ class HotspotVoucherDetails:
 
         _activated_at = d.pop("activatedAt", UNSET)
         activated_at: Union[Unset, datetime.datetime]
-        if isinstance(_activated_at,  Unset):
+        if isinstance(_activated_at, Unset):
             activated_at = UNSET
         else:
             activated_at = isoparse(_activated_at)
 
-
-
-
         _expires_at = d.pop("expiresAt", UNSET)
         expires_at: Union[Unset, datetime.datetime]
-        if isinstance(_expires_at,  Unset):
+        if isinstance(_expires_at, Unset):
             expires_at = UNSET
         else:
             expires_at = isoparse(_expires_at)
-
-
-
 
         data_usage_limit_m_bytes = d.pop("dataUsageLimitMBytes", UNSET)
 
@@ -191,7 +168,6 @@ class HotspotVoucherDetails:
             rx_rate_limit_kbps=rx_rate_limit_kbps,
             tx_rate_limit_kbps=tx_rate_limit_kbps,
         )
-
 
         hotspot_voucher_details.additional_properties = d
         return hotspot_voucher_details

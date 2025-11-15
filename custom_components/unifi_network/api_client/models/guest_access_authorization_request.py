@@ -6,21 +6,15 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from typing import Union
-
-
-
-
 
 
 T = TypeVar("T", bound="GuestAccessAuthorizationRequest")
 
 
-
 @_attrs_define
 class GuestAccessAuthorizationRequest:
-    """ Authorizes network access to a guest client. Client must be a guest.
+    """Authorizes network access to a guest client. Client must be a guest.
     This action cancels existing active authorization (if exists), creates a new one with new limits
     and resets guest traffic counters.
 
@@ -32,7 +26,7 @@ class GuestAccessAuthorizationRequest:
             data_usage_limit_m_bytes (Union[Unset, int]): (Optional) data usage limit in megabytes
             rx_rate_limit_kbps (Union[Unset, int]): (Optional) download rate limit in kilobits per second
             tx_rate_limit_kbps (Union[Unset, int]): (Optional) upload rate limit in kilobits per second
-     """
+    """
 
     action: str
     time_limit_minutes: Union[Unset, int] = UNSET
@@ -40,10 +34,6 @@ class GuestAccessAuthorizationRequest:
     rx_rate_limit_kbps: Union[Unset, int] = UNSET
     tx_rate_limit_kbps: Union[Unset, int] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         action = self.action
@@ -56,12 +46,13 @@ class GuestAccessAuthorizationRequest:
 
         tx_rate_limit_kbps = self.tx_rate_limit_kbps
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "action": action,
-        })
+        field_dict.update(
+            {
+                "action": action,
+            }
+        )
         if time_limit_minutes is not UNSET:
             field_dict["timeLimitMinutes"] = time_limit_minutes
         if data_usage_limit_m_bytes is not UNSET:
@@ -72,8 +63,6 @@ class GuestAccessAuthorizationRequest:
             field_dict["txRateLimitKbps"] = tx_rate_limit_kbps
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -95,7 +84,6 @@ class GuestAccessAuthorizationRequest:
             rx_rate_limit_kbps=rx_rate_limit_kbps,
             tx_rate_limit_kbps=tx_rate_limit_kbps,
         )
-
 
         guest_access_authorization_request.additional_properties = d
         return guest_access_authorization_request

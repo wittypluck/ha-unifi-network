@@ -6,7 +6,6 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from dateutil.parser import isoparse
 from typing import cast
 from typing import Union
@@ -14,25 +13,20 @@ from uuid import UUID
 import datetime
 
 
-
-
-
-
 T = TypeVar("T", bound="ClientOverview")
-
 
 
 @_attrs_define
 class ClientOverview:
-    """ 
-        Attributes:
-            id (UUID):
-            name (str):
-            access (Any):  Example: {'type': 'DEFAULT'}.
-            type_ (str):
-            connected_at (Union[Unset, datetime.datetime]):
-            ip_address (Union[Unset, str]):
-     """
+    """
+    Attributes:
+        id (UUID):
+        name (str):
+        access (Any):  Example: {'type': 'DEFAULT'}.
+        type_ (str):
+        connected_at (Union[Unset, datetime.datetime]):
+        ip_address (Union[Unset, str]):
+    """
 
     id: UUID
     name: str
@@ -41,10 +35,6 @@ class ClientOverview:
     connected_at: Union[Unset, datetime.datetime] = UNSET
     ip_address: Union[Unset, str] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         id = str(self.id)
@@ -61,15 +51,16 @@ class ClientOverview:
 
         ip_address = self.ip_address
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "id": id,
-            "name": name,
-            "access": access,
-            "type": type_,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "name": name,
+                "access": access,
+                "type": type_,
+            }
+        )
         if connected_at is not UNSET:
             field_dict["connectedAt"] = connected_at
         if ip_address is not UNSET:
@@ -77,15 +68,10 @@ class ClientOverview:
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
         id = UUID(d.pop("id"))
-
-
-
 
         name = d.pop("name")
 
@@ -95,13 +81,10 @@ class ClientOverview:
 
         _connected_at = d.pop("connectedAt", UNSET)
         connected_at: Union[Unset, datetime.datetime]
-        if isinstance(_connected_at,  Unset):
+        if isinstance(_connected_at, Unset):
             connected_at = UNSET
         else:
             connected_at = isoparse(_connected_at)
-
-
-
 
         ip_address = d.pop("ipAddress", UNSET)
 
@@ -113,7 +96,6 @@ class ClientOverview:
             connected_at=connected_at,
             ip_address=ip_address,
         )
-
 
         client_overview.additional_properties = d
         return client_overview

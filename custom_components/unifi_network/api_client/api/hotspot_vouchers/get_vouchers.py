@@ -8,11 +8,8 @@ from ...types import Response, UNSET
 from ... import errors
 
 from ...models.hotspot_voucher_detail_page import HotspotVoucherDetailPage
-from ...types import UNSET, Unset
-from typing import cast
-from typing import Union
+from ...types import Unset
 from uuid import UUID
-
 
 
 def _get_kwargs(
@@ -21,12 +18,7 @@ def _get_kwargs(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 100,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> dict[str, Any]:
-    
-
-    
-
     params: dict[str, Any] = {}
 
     params["offset"] = offset
@@ -35,26 +27,24 @@ def _get_kwargs(
 
     params["filter"] = filter_
 
-
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
-
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/v1/sites/{site_id}/hotspot/vouchers".format(site_id=site_id,),
+        "url": "/v1/sites/{site_id}/hotspot/vouchers".format(
+            site_id=site_id,
+        ),
         "params": params,
     }
-
 
     return _kwargs
 
 
-
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[HotspotVoucherDetailPage]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[HotspotVoucherDetailPage]:
     if response.status_code == 200:
         response_200 = HotspotVoucherDetailPage.from_dict(response.json())
-
-
 
         return response_200
 
@@ -64,7 +54,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[HotspotVoucherDetailPage]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[HotspotVoucherDetailPage]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -80,9 +72,8 @@ def sync_detailed(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 100,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> Response[HotspotVoucherDetailPage]:
-    """ List Vouchers
+    """List Vouchers
 
      Retrieve a paginated list of Hotspot vouchers.
 
@@ -118,15 +109,13 @@ def sync_detailed(
 
     Returns:
         Response[HotspotVoucherDetailPage]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-offset=offset,
-limit=limit,
-filter_=filter_,
-
+        offset=offset,
+        limit=limit,
+        filter_=filter_,
     )
 
     response = client.get_httpx_client().request(
@@ -135,6 +124,7 @@ filter_=filter_,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     site_id: UUID,
     *,
@@ -142,9 +132,8 @@ def sync(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 100,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> Optional[HotspotVoucherDetailPage]:
-    """ List Vouchers
+    """List Vouchers
 
      Retrieve a paginated list of Hotspot vouchers.
 
@@ -180,17 +169,16 @@ def sync(
 
     Returns:
         HotspotVoucherDetailPage
-     """
-
+    """
 
     return sync_detailed(
         site_id=site_id,
-client=client,
-offset=offset,
-limit=limit,
-filter_=filter_,
-
+        client=client,
+        offset=offset,
+        limit=limit,
+        filter_=filter_,
     ).parsed
+
 
 async def asyncio_detailed(
     site_id: UUID,
@@ -199,9 +187,8 @@ async def asyncio_detailed(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 100,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> Response[HotspotVoucherDetailPage]:
-    """ List Vouchers
+    """List Vouchers
 
      Retrieve a paginated list of Hotspot vouchers.
 
@@ -237,22 +224,19 @@ async def asyncio_detailed(
 
     Returns:
         Response[HotspotVoucherDetailPage]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-offset=offset,
-limit=limit,
-filter_=filter_,
-
+        offset=offset,
+        limit=limit,
+        filter_=filter_,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     site_id: UUID,
@@ -261,9 +245,8 @@ async def asyncio(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 100,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> Optional[HotspotVoucherDetailPage]:
-    """ List Vouchers
+    """List Vouchers
 
      Retrieve a paginated list of Hotspot vouchers.
 
@@ -299,14 +282,14 @@ async def asyncio(
 
     Returns:
         HotspotVoucherDetailPage
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        site_id=site_id,
-client=client,
-offset=offset,
-limit=limit,
-filter_=filter_,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            site_id=site_id,
+            client=client,
+            offset=offset,
+            limit=limit,
+            filter_=filter_,
+        )
+    ).parsed

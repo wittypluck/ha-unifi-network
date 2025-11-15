@@ -7,42 +7,31 @@ from attrs import field as _attrs_field
 from ..types import UNSET, Unset
 
 
-
-
-
-
-
 T = TypeVar("T", bound="PortActionRequest")
-
 
 
 @_attrs_define
 class PortActionRequest:
-    """ 
-        Attributes:
-            action (str):
-     """
+    """
+    Attributes:
+        action (str):
+    """
 
     action: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
         action = self.action
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "action": action,
-        })
+        field_dict.update(
+            {
+                "action": action,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -52,7 +41,6 @@ class PortActionRequest:
         port_action_request = cls(
             action=action,
         )
-
 
         port_action_request.additional_properties = d
         return port_action_request

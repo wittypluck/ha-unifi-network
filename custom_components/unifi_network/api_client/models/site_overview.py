@@ -9,31 +9,22 @@ from ..types import UNSET, Unset
 from uuid import UUID
 
 
-
-
-
-
 T = TypeVar("T", bound="SiteOverview")
-
 
 
 @_attrs_define
 class SiteOverview:
-    """ 
-        Attributes:
-            id (UUID):
-            internal_reference (str): Internal unique name of the site used in older APIs
-            name (str):
-     """
+    """
+    Attributes:
+        id (UUID):
+        internal_reference (str): Internal unique name of the site used in older APIs
+        name (str):
+    """
 
     id: UUID
     internal_reference: str
     name: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         id = str(self.id)
@@ -42,26 +33,22 @@ class SiteOverview:
 
         name = self.name
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "id": id,
-            "internalReference": internal_reference,
-            "name": name,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "internalReference": internal_reference,
+                "name": name,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
         id = UUID(d.pop("id"))
-
-
-
 
         internal_reference = d.pop("internalReference")
 
@@ -72,7 +59,6 @@ class SiteOverview:
             internal_reference=internal_reference,
             name=name,
         )
-
 
         site_overview.additional_properties = d
         return site_overview

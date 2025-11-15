@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class DeviceOverviewInterfacesItem(str, Enum):
     PORTS = "ports"
     RADIOS = "radios"

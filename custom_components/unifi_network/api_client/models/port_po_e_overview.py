@@ -11,33 +11,24 @@ from ..models.port_po_e_overview_state import PortPoEOverviewState
 from ..models.port_po_e_overview_type import PortPoEOverviewType
 
 
-
-
-
-
 T = TypeVar("T", bound="PortPoEOverview")
-
 
 
 @_attrs_define
 class PortPoEOverview:
-    """ 
-        Attributes:
-            standard (PortPoEOverviewStandard):  Example: 802.3bt.
-            type_ (PortPoEOverviewType):  Example: 3.
-            enabled (bool): Whether the PoE feature is enabled on the port
-            state (PortPoEOverviewState): Whether the port currently supplies power to the (connected) device.
-     """
+    """
+    Attributes:
+        standard (PortPoEOverviewStandard):  Example: 802.3bt.
+        type_ (PortPoEOverviewType):  Example: 3.
+        enabled (bool): Whether the PoE feature is enabled on the port
+        state (PortPoEOverviewState): Whether the port currently supplies power to the (connected) device.
+    """
 
     standard: PortPoEOverviewStandard
     type_: PortPoEOverviewType
     enabled: bool
     state: PortPoEOverviewState
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         standard = self.standard.value
@@ -48,39 +39,29 @@ class PortPoEOverview:
 
         state = self.state.value
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "standard": standard,
-            "type": type_,
-            "enabled": enabled,
-            "state": state,
-        })
+        field_dict.update(
+            {
+                "standard": standard,
+                "type": type_,
+                "enabled": enabled,
+                "state": state,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
         standard = PortPoEOverviewStandard(d.pop("standard"))
 
-
-
-
         type_ = PortPoEOverviewType(d.pop("type"))
-
-
-
 
         enabled = d.pop("enabled")
 
         state = PortPoEOverviewState(d.pop("state"))
-
-
-
 
         port_po_e_overview = cls(
             standard=standard,
@@ -88,7 +69,6 @@ class PortPoEOverview:
             enabled=enabled,
             state=state,
         )
-
 
         port_po_e_overview.additional_properties = d
         return port_po_e_overview

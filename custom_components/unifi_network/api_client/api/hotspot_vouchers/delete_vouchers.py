@@ -8,45 +8,36 @@ from ...types import Response, UNSET
 from ... import errors
 
 from ...models.voucher_deletion_results import VoucherDeletionResults
-from typing import cast
 from uuid import UUID
-
 
 
 def _get_kwargs(
     site_id: UUID,
     *,
     filter_: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
     params: dict[str, Any] = {}
 
     params["filter"] = filter_
 
-
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
-
 
     _kwargs: dict[str, Any] = {
         "method": "delete",
-        "url": "/v1/sites/{site_id}/hotspot/vouchers".format(site_id=site_id,),
+        "url": "/v1/sites/{site_id}/hotspot/vouchers".format(
+            site_id=site_id,
+        ),
         "params": params,
     }
-
 
     return _kwargs
 
 
-
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[VoucherDeletionResults]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[VoucherDeletionResults]:
     if response.status_code == 200:
         response_200 = VoucherDeletionResults.from_dict(response.json())
-
-
 
         return response_200
 
@@ -56,7 +47,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[VoucherDeletionResults]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[VoucherDeletionResults]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -70,9 +63,8 @@ def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
     filter_: str,
-
 ) -> Response[VoucherDeletionResults]:
-    """ Delete Vouchers
+    """Delete Vouchers
 
      Remove Hotspot vouchers based on the specified filter criteria.
 
@@ -106,13 +98,11 @@ def sync_detailed(
 
     Returns:
         Response[VoucherDeletionResults]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-filter_=filter_,
-
+        filter_=filter_,
     )
 
     response = client.get_httpx_client().request(
@@ -121,14 +111,14 @@ filter_=filter_,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
     filter_: str,
-
 ) -> Optional[VoucherDeletionResults]:
-    """ Delete Vouchers
+    """Delete Vouchers
 
      Remove Hotspot vouchers based on the specified filter criteria.
 
@@ -162,24 +152,22 @@ def sync(
 
     Returns:
         VoucherDeletionResults
-     """
-
+    """
 
     return sync_detailed(
         site_id=site_id,
-client=client,
-filter_=filter_,
-
+        client=client,
+        filter_=filter_,
     ).parsed
+
 
 async def asyncio_detailed(
     site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
     filter_: str,
-
 ) -> Response[VoucherDeletionResults]:
-    """ Delete Vouchers
+    """Delete Vouchers
 
      Remove Hotspot vouchers based on the specified filter criteria.
 
@@ -213,29 +201,25 @@ async def asyncio_detailed(
 
     Returns:
         Response[VoucherDeletionResults]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-filter_=filter_,
-
+        filter_=filter_,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
     filter_: str,
-
 ) -> Optional[VoucherDeletionResults]:
-    """ Delete Vouchers
+    """Delete Vouchers
 
      Remove Hotspot vouchers based on the specified filter criteria.
 
@@ -269,12 +253,12 @@ async def asyncio(
 
     Returns:
         VoucherDeletionResults
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        site_id=site_id,
-client=client,
-filter_=filter_,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            site_id=site_id,
+            client=client,
+            filter_=filter_,
+        )
+    ).parsed

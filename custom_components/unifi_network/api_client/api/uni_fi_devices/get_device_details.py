@@ -8,37 +8,29 @@ from ...types import Response, UNSET
 from ... import errors
 
 from ...models.device_details import DeviceDetails
-from typing import cast
 from uuid import UUID
-
 
 
 def _get_kwargs(
     site_id: UUID,
     device_id: UUID,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
-
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/v1/sites/{site_id}/devices/{device_id}".format(site_id=site_id,device_id=device_id,),
+        "url": "/v1/sites/{site_id}/devices/{device_id}".format(
+            site_id=site_id,
+            device_id=device_id,
+        ),
     }
-
 
     return _kwargs
 
 
-
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[DeviceDetails]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[DeviceDetails]:
     if response.status_code == 200:
         response_200 = DeviceDetails.from_dict(response.json())
-
-
 
         return response_200
 
@@ -48,7 +40,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[DeviceDetails]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[DeviceDetails]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -62,9 +56,8 @@ def sync_detailed(
     device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-
 ) -> Response[DeviceDetails]:
-    """ Get Device Details
+    """Get Device Details
 
      Retrieve detailed information about a specific adopted device, including firmware versioning, uplink
     state, details about device features and interfaces (ports, radios) and other key attributes.
@@ -79,13 +72,11 @@ def sync_detailed(
 
     Returns:
         Response[DeviceDetails]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-device_id=device_id,
-
+        device_id=device_id,
     )
 
     response = client.get_httpx_client().request(
@@ -94,14 +85,14 @@ device_id=device_id,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     site_id: UUID,
     device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-
 ) -> Optional[DeviceDetails]:
-    """ Get Device Details
+    """Get Device Details
 
      Retrieve detailed information about a specific adopted device, including firmware versioning, uplink
     state, details about device features and interfaces (ports, radios) and other key attributes.
@@ -116,24 +107,22 @@ def sync(
 
     Returns:
         DeviceDetails
-     """
-
+    """
 
     return sync_detailed(
         site_id=site_id,
-device_id=device_id,
-client=client,
-
+        device_id=device_id,
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     site_id: UUID,
     device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-
 ) -> Response[DeviceDetails]:
-    """ Get Device Details
+    """Get Device Details
 
      Retrieve detailed information about a specific adopted device, including firmware versioning, uplink
     state, details about device features and interfaces (ports, radios) and other key attributes.
@@ -148,29 +137,25 @@ async def asyncio_detailed(
 
     Returns:
         Response[DeviceDetails]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-device_id=device_id,
-
+        device_id=device_id,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     site_id: UUID,
     device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-
 ) -> Optional[DeviceDetails]:
-    """ Get Device Details
+    """Get Device Details
 
      Retrieve detailed information about a specific adopted device, including firmware versioning, uplink
     state, details about device features and interfaces (ports, radios) and other key attributes.
@@ -185,12 +170,12 @@ async def asyncio(
 
     Returns:
         DeviceDetails
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        site_id=site_id,
-device_id=device_id,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            site_id=site_id,
+            device_id=device_id,
+            client=client,
+        )
+    ).parsed
