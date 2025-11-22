@@ -9,32 +9,32 @@ from ..types import UNSET, Unset
 from typing import cast
 
 if TYPE_CHECKING:
-    from ..models.hotspot_voucher_details import HotspotVoucherDetails
+    from ..models.device_pending_adoption import DevicePendingAdoption
 
 
-T = TypeVar("T", bound="HotspotVoucherDetailPage")
+T = TypeVar("T", bound="DevicePendingAdoptionPage")
 
 
 @_attrs_define
-class HotspotVoucherDetailPage:
+class DevicePendingAdoptionPage:
     """
     Attributes:
         offset (int):
         limit (int):  Example: 25.
         count (int):  Example: 10.
         total_count (int):  Example: 1000.
-        data (list['HotspotVoucherDetails']):
+        data (list['DevicePendingAdoption']):
     """
 
     offset: int
     limit: int
     count: int
     total_count: int
-    data: list["HotspotVoucherDetails"]
+    data: list["DevicePendingAdoption"]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.hotspot_voucher_details import HotspotVoucherDetails
+        from ..models.device_pending_adoption import DevicePendingAdoption
 
         offset = self.offset
 
@@ -65,7 +65,7 @@ class HotspotVoucherDetailPage:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.hotspot_voucher_details import HotspotVoucherDetails
+        from ..models.device_pending_adoption import DevicePendingAdoption
 
         d = dict(src_dict)
         offset = d.pop("offset")
@@ -79,11 +79,11 @@ class HotspotVoucherDetailPage:
         data = []
         _data = d.pop("data")
         for data_item_data in _data:
-            data_item = HotspotVoucherDetails.from_dict(data_item_data)
+            data_item = DevicePendingAdoption.from_dict(data_item_data)
 
             data.append(data_item)
 
-        hotspot_voucher_detail_page = cls(
+        device_pending_adoption_page = cls(
             offset=offset,
             limit=limit,
             count=count,
@@ -91,8 +91,8 @@ class HotspotVoucherDetailPage:
             data=data,
         )
 
-        hotspot_voucher_detail_page.additional_properties = d
-        return hotspot_voucher_detail_page
+        device_pending_adoption_page.additional_properties = d
+        return device_pending_adoption_page
 
     @property
     def additional_keys(self) -> list[str]:

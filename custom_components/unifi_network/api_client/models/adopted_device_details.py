@@ -6,7 +6,7 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..models.device_details_state import DeviceDetailsState
+from ..models.adopted_device_details_state import AdoptedDeviceDetailsState
 from dateutil.parser import isoparse
 from typing import cast
 from typing import Union
@@ -14,25 +14,25 @@ from uuid import UUID
 import datetime
 
 if TYPE_CHECKING:
+    from ..models.device_features import DeviceFeatures
     from ..models.device_physical_interfaces import DevicePhysicalInterfaces
     from ..models.device_uplink_interface_overview import DeviceUplinkInterfaceOverview
-    from ..models.device_features import DeviceFeatures
 
 
-T = TypeVar("T", bound="DeviceDetails")
+T = TypeVar("T", bound="AdoptedDeviceDetails")
 
 
 @_attrs_define
-class DeviceDetails:
+class AdoptedDeviceDetails:
     """
     Attributes:
         id (UUID):
+        mac_address (str):  Example: 94:2a:6f:26:c6:ca.
+        ip_address (str):  Example: 192.168.1.55.
         name (str):  Example: IW HD.
         model (str):  Example: UHDIW.
         supported (bool):
-        mac_address (str):  Example: 94:2a:6f:26:c6:ca.
-        ip_address (str):  Example: 192.168.1.55.
-        state (DeviceDetailsState):
+        state (AdoptedDeviceDetailsState):
         firmware_updatable (bool):
         configuration_id (str):  Example: 7596498d2f367dc2.
         features (DeviceFeatures):
@@ -45,12 +45,12 @@ class DeviceDetails:
     """
 
     id: UUID
+    mac_address: str
+    ip_address: str
     name: str
     model: str
     supported: bool
-    mac_address: str
-    ip_address: str
-    state: DeviceDetailsState
+    state: AdoptedDeviceDetailsState
     firmware_updatable: bool
     configuration_id: str
     features: "DeviceFeatures"
@@ -62,23 +62,23 @@ class DeviceDetails:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.device_features import DeviceFeatures
         from ..models.device_physical_interfaces import DevicePhysicalInterfaces
         from ..models.device_uplink_interface_overview import (
             DeviceUplinkInterfaceOverview,
         )
-        from ..models.device_features import DeviceFeatures
 
         id = str(self.id)
+
+        mac_address = self.mac_address
+
+        ip_address = self.ip_address
 
         name = self.name
 
         model = self.model
 
         supported = self.supported
-
-        mac_address = self.mac_address
-
-        ip_address = self.ip_address
 
         state = self.state.value
 
@@ -109,11 +109,11 @@ class DeviceDetails:
         field_dict.update(
             {
                 "id": id,
+                "macAddress": mac_address,
+                "ipAddress": ip_address,
                 "name": name,
                 "model": model,
                 "supported": supported,
-                "macAddress": mac_address,
-                "ipAddress": ip_address,
                 "state": state,
                 "firmwareUpdatable": firmware_updatable,
                 "configurationId": configuration_id,
@@ -134,14 +134,18 @@ class DeviceDetails:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.device_features import DeviceFeatures
         from ..models.device_physical_interfaces import DevicePhysicalInterfaces
         from ..models.device_uplink_interface_overview import (
             DeviceUplinkInterfaceOverview,
         )
-        from ..models.device_features import DeviceFeatures
 
         d = dict(src_dict)
         id = UUID(d.pop("id"))
+
+        mac_address = d.pop("macAddress")
+
+        ip_address = d.pop("ipAddress")
 
         name = d.pop("name")
 
@@ -149,11 +153,7 @@ class DeviceDetails:
 
         supported = d.pop("supported")
 
-        mac_address = d.pop("macAddress")
-
-        ip_address = d.pop("ipAddress")
-
-        state = DeviceDetailsState(d.pop("state"))
+        state = AdoptedDeviceDetailsState(d.pop("state"))
 
         firmware_updatable = d.pop("firmwareUpdatable")
 
@@ -186,13 +186,13 @@ class DeviceDetails:
         else:
             uplink = DeviceUplinkInterfaceOverview.from_dict(_uplink)
 
-        device_details = cls(
+        adopted_device_details = cls(
             id=id,
+            mac_address=mac_address,
+            ip_address=ip_address,
             name=name,
             model=model,
             supported=supported,
-            mac_address=mac_address,
-            ip_address=ip_address,
             state=state,
             firmware_updatable=firmware_updatable,
             configuration_id=configuration_id,
@@ -204,8 +204,8 @@ class DeviceDetails:
             uplink=uplink,
         )
 
-        device_details.additional_properties = d
-        return device_details
+        adopted_device_details.additional_properties = d
+        return adopted_device_details
 
     @property
     def additional_keys(self) -> list[str]:

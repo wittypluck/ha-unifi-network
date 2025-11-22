@@ -23,6 +23,7 @@ T = TypeVar("T", bound="WirelessClientOverview")
 class WirelessClientOverview:
     """
     Attributes:
+        type_ (str):
         id (UUID):
         name (str):
         access (LocalClientAccessOverview): Represents the type of network access and/or any applicable authorization
@@ -38,17 +39,16 @@ class WirelessClientOverview:
 
             Filtering is possible by `access.type`, for example `access.type.eq('GUEST')` to list guest clients. Example:
             {'type': 'DEFAULT'}.
-        type_ (str):
         mac_address (str):
         uplink_device_id (UUID):
         connected_at (Union[Unset, datetime.datetime]):
         ip_address (Union[Unset, str]):
     """
 
+    type_: str
     id: UUID
     name: str
     access: "LocalClientAccessOverview"
-    type_: str
     mac_address: str
     uplink_device_id: UUID
     connected_at: Union[Unset, datetime.datetime] = UNSET
@@ -58,13 +58,13 @@ class WirelessClientOverview:
     def to_dict(self) -> dict[str, Any]:
         from ..models.local_client_access_overview import LocalClientAccessOverview
 
+        type_ = self.type_
+
         id = str(self.id)
 
         name = self.name
 
         access = self.access.to_dict()
-
-        type_ = self.type_
 
         mac_address = self.mac_address
 
@@ -80,10 +80,10 @@ class WirelessClientOverview:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "type": type_,
                 "id": id,
                 "name": name,
                 "access": access,
-                "type": type_,
                 "macAddress": mac_address,
                 "uplinkDeviceId": uplink_device_id,
             }
@@ -100,13 +100,13 @@ class WirelessClientOverview:
         from ..models.local_client_access_overview import LocalClientAccessOverview
 
         d = dict(src_dict)
+        type_ = d.pop("type")
+
         id = UUID(d.pop("id"))
 
         name = d.pop("name")
 
         access = LocalClientAccessOverview.from_dict(d.pop("access"))
-
-        type_ = d.pop("type")
 
         mac_address = d.pop("macAddress")
 
@@ -122,10 +122,10 @@ class WirelessClientOverview:
         ip_address = d.pop("ipAddress", UNSET)
 
         wireless_client_overview = cls(
+            type_=type_,
             id=id,
             name=name,
             access=access,
-            type_=type_,
             mac_address=mac_address,
             uplink_device_id=uplink_device_id,
             connected_at=connected_at,

@@ -111,11 +111,11 @@ class TestUnifiDeviceCoordinator:
                 return_value=[mock_device_overview],
             ),
             patch(
-                "custom_components.unifi_network.coordinator.get_device_latest_statistics.asyncio",
+                "custom_components.unifi_network.coordinator.get_adopted_device_latest_statistics.asyncio",
                 return_value=mock_device_statistics,
             ),
             patch(
-                "custom_components.unifi_network.coordinator.get_device_details.asyncio",
+                "custom_components.unifi_network.coordinator.get_adopted_device_details.asyncio",
                 return_value=mock_device_details,
             ),
         ):
@@ -151,11 +151,11 @@ class TestUnifiDeviceCoordinator:
                 return_value=[mock_device_overview],
             ),
             patch(
-                "custom_components.unifi_network.coordinator.get_device_latest_statistics.asyncio",
+                "custom_components.unifi_network.coordinator.get_adopted_device_latest_statistics.asyncio",
                 side_effect=Exception("Statistics failed"),
             ),
             patch(
-                "custom_components.unifi_network.coordinator.get_device_details.asyncio",
+                "custom_components.unifi_network.coordinator.get_adopted_device_details.asyncio",
                 return_value=mock_device_details,
             ),
         ):
@@ -177,11 +177,11 @@ class TestUnifiDeviceCoordinator:
                 return_value=[mock_device_overview],
             ),
             patch(
-                "custom_components.unifi_network.coordinator.get_device_latest_statistics.asyncio",
+                "custom_components.unifi_network.coordinator.get_adopted_device_latest_statistics.asyncio",
                 return_value=mock_device_statistics,
             ),
             patch(
-                "custom_components.unifi_network.coordinator.get_device_details.asyncio",
+                "custom_components.unifi_network.coordinator.get_adopted_device_details.asyncio",
                 side_effect=Exception("Details failed"),
             ),
         ):

@@ -57,7 +57,7 @@ def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
 ) -> Response[LatestStatisticsForADevice]:
-    """Get Latest Device Statistics
+    """Get Latest Adopted Device Statistics
 
      Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data
     transmission rates, CPU and memory utilization.
@@ -92,7 +92,7 @@ def sync(
     *,
     client: Union[AuthenticatedClient, Client],
 ) -> Optional[LatestStatisticsForADevice]:
-    """Get Latest Device Statistics
+    """Get Latest Adopted Device Statistics
 
      Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data
     transmission rates, CPU and memory utilization.
@@ -122,7 +122,7 @@ async def asyncio_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
 ) -> Response[LatestStatisticsForADevice]:
-    """Get Latest Device Statistics
+    """Get Latest Adopted Device Statistics
 
      Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data
     transmission rates, CPU and memory utilization.
@@ -155,7 +155,7 @@ async def asyncio(
     *,
     client: Union[AuthenticatedClient, Client],
 ) -> Optional[LatestStatisticsForADevice]:
-    """Get Latest Device Statistics
+    """Get Latest Adopted Device Statistics
 
      Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data
     transmission rates, CPU and memory utilization.

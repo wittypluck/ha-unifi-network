@@ -20,30 +20,30 @@ T = TypeVar("T", bound="ClientOverview")
 class ClientOverview:
     """
     Attributes:
+        type_ (str):
         id (UUID):
         name (str):
         access (Any):  Example: {'type': 'DEFAULT'}.
-        type_ (str):
         connected_at (Union[Unset, datetime.datetime]):
         ip_address (Union[Unset, str]):
     """
 
+    type_: str
     id: UUID
     name: str
     access: Any
-    type_: str
     connected_at: Union[Unset, datetime.datetime] = UNSET
     ip_address: Union[Unset, str] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        type_ = self.type_
+
         id = str(self.id)
 
         name = self.name
 
         access = self.access
-
-        type_ = self.type_
 
         connected_at: Union[Unset, str] = UNSET
         if not isinstance(self.connected_at, Unset):
@@ -55,10 +55,10 @@ class ClientOverview:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "type": type_,
                 "id": id,
                 "name": name,
                 "access": access,
-                "type": type_,
             }
         )
         if connected_at is not UNSET:
@@ -71,13 +71,13 @@ class ClientOverview:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
+        type_ = d.pop("type")
+
         id = UUID(d.pop("id"))
 
         name = d.pop("name")
 
         access = d.pop("access")
-
-        type_ = d.pop("type")
 
         _connected_at = d.pop("connectedAt", UNSET)
         connected_at: Union[Unset, datetime.datetime]
@@ -89,10 +89,10 @@ class ClientOverview:
         ip_address = d.pop("ipAddress", UNSET)
 
         client_overview = cls(
+            type_=type_,
             id=id,
             name=name,
             access=access,
-            type_=type_,
             connected_at=connected_at,
             ip_address=ip_address,
         )

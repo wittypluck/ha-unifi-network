@@ -9,32 +9,32 @@ from ..types import UNSET, Unset
 from typing import cast
 
 if TYPE_CHECKING:
-    from ..models.device_overview import DeviceOverview
+    from ..models.adopted_device_overview import AdoptedDeviceOverview
 
 
-T = TypeVar("T", bound="DeviceOverviewPage")
+T = TypeVar("T", bound="AdoptedDeviceOverviewPage")
 
 
 @_attrs_define
-class DeviceOverviewPage:
+class AdoptedDeviceOverviewPage:
     """
     Attributes:
         offset (int):
         limit (int):  Example: 25.
         count (int):  Example: 10.
         total_count (int):  Example: 1000.
-        data (list['DeviceOverview']):
+        data (list['AdoptedDeviceOverview']):
     """
 
     offset: int
     limit: int
     count: int
     total_count: int
-    data: list["DeviceOverview"]
+    data: list["AdoptedDeviceOverview"]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.device_overview import DeviceOverview
+        from ..models.adopted_device_overview import AdoptedDeviceOverview
 
         offset = self.offset
 
@@ -65,7 +65,7 @@ class DeviceOverviewPage:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.device_overview import DeviceOverview
+        from ..models.adopted_device_overview import AdoptedDeviceOverview
 
         d = dict(src_dict)
         offset = d.pop("offset")
@@ -79,11 +79,11 @@ class DeviceOverviewPage:
         data = []
         _data = d.pop("data")
         for data_item_data in _data:
-            data_item = DeviceOverview.from_dict(data_item_data)
+            data_item = AdoptedDeviceOverview.from_dict(data_item_data)
 
             data.append(data_item)
 
-        device_overview_page = cls(
+        adopted_device_overview_page = cls(
             offset=offset,
             limit=limit,
             count=count,
@@ -91,8 +91,8 @@ class DeviceOverviewPage:
             data=data,
         )
 
-        device_overview_page.additional_properties = d
-        return device_overview_page
+        adopted_device_overview_page.additional_properties = d
+        return adopted_device_overview_page
 
     @property
     def additional_keys(self) -> list[str]:

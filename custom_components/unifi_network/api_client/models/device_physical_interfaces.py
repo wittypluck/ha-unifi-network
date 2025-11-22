@@ -10,8 +10,8 @@ from typing import cast
 from typing import Union
 
 if TYPE_CHECKING:
-    from ..models.port_overview import PortOverview
     from ..models.wireless_radio_overview import WirelessRadioOverview
+    from ..models.port_overview import PortOverview
 
 
 T = TypeVar("T", bound="DevicePhysicalInterfaces")
@@ -30,8 +30,8 @@ class DevicePhysicalInterfaces:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.port_overview import PortOverview
         from ..models.wireless_radio_overview import WirelessRadioOverview
+        from ..models.port_overview import PortOverview
 
         ports: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.ports, Unset):
@@ -59,8 +59,8 @@ class DevicePhysicalInterfaces:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.port_overview import PortOverview
         from ..models.wireless_radio_overview import WirelessRadioOverview
+        from ..models.port_overview import PortOverview
 
         d = dict(src_dict)
         ports = []

@@ -7,19 +7,19 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
 from ... import errors
 
-from ...models.voucher_deletion_results import VoucherDeletionResults
+from ...models.adopted_device_details import AdoptedDeviceDetails
 from uuid import UUID
 
 
 def _get_kwargs(
     site_id: UUID,
-    voucher_id: UUID,
+    device_id: UUID,
 ) -> dict[str, Any]:
     _kwargs: dict[str, Any] = {
-        "method": "delete",
-        "url": "/v1/sites/{site_id}/hotspot/vouchers/{voucher_id}".format(
+        "method": "get",
+        "url": "/v1/sites/{site_id}/devices/{device_id}".format(
             site_id=site_id,
-            voucher_id=voucher_id,
+            device_id=device_id,
         ),
     }
 
@@ -28,9 +28,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[VoucherDeletionResults]:
+) -> Optional[AdoptedDeviceDetails]:
     if response.status_code == 200:
-        response_200 = VoucherDeletionResults.from_dict(response.json())
+        response_200 = AdoptedDeviceDetails.from_dict(response.json())
 
         return response_200
 
@@ -42,7 +42,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[VoucherDeletionResults]:
+) -> Response[AdoptedDeviceDetails]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -53,29 +53,30 @@ def _build_response(
 
 def sync_detailed(
     site_id: UUID,
-    voucher_id: UUID,
+    device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-) -> Response[VoucherDeletionResults]:
-    """Delete Voucher
+) -> Response[AdoptedDeviceDetails]:
+    """Get Adopted Device Details
 
-     Remove a specific Hotspot voucher.
+     Retrieve detailed information about a specific adopted device, including firmware versioning, uplink
+    state, details about device features and interfaces (ports, radios) and other key attributes.
 
     Args:
         site_id (UUID):
-        voucher_id (UUID):
+        device_id (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[VoucherDeletionResults]
+        Response[AdoptedDeviceDetails]
     """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-        voucher_id=voucher_id,
+        device_id=device_id,
     )
 
     response = client.get_httpx_client().request(
@@ -87,58 +88,60 @@ def sync_detailed(
 
 def sync(
     site_id: UUID,
-    voucher_id: UUID,
+    device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-) -> Optional[VoucherDeletionResults]:
-    """Delete Voucher
+) -> Optional[AdoptedDeviceDetails]:
+    """Get Adopted Device Details
 
-     Remove a specific Hotspot voucher.
+     Retrieve detailed information about a specific adopted device, including firmware versioning, uplink
+    state, details about device features and interfaces (ports, radios) and other key attributes.
 
     Args:
         site_id (UUID):
-        voucher_id (UUID):
+        device_id (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        VoucherDeletionResults
+        AdoptedDeviceDetails
     """
 
     return sync_detailed(
         site_id=site_id,
-        voucher_id=voucher_id,
+        device_id=device_id,
         client=client,
     ).parsed
 
 
 async def asyncio_detailed(
     site_id: UUID,
-    voucher_id: UUID,
+    device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-) -> Response[VoucherDeletionResults]:
-    """Delete Voucher
+) -> Response[AdoptedDeviceDetails]:
+    """Get Adopted Device Details
 
-     Remove a specific Hotspot voucher.
+     Retrieve detailed information about a specific adopted device, including firmware versioning, uplink
+    state, details about device features and interfaces (ports, radios) and other key attributes.
 
     Args:
         site_id (UUID):
-        voucher_id (UUID):
+        device_id (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[VoucherDeletionResults]
+        Response[AdoptedDeviceDetails]
     """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-        voucher_id=voucher_id,
+        device_id=device_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -148,30 +151,31 @@ async def asyncio_detailed(
 
 async def asyncio(
     site_id: UUID,
-    voucher_id: UUID,
+    device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-) -> Optional[VoucherDeletionResults]:
-    """Delete Voucher
+) -> Optional[AdoptedDeviceDetails]:
+    """Get Adopted Device Details
 
-     Remove a specific Hotspot voucher.
+     Retrieve detailed information about a specific adopted device, including firmware versioning, uplink
+    state, details about device features and interfaces (ports, radios) and other key attributes.
 
     Args:
         site_id (UUID):
-        voucher_id (UUID):
+        device_id (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        VoucherDeletionResults
+        AdoptedDeviceDetails
     """
 
     return (
         await asyncio_detailed(
             site_id=site_id,
-            voucher_id=voucher_id,
+            device_id=device_id,
             client=client,
         )
     ).parsed

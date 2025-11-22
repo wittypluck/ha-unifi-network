@@ -7,7 +7,7 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
 from ... import errors
 
-from ...models.device_overview_page import DeviceOverviewPage
+from ...models.adopted_device_overview_page import AdoptedDeviceOverviewPage
 from ...types import Unset
 from uuid import UUID
 
@@ -17,12 +17,15 @@ def _get_kwargs(
     *,
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
+    filter_: Union[Unset, str] = UNSET,
 ) -> dict[str, Any]:
     params: dict[str, Any] = {}
 
     params["offset"] = offset
 
     params["limit"] = limit
+
+    params["filter"] = filter_
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -39,9 +42,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[DeviceOverviewPage]:
+) -> Optional[AdoptedDeviceOverviewPage]:
     if response.status_code == 200:
-        response_200 = DeviceOverviewPage.from_dict(response.json())
+        response_200 = AdoptedDeviceOverviewPage.from_dict(response.json())
 
         return response_200
 
@@ -53,7 +56,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[DeviceOverviewPage]:
+) -> Response[AdoptedDeviceOverviewPage]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -68,28 +71,49 @@ def sync_detailed(
     client: Union[AuthenticatedClient, Client],
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
-) -> Response[DeviceOverviewPage]:
-    """List Devices
+    filter_: Union[Unset, str] = UNSET,
+) -> Response[AdoptedDeviceOverviewPage]:
+    """List Adopted Devices
 
      Retrieve a paginated list of all adopted devices on a site, including basic device information.
+
+    <details>
+    <summary>Filterable properties (click to expand)</summary>
+
+    |Name|Type|Allowed functions|
+    |-|-|-|
+    |`id`|`UUID`|`eq` `ne` `in` `notIn`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    |`interfaces`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    </details>
 
     Args:
         site_id (UUID):
         offset (Union[Unset, Any]):  Default: 0.
         limit (Union[Unset, Any]):  Default: 25.
+        filter_ (Union[Unset, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[DeviceOverviewPage]
+        Response[AdoptedDeviceOverviewPage]
     """
 
     kwargs = _get_kwargs(
         site_id=site_id,
         offset=offset,
         limit=limit,
+        filter_=filter_,
     )
 
     response = client.get_httpx_client().request(
@@ -105,22 +129,42 @@ def sync(
     client: Union[AuthenticatedClient, Client],
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
-) -> Optional[DeviceOverviewPage]:
-    """List Devices
+    filter_: Union[Unset, str] = UNSET,
+) -> Optional[AdoptedDeviceOverviewPage]:
+    """List Adopted Devices
 
      Retrieve a paginated list of all adopted devices on a site, including basic device information.
+
+    <details>
+    <summary>Filterable properties (click to expand)</summary>
+
+    |Name|Type|Allowed functions|
+    |-|-|-|
+    |`id`|`UUID`|`eq` `ne` `in` `notIn`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    |`interfaces`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    </details>
 
     Args:
         site_id (UUID):
         offset (Union[Unset, Any]):  Default: 0.
         limit (Union[Unset, Any]):  Default: 25.
+        filter_ (Union[Unset, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        DeviceOverviewPage
+        AdoptedDeviceOverviewPage
     """
 
     return sync_detailed(
@@ -128,6 +172,7 @@ def sync(
         client=client,
         offset=offset,
         limit=limit,
+        filter_=filter_,
     ).parsed
 
 
@@ -137,28 +182,49 @@ async def asyncio_detailed(
     client: Union[AuthenticatedClient, Client],
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
-) -> Response[DeviceOverviewPage]:
-    """List Devices
+    filter_: Union[Unset, str] = UNSET,
+) -> Response[AdoptedDeviceOverviewPage]:
+    """List Adopted Devices
 
      Retrieve a paginated list of all adopted devices on a site, including basic device information.
+
+    <details>
+    <summary>Filterable properties (click to expand)</summary>
+
+    |Name|Type|Allowed functions|
+    |-|-|-|
+    |`id`|`UUID`|`eq` `ne` `in` `notIn`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    |`interfaces`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    </details>
 
     Args:
         site_id (UUID):
         offset (Union[Unset, Any]):  Default: 0.
         limit (Union[Unset, Any]):  Default: 25.
+        filter_ (Union[Unset, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[DeviceOverviewPage]
+        Response[AdoptedDeviceOverviewPage]
     """
 
     kwargs = _get_kwargs(
         site_id=site_id,
         offset=offset,
         limit=limit,
+        filter_=filter_,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -172,22 +238,42 @@ async def asyncio(
     client: Union[AuthenticatedClient, Client],
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
-) -> Optional[DeviceOverviewPage]:
-    """List Devices
+    filter_: Union[Unset, str] = UNSET,
+) -> Optional[AdoptedDeviceOverviewPage]:
+    """List Adopted Devices
 
      Retrieve a paginated list of all adopted devices on a site, including basic device information.
+
+    <details>
+    <summary>Filterable properties (click to expand)</summary>
+
+    |Name|Type|Allowed functions|
+    |-|-|-|
+    |`id`|`UUID`|`eq` `ne` `in` `notIn`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    |`interfaces`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    </details>
 
     Args:
         site_id (UUID):
         offset (Union[Unset, Any]):  Default: 0.
         limit (Union[Unset, Any]):  Default: 25.
+        filter_ (Union[Unset, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        DeviceOverviewPage
+        AdoptedDeviceOverviewPage
     """
 
     return (
@@ -196,5 +282,6 @@ async def asyncio(
             client=client,
             offset=offset,
             limit=limit,
+            filter_=filter_,
         )
     ).parsed

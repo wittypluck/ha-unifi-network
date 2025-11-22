@@ -11,7 +11,7 @@ from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .api_client.api.uni_fi_devices.execute_device_action import (
+from .api_client.api.uni_fi_devices.execute_adopted_device_action import (
     asyncio_detailed as device_action_detailed,
 )
 from .api_client.api.uni_fi_devices.execute_port_action import asyncio_detailed

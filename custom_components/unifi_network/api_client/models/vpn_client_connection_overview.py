@@ -23,6 +23,7 @@ T = TypeVar("T", bound="VPNClientConnectionOverview")
 class VPNClientConnectionOverview:
     """
     Attributes:
+        type_ (str):
         id (UUID):
         name (str):
         access (VPNClientAccessOverview): Represents the type of network access and/or any applicable authorization
@@ -38,15 +39,14 @@ class VPNClientConnectionOverview:
 
             Filtering is possible by `access.type`, for example `access.type.eq('GUEST')` to list guest clients. Example:
             {'type': 'DEFAULT'}.
-        type_ (str):
         connected_at (Union[Unset, datetime.datetime]):
         ip_address (Union[Unset, str]):
     """
 
+    type_: str
     id: UUID
     name: str
     access: "VPNClientAccessOverview"
-    type_: str
     connected_at: Union[Unset, datetime.datetime] = UNSET
     ip_address: Union[Unset, str] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -54,13 +54,13 @@ class VPNClientConnectionOverview:
     def to_dict(self) -> dict[str, Any]:
         from ..models.vpn_client_access_overview import VPNClientAccessOverview
 
+        type_ = self.type_
+
         id = str(self.id)
 
         name = self.name
 
         access = self.access.to_dict()
-
-        type_ = self.type_
 
         connected_at: Union[Unset, str] = UNSET
         if not isinstance(self.connected_at, Unset):
@@ -72,10 +72,10 @@ class VPNClientConnectionOverview:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "type": type_,
                 "id": id,
                 "name": name,
                 "access": access,
-                "type": type_,
             }
         )
         if connected_at is not UNSET:
@@ -90,13 +90,13 @@ class VPNClientConnectionOverview:
         from ..models.vpn_client_access_overview import VPNClientAccessOverview
 
         d = dict(src_dict)
+        type_ = d.pop("type")
+
         id = UUID(d.pop("id"))
 
         name = d.pop("name")
 
         access = VPNClientAccessOverview.from_dict(d.pop("access"))
-
-        type_ = d.pop("type")
 
         _connected_at = d.pop("connectedAt", UNSET)
         connected_at: Union[Unset, datetime.datetime]
@@ -108,10 +108,10 @@ class VPNClientConnectionOverview:
         ip_address = d.pop("ipAddress", UNSET)
 
         vpn_client_connection_overview = cls(
+            type_=type_,
             id=id,
             name=name,
             access=access,
-            type_=type_,
             connected_at=connected_at,
             ip_address=ip_address,
         )

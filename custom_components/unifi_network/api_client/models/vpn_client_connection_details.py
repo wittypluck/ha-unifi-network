@@ -23,6 +23,7 @@ T = TypeVar("T", bound="VPNClientConnectionDetails")
 class VPNClientConnectionDetails:
     """
     Attributes:
+        type_ (str):
         id (UUID):
         name (str):
         access (VPNClientAccessDetails): Represents the type of network access and/or any applicable authorization
@@ -37,15 +38,14 @@ class VPNClientConnectionDetails:
             and `DEFAULT` (a placeholder, which might be refined in the future releases, used for all other clients).
 
             Filtering is possible by `access.type`, for example `access.type.eq('GUEST')` to list guest clients.
-        type_ (str):
         connected_at (Union[Unset, datetime.datetime]):
         ip_address (Union[Unset, str]):
     """
 
+    type_: str
     id: UUID
     name: str
     access: "VPNClientAccessDetails"
-    type_: str
     connected_at: Union[Unset, datetime.datetime] = UNSET
     ip_address: Union[Unset, str] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -53,13 +53,13 @@ class VPNClientConnectionDetails:
     def to_dict(self) -> dict[str, Any]:
         from ..models.vpn_client_access_details import VPNClientAccessDetails
 
+        type_ = self.type_
+
         id = str(self.id)
 
         name = self.name
 
         access = self.access.to_dict()
-
-        type_ = self.type_
 
         connected_at: Union[Unset, str] = UNSET
         if not isinstance(self.connected_at, Unset):
@@ -71,10 +71,10 @@ class VPNClientConnectionDetails:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "type": type_,
                 "id": id,
                 "name": name,
                 "access": access,
-                "type": type_,
             }
         )
         if connected_at is not UNSET:
@@ -89,13 +89,13 @@ class VPNClientConnectionDetails:
         from ..models.vpn_client_access_details import VPNClientAccessDetails
 
         d = dict(src_dict)
+        type_ = d.pop("type")
+
         id = UUID(d.pop("id"))
 
         name = d.pop("name")
 
         access = VPNClientAccessDetails.from_dict(d.pop("access"))
-
-        type_ = d.pop("type")
 
         _connected_at = d.pop("connectedAt", UNSET)
         connected_at: Union[Unset, datetime.datetime]
@@ -107,10 +107,10 @@ class VPNClientConnectionDetails:
         ip_address = d.pop("ipAddress", UNSET)
 
         vpn_client_connection_details = cls(
+            type_=type_,
             id=id,
             name=name,
             access=access,
-            type_=type_,
             connected_at=connected_at,
             ip_address=ip_address,
         )

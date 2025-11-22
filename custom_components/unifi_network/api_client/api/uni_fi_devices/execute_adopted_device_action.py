@@ -65,7 +65,7 @@ def sync_detailed(
     client: Union[AuthenticatedClient, Client],
     body: DeviceActionRequest,
 ) -> Response[Any]:
-    """Execute Device Action
+    """Execute Adopted Device Action
 
      Perform an action on an specific adopted device. The request body must include the action name and
     any applicable input arguments.
@@ -103,7 +103,7 @@ async def asyncio_detailed(
     client: Union[AuthenticatedClient, Client],
     body: DeviceActionRequest,
 ) -> Response[Any]:
-    """Execute Device Action
+    """Execute Adopted Device Action
 
      Perform an action on an specific adopted device. The request body must include the action name and
     any applicable input arguments.

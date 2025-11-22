@@ -3,6 +3,7 @@ open_api_client_generator/unifi-network-api-client/
 openapi_client_generator/integration-fix.json
 openapi_client_generator/unifi-network-api-client/pyproject.toml
 openapi_client_generator/unifi-network-api-client/README.md
+openapi_client_generator/unifi-network-api-client/.ruff.toml
 deploy_custom_integration.sh
 diff_api.sh
 

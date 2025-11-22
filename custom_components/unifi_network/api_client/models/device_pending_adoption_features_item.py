@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class DeviceOverviewFeaturesItem(str, Enum):
+class DevicePendingAdoptionFeaturesItem(str, Enum):
     ACCESSPOINT = "accessPoint"
     GATEWAY = "gateway"
     SWITCHING = "switching"

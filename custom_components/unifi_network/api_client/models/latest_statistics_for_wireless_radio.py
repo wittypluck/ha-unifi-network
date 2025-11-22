@@ -6,6 +6,9 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
+from ..models.latest_statistics_for_wireless_radio_frequency_g_hz import (
+    LatestStatisticsForWirelessRadioFrequencyGHz,
+)
 from typing import Union
 
 
@@ -16,16 +19,16 @@ T = TypeVar("T", bound="LatestStatisticsForWirelessRadio")
 class LatestStatisticsForWirelessRadio:
     """
     Attributes:
-        frequency_g_hz (float):
+        frequency_g_hz (LatestStatisticsForWirelessRadioFrequencyGHz):
         tx_retries_pct (Union[Unset, float]):
     """
 
-    frequency_g_hz: float
+    frequency_g_hz: LatestStatisticsForWirelessRadioFrequencyGHz
     tx_retries_pct: Union[Unset, float] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        frequency_g_hz = self.frequency_g_hz
+        frequency_g_hz = self.frequency_g_hz.value
 
         tx_retries_pct = self.tx_retries_pct
 
@@ -44,7 +47,9 @@ class LatestStatisticsForWirelessRadio:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        frequency_g_hz = d.pop("frequencyGHz")
+        frequency_g_hz = LatestStatisticsForWirelessRadioFrequencyGHz(
+            d.pop("frequencyGHz")
+        )
 
         tx_retries_pct = d.pop("txRetriesPct", UNSET)
 

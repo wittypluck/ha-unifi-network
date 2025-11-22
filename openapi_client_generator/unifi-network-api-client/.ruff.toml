@@ -1,2 +1,23 @@
+# Ruff configuration for generated API client
+# Matches main project settings but adds exceptions for generated code
+
+line-length = 88
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+
 [lint]
-ignore = ["UP007"]  # Allow Union[X, Y] instead of X | Y in generated code
+ignore = [
+    "UP007",  # Allow Union[X, Y] instead of X | Y in generated code
+    "F401",   # Allow unused imports in generated code
+    "E501",   # Line length handled by formatter
+    "COM812", # Trailing comma handled by formatter
+    "ISC001", # Implicit string concatenation/formatter interplay
+    "TRY003", # Allow inline exception messages
+    "TRY300", # No enforced else-after-try style
+    "TRY301", # Don't force abstracting raise into inner function
+    "PLR0913", # Allow more args in dataclass/initializer when pragmatic
+]
