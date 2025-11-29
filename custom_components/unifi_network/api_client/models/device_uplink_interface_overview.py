@@ -9,55 +9,41 @@ from ..types import UNSET, Unset
 from uuid import UUID
 
 
-
-
-
-
 T = TypeVar("T", bound="DeviceUplinkInterfaceOverview")
-
 
 
 @_attrs_define
 class DeviceUplinkInterfaceOverview:
-    """ Uplink interface is device's connection to the parent device in the network topology
+    """Uplink interface is device's connection to the parent device in the network topology
 
-        Attributes:
-            device_id (UUID):
-     """
+    Attributes:
+        device_id (UUID):
+    """
 
     device_id: UUID
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
         device_id = str(self.device_id)
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "deviceId": device_id,
-        })
+        field_dict.update(
+            {
+                "deviceId": device_id,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
         device_id = UUID(d.pop("deviceId"))
 
-
-
-
         device_uplink_interface_overview = cls(
             device_id=device_id,
         )
-
 
         device_uplink_interface_overview.additional_properties = d
         return device_uplink_interface_overview

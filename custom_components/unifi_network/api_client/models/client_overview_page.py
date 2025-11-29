@@ -9,40 +9,33 @@ from ..types import UNSET, Unset
 from typing import cast
 
 if TYPE_CHECKING:
-  from ..models.client_overview import ClientOverview
-
-
-
+    from ..models.client_overview import ClientOverview
 
 
 T = TypeVar("T", bound="ClientOverviewPage")
 
 
-
 @_attrs_define
 class ClientOverviewPage:
-    """ 
-        Attributes:
-            offset (int):
-            limit (int):  Example: 25.
-            count (int):  Example: 10.
-            total_count (int):  Example: 1000.
-            data (list['ClientOverview']):
-     """
+    """
+    Attributes:
+        offset (int):
+        limit (int):  Example: 25.
+        count (int):  Example: 10.
+        total_count (int):  Example: 1000.
+        data (list['ClientOverview']):
+    """
 
     offset: int
     limit: int
     count: int
     total_count: int
-    data: list['ClientOverview']
+    data: list["ClientOverview"]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.client_overview import ClientOverview
+
         offset = self.offset
 
         limit = self.limit
@@ -56,26 +49,24 @@ class ClientOverviewPage:
             data_item = data_item_data.to_dict()
             data.append(data_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "offset": offset,
-            "limit": limit,
-            "count": count,
-            "totalCount": total_count,
-            "data": data,
-        })
+        field_dict.update(
+            {
+                "offset": offset,
+                "limit": limit,
+                "count": count,
+                "totalCount": total_count,
+                "data": data,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.client_overview import ClientOverview
+
         d = dict(src_dict)
         offset = d.pop("offset")
 
@@ -87,13 +78,10 @@ class ClientOverviewPage:
 
         data = []
         _data = d.pop("data")
-        for data_item_data in (_data):
+        for data_item_data in _data:
             data_item = ClientOverview.from_dict(data_item_data)
 
-
-
             data.append(data_item)
-
 
         client_overview_page = cls(
             offset=offset,
@@ -102,7 +90,6 @@ class ClientOverviewPage:
             total_count=total_count,
             data=data,
         )
-
 
         client_overview_page.additional_properties = d
         return client_overview_page

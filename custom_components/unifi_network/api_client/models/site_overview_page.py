@@ -9,40 +9,33 @@ from ..types import UNSET, Unset
 from typing import cast
 
 if TYPE_CHECKING:
-  from ..models.site_overview import SiteOverview
-
-
-
+    from ..models.site_overview import SiteOverview
 
 
 T = TypeVar("T", bound="SiteOverviewPage")
 
 
-
 @_attrs_define
 class SiteOverviewPage:
-    """ 
-        Attributes:
-            offset (int):
-            limit (int):  Example: 25.
-            count (int):  Example: 10.
-            total_count (int):  Example: 1000.
-            data (list['SiteOverview']):
-     """
+    """
+    Attributes:
+        offset (int):
+        limit (int):  Example: 25.
+        count (int):  Example: 10.
+        total_count (int):  Example: 1000.
+        data (list['SiteOverview']):
+    """
 
     offset: int
     limit: int
     count: int
     total_count: int
-    data: list['SiteOverview']
+    data: list["SiteOverview"]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.site_overview import SiteOverview
+
         offset = self.offset
 
         limit = self.limit
@@ -56,26 +49,24 @@ class SiteOverviewPage:
             data_item = data_item_data.to_dict()
             data.append(data_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "offset": offset,
-            "limit": limit,
-            "count": count,
-            "totalCount": total_count,
-            "data": data,
-        })
+        field_dict.update(
+            {
+                "offset": offset,
+                "limit": limit,
+                "count": count,
+                "totalCount": total_count,
+                "data": data,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.site_overview import SiteOverview
+
         d = dict(src_dict)
         offset = d.pop("offset")
 
@@ -87,13 +78,10 @@ class SiteOverviewPage:
 
         data = []
         _data = d.pop("data")
-        for data_item_data in (_data):
+        for data_item_data in _data:
             data_item = SiteOverview.from_dict(data_item_data)
 
-
-
             data.append(data_item)
-
 
         site_overview_page = cls(
             offset=offset,
@@ -102,7 +90,6 @@ class SiteOverviewPage:
             total_count=total_count,
             data=data,
         )
-
 
         site_overview_page.additional_properties = d
         return site_overview_page

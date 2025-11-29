@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class GuestAuthorizationDetailsAuthorizationMethod(str, Enum):
     API = "API"
     OTHER = "OTHER"

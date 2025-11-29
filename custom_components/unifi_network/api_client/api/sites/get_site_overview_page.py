@@ -8,10 +8,7 @@ from ...types import Response, UNSET
 from ... import errors
 
 from ...models.site_overview_page import SiteOverviewPage
-from ...types import UNSET, Unset
-from typing import cast
-from typing import Union
-
+from ...types import Unset
 
 
 def _get_kwargs(
@@ -19,12 +16,7 @@ def _get_kwargs(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> dict[str, Any]:
-    
-
-    
-
     params: dict[str, Any] = {}
 
     params["offset"] = offset
@@ -33,9 +25,7 @@ def _get_kwargs(
 
     params["filter"] = filter_
 
-
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
-
 
     _kwargs: dict[str, Any] = {
         "method": "get",
@@ -43,16 +33,14 @@ def _get_kwargs(
         "params": params,
     }
 
-
     return _kwargs
 
 
-
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[SiteOverviewPage]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[SiteOverviewPage]:
     if response.status_code == 200:
         response_200 = SiteOverviewPage.from_dict(response.json())
-
-
 
         return response_200
 
@@ -62,7 +50,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[SiteOverviewPage]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[SiteOverviewPage]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -77,9 +67,8 @@ def sync_detailed(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> Response[SiteOverviewPage]:
-    """ List Local Sites
+    """List Local Sites
 
      Retrieve a paginated list of local sites managed by this Network application.
     Site ID is required for other UniFi Network API calls.
@@ -105,14 +94,12 @@ def sync_detailed(
 
     Returns:
         Response[SiteOverviewPage]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         offset=offset,
-limit=limit,
-filter_=filter_,
-
+        limit=limit,
+        filter_=filter_,
     )
 
     response = client.get_httpx_client().request(
@@ -121,15 +108,15 @@ filter_=filter_,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     *,
     client: Union[AuthenticatedClient, Client],
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> Optional[SiteOverviewPage]:
-    """ List Local Sites
+    """List Local Sites
 
      Retrieve a paginated list of local sites managed by this Network application.
     Site ID is required for other UniFi Network API calls.
@@ -155,16 +142,15 @@ def sync(
 
     Returns:
         SiteOverviewPage
-     """
-
+    """
 
     return sync_detailed(
         client=client,
-offset=offset,
-limit=limit,
-filter_=filter_,
-
+        offset=offset,
+        limit=limit,
+        filter_=filter_,
     ).parsed
+
 
 async def asyncio_detailed(
     *,
@@ -172,9 +158,8 @@ async def asyncio_detailed(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> Response[SiteOverviewPage]:
-    """ List Local Sites
+    """List Local Sites
 
      Retrieve a paginated list of local sites managed by this Network application.
     Site ID is required for other UniFi Network API calls.
@@ -200,21 +185,18 @@ async def asyncio_detailed(
 
     Returns:
         Response[SiteOverviewPage]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         offset=offset,
-limit=limit,
-filter_=filter_,
-
+        limit=limit,
+        filter_=filter_,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     *,
@@ -222,9 +204,8 @@ async def asyncio(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-
 ) -> Optional[SiteOverviewPage]:
-    """ List Local Sites
+    """List Local Sites
 
      Retrieve a paginated list of local sites managed by this Network application.
     Site ID is required for other UniFi Network API calls.
@@ -250,13 +231,13 @@ async def asyncio(
 
     Returns:
         SiteOverviewPage
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        client=client,
-offset=offset,
-limit=limit,
-filter_=filter_,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            client=client,
+            offset=offset,
+            limit=limit,
+            filter_=filter_,
+        )
+    ).parsed

@@ -6,41 +6,40 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from dateutil.parser import isoparse
 from typing import cast
 from typing import Union
 import datetime
 
 if TYPE_CHECKING:
-  from ..models.latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
-  from ..models.latest_statistics_for_device_interfaces import LatestStatisticsForDeviceInterfaces
-
-
-
+    from ..models.latest_statistics_for_a_device_uplink_interface import (
+        LatestStatisticsForADeviceUplinkInterface,
+    )
+    from ..models.latest_statistics_for_device_interfaces import (
+        LatestStatisticsForDeviceInterfaces,
+    )
 
 
 T = TypeVar("T", bound="LatestStatisticsForADevice")
 
 
-
 @_attrs_define
 class LatestStatisticsForADevice:
-    """ 
-        Attributes:
-            interfaces (LatestStatisticsForDeviceInterfaces):
-            uptime_sec (Union[Unset, int]):
-            last_heartbeat_at (Union[Unset, datetime.datetime]):
-            next_heartbeat_at (Union[Unset, datetime.datetime]):
-            load_average_1_min (Union[Unset, float]):
-            load_average_5_min (Union[Unset, float]):
-            load_average_15_min (Union[Unset, float]):
-            cpu_utilization_pct (Union[Unset, float]):
-            memory_utilization_pct (Union[Unset, float]):
-            uplink (Union[Unset, LatestStatisticsForADeviceUplinkInterface]):
-     """
+    """
+    Attributes:
+        interfaces (LatestStatisticsForDeviceInterfaces):
+        uptime_sec (Union[Unset, int]):
+        last_heartbeat_at (Union[Unset, datetime.datetime]):
+        next_heartbeat_at (Union[Unset, datetime.datetime]):
+        load_average_1_min (Union[Unset, float]):
+        load_average_5_min (Union[Unset, float]):
+        load_average_15_min (Union[Unset, float]):
+        cpu_utilization_pct (Union[Unset, float]):
+        memory_utilization_pct (Union[Unset, float]):
+        uplink (Union[Unset, LatestStatisticsForADeviceUplinkInterface]):
+    """
 
-    interfaces: 'LatestStatisticsForDeviceInterfaces'
+    interfaces: "LatestStatisticsForDeviceInterfaces"
     uptime_sec: Union[Unset, int] = UNSET
     last_heartbeat_at: Union[Unset, datetime.datetime] = UNSET
     next_heartbeat_at: Union[Unset, datetime.datetime] = UNSET
@@ -49,16 +48,17 @@ class LatestStatisticsForADevice:
     load_average_15_min: Union[Unset, float] = UNSET
     cpu_utilization_pct: Union[Unset, float] = UNSET
     memory_utilization_pct: Union[Unset, float] = UNSET
-    uplink: Union[Unset, 'LatestStatisticsForADeviceUplinkInterface'] = UNSET
+    uplink: Union[Unset, "LatestStatisticsForADeviceUplinkInterface"] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
-        from ..models.latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
-        from ..models.latest_statistics_for_device_interfaces import LatestStatisticsForDeviceInterfaces
+        from ..models.latest_statistics_for_a_device_uplink_interface import (
+            LatestStatisticsForADeviceUplinkInterface,
+        )
+        from ..models.latest_statistics_for_device_interfaces import (
+            LatestStatisticsForDeviceInterfaces,
+        )
+
         interfaces = self.interfaces.to_dict()
 
         uptime_sec = self.uptime_sec
@@ -85,12 +85,13 @@ class LatestStatisticsForADevice:
         if not isinstance(self.uplink, Unset):
             uplink = self.uplink.to_dict()
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "interfaces": interfaces,
-        })
+        field_dict.update(
+            {
+                "interfaces": interfaces,
+            }
+        )
         if uptime_sec is not UNSET:
             field_dict["uptimeSec"] = uptime_sec
         if last_heartbeat_at is not UNSET:
@@ -112,39 +113,33 @@ class LatestStatisticsForADevice:
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.latest_statistics_for_a_device_uplink_interface import LatestStatisticsForADeviceUplinkInterface
-        from ..models.latest_statistics_for_device_interfaces import LatestStatisticsForDeviceInterfaces
+        from ..models.latest_statistics_for_a_device_uplink_interface import (
+            LatestStatisticsForADeviceUplinkInterface,
+        )
+        from ..models.latest_statistics_for_device_interfaces import (
+            LatestStatisticsForDeviceInterfaces,
+        )
+
         d = dict(src_dict)
         interfaces = LatestStatisticsForDeviceInterfaces.from_dict(d.pop("interfaces"))
-
-
-
 
         uptime_sec = d.pop("uptimeSec", UNSET)
 
         _last_heartbeat_at = d.pop("lastHeartbeatAt", UNSET)
         last_heartbeat_at: Union[Unset, datetime.datetime]
-        if isinstance(_last_heartbeat_at,  Unset):
+        if isinstance(_last_heartbeat_at, Unset):
             last_heartbeat_at = UNSET
         else:
             last_heartbeat_at = isoparse(_last_heartbeat_at)
 
-
-
-
         _next_heartbeat_at = d.pop("nextHeartbeatAt", UNSET)
         next_heartbeat_at: Union[Unset, datetime.datetime]
-        if isinstance(_next_heartbeat_at,  Unset):
+        if isinstance(_next_heartbeat_at, Unset):
             next_heartbeat_at = UNSET
         else:
             next_heartbeat_at = isoparse(_next_heartbeat_at)
-
-
-
 
         load_average_1_min = d.pop("loadAverage1Min", UNSET)
 
@@ -158,13 +153,10 @@ class LatestStatisticsForADevice:
 
         _uplink = d.pop("uplink", UNSET)
         uplink: Union[Unset, LatestStatisticsForADeviceUplinkInterface]
-        if isinstance(_uplink,  Unset):
+        if isinstance(_uplink, Unset):
             uplink = UNSET
         else:
             uplink = LatestStatisticsForADeviceUplinkInterface.from_dict(_uplink)
-
-
-
 
         latest_statistics_for_a_device = cls(
             interfaces=interfaces,
@@ -178,7 +170,6 @@ class LatestStatisticsForADevice:
             memory_utilization_pct=memory_utilization_pct,
             uplink=uplink,
         )
-
 
         latest_statistics_for_a_device.additional_properties = d
         return latest_statistics_for_a_device

@@ -9,40 +9,33 @@ from ..types import UNSET, Unset
 from typing import cast
 
 if TYPE_CHECKING:
-  from ..models.device_overview import DeviceOverview
+    from ..models.device_pending_adoption import DevicePendingAdoption
 
 
-
-
-
-T = TypeVar("T", bound="DeviceOverviewPage")
-
+T = TypeVar("T", bound="DevicePendingAdoptionPage")
 
 
 @_attrs_define
-class DeviceOverviewPage:
-    """ 
-        Attributes:
-            offset (int):
-            limit (int):  Example: 25.
-            count (int):  Example: 10.
-            total_count (int):  Example: 1000.
-            data (list['DeviceOverview']):
-     """
+class DevicePendingAdoptionPage:
+    """
+    Attributes:
+        offset (int):
+        limit (int):  Example: 25.
+        count (int):  Example: 10.
+        total_count (int):  Example: 1000.
+        data (list['DevicePendingAdoption']):
+    """
 
     offset: int
     limit: int
     count: int
     total_count: int
-    data: list['DeviceOverview']
+    data: list["DevicePendingAdoption"]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
-        from ..models.device_overview import DeviceOverview
+        from ..models.device_pending_adoption import DevicePendingAdoption
+
         offset = self.offset
 
         limit = self.limit
@@ -56,26 +49,24 @@ class DeviceOverviewPage:
             data_item = data_item_data.to_dict()
             data.append(data_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "offset": offset,
-            "limit": limit,
-            "count": count,
-            "totalCount": total_count,
-            "data": data,
-        })
+        field_dict.update(
+            {
+                "offset": offset,
+                "limit": limit,
+                "count": count,
+                "totalCount": total_count,
+                "data": data,
+            }
+        )
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.device_overview import DeviceOverview
+        from ..models.device_pending_adoption import DevicePendingAdoption
+
         d = dict(src_dict)
         offset = d.pop("offset")
 
@@ -87,15 +78,12 @@ class DeviceOverviewPage:
 
         data = []
         _data = d.pop("data")
-        for data_item_data in (_data):
-            data_item = DeviceOverview.from_dict(data_item_data)
-
-
+        for data_item_data in _data:
+            data_item = DevicePendingAdoption.from_dict(data_item_data)
 
             data.append(data_item)
 
-
-        device_overview_page = cls(
+        device_pending_adoption_page = cls(
             offset=offset,
             limit=limit,
             count=count,
@@ -103,9 +91,8 @@ class DeviceOverviewPage:
             data=data,
         )
 
-
-        device_overview_page.additional_properties = d
-        return device_overview_page
+        device_pending_adoption_page.additional_properties = d
+        return device_pending_adoption_page
 
     @property
     def additional_keys(self) -> list[str]:

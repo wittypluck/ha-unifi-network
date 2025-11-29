@@ -13,9 +13,9 @@ from homeassistant.util import dt as dt_util
 from .api_client import Client
 from .api_client.api.clients import get_connected_client_overview_page
 from .api_client.api.uni_fi_devices import (
-    get_device_details,
-    get_device_latest_statistics,
-    get_device_overview_page,
+    get_adopted_device_details,
+    get_adopted_device_latest_statistics,
+    get_adopted_device_overview_page,
 )
 from .api_helpers import fetch_all_pages
 from .const import DEFAULT_UPDATE_INTERVAL, DOMAIN
@@ -79,14 +79,14 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
         try:
             # Fetch all devices using pagination helper
             device_overviews = await fetch_all_pages(
-                get_device_overview_page.asyncio_detailed,
+                get_adopted_device_overview_page.asyncio_detailed,
                 client=self.client,
                 site_id=self.site_id,
             )
 
             # Prepare tasks to fetch statistics and details for each device concurrently
             stats_tasks = [
-                get_device_latest_statistics.asyncio(
+                get_adopted_device_latest_statistics.asyncio(
                     site_id=self.site_id,
                     device_id=device_overview.id,
                     client=self.client,
@@ -95,7 +95,7 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
             ]
 
             details_tasks = [
-                get_device_details.asyncio(
+                get_adopted_device_details.asyncio(
                     site_id=self.site_id,
                     device_id=device_overview.id,
                     client=self.client,

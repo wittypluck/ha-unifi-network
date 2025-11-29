@@ -9,66 +9,57 @@ from ..types import UNSET, Unset
 from typing import cast
 
 if TYPE_CHECKING:
-  from ..models.guest_authorization_details import GuestAuthorizationDetails
-
-
-
+    from ..models.guest_authorization_details import GuestAuthorizationDetails
 
 
 T = TypeVar("T", bound="GuestAccessUnauthorizationResponse")
 
 
-
 @_attrs_define
 class GuestAccessUnauthorizationResponse:
-    """ 
-        Attributes:
-            action (str):
-            revoked_authorization (GuestAuthorizationDetails):
-     """
+    """
+    Attributes:
+        action (str):
+        revoked_authorization (GuestAuthorizationDetails):
+    """
 
     action: str
-    revoked_authorization: 'GuestAuthorizationDetails'
+    revoked_authorization: "GuestAuthorizationDetails"
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.guest_authorization_details import GuestAuthorizationDetails
+
         action = self.action
 
         revoked_authorization = self.revoked_authorization.to_dict()
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "action": action,
-            "revokedAuthorization": revoked_authorization,
-        })
+        field_dict.update(
+            {
+                "action": action,
+                "revokedAuthorization": revoked_authorization,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.guest_authorization_details import GuestAuthorizationDetails
+
         d = dict(src_dict)
         action = d.pop("action")
 
-        revoked_authorization = GuestAuthorizationDetails.from_dict(d.pop("revokedAuthorization"))
-
-
-
+        revoked_authorization = GuestAuthorizationDetails.from_dict(
+            d.pop("revokedAuthorization")
+        )
 
         guest_access_unauthorization_response = cls(
             action=action,
             revoked_authorization=revoked_authorization,
         )
-
 
         guest_access_unauthorization_response.additional_properties = d
         return guest_access_unauthorization_response

@@ -1,6 +1,7 @@
 from enum import Enum
 
-class DeviceOverviewInterfacesItem(str, Enum):
+
+class AdoptedDeviceOverviewInterfacesItem(str, Enum):
     PORTS = "ports"
     RADIOS = "radios"
 

@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class WirelessRadioOverviewWlanStandard(str, Enum):
     VALUE_0 = "802.11a"
     VALUE_1 = "802.11b"

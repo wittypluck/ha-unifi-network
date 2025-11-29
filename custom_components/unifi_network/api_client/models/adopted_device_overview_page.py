@@ -9,40 +9,33 @@ from ..types import UNSET, Unset
 from typing import cast
 
 if TYPE_CHECKING:
-  from ..models.hotspot_voucher_details import HotspotVoucherDetails
+    from ..models.adopted_device_overview import AdoptedDeviceOverview
 
 
-
-
-
-T = TypeVar("T", bound="HotspotVoucherDetailPage")
-
+T = TypeVar("T", bound="AdoptedDeviceOverviewPage")
 
 
 @_attrs_define
-class HotspotVoucherDetailPage:
-    """ 
-        Attributes:
-            offset (int):
-            limit (int):  Example: 25.
-            count (int):  Example: 10.
-            total_count (int):  Example: 1000.
-            data (list['HotspotVoucherDetails']):
-     """
+class AdoptedDeviceOverviewPage:
+    """
+    Attributes:
+        offset (int):
+        limit (int):  Example: 25.
+        count (int):  Example: 10.
+        total_count (int):  Example: 1000.
+        data (list['AdoptedDeviceOverview']):
+    """
 
     offset: int
     limit: int
     count: int
     total_count: int
-    data: list['HotspotVoucherDetails']
+    data: list["AdoptedDeviceOverview"]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
-        from ..models.hotspot_voucher_details import HotspotVoucherDetails
+        from ..models.adopted_device_overview import AdoptedDeviceOverview
+
         offset = self.offset
 
         limit = self.limit
@@ -56,26 +49,24 @@ class HotspotVoucherDetailPage:
             data_item = data_item_data.to_dict()
             data.append(data_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "offset": offset,
-            "limit": limit,
-            "count": count,
-            "totalCount": total_count,
-            "data": data,
-        })
+        field_dict.update(
+            {
+                "offset": offset,
+                "limit": limit,
+                "count": count,
+                "totalCount": total_count,
+                "data": data,
+            }
+        )
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.hotspot_voucher_details import HotspotVoucherDetails
+        from ..models.adopted_device_overview import AdoptedDeviceOverview
+
         d = dict(src_dict)
         offset = d.pop("offset")
 
@@ -87,15 +78,12 @@ class HotspotVoucherDetailPage:
 
         data = []
         _data = d.pop("data")
-        for data_item_data in (_data):
-            data_item = HotspotVoucherDetails.from_dict(data_item_data)
-
-
+        for data_item_data in _data:
+            data_item = AdoptedDeviceOverview.from_dict(data_item_data)
 
             data.append(data_item)
 
-
-        hotspot_voucher_detail_page = cls(
+        adopted_device_overview_page = cls(
             offset=offset,
             limit=limit,
             count=count,
@@ -103,9 +91,8 @@ class HotspotVoucherDetailPage:
             data=data,
         )
 
-
-        hotspot_voucher_detail_page.additional_properties = d
-        return hotspot_voucher_detail_page
+        adopted_device_overview_page.additional_properties = d
+        return adopted_device_overview_page
 
     @property
     def additional_keys(self) -> list[str]:

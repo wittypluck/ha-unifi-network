@@ -7,47 +7,36 @@ from attrs import field as _attrs_field
 from ..types import UNSET, Unset
 
 
-
-
-
-
-
 T = TypeVar("T", bound="GuestAccessOverview")
-
 
 
 @_attrs_define
 class GuestAccessOverview:
-    """ 
-        Attributes:
-            type_ (str):
-            authorized (bool):
-     """
+    """
+    Attributes:
+        type_ (str):
+        authorized (bool):
+    """
 
     type_: str
     authorized: bool
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         type_ = self.type_
 
         authorized = self.authorized
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "type": type_,
-            "authorized": authorized,
-        })
+        field_dict.update(
+            {
+                "type": type_,
+                "authorized": authorized,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -60,7 +49,6 @@ class GuestAccessOverview:
             type_=type_,
             authorized=authorized,
         )
-
 
         guest_access_overview.additional_properties = d
         return guest_access_overview

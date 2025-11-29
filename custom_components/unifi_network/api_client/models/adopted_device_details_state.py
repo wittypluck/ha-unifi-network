@@ -1,6 +1,7 @@
 from enum import Enum
 
-class DeviceDetailsState(str, Enum):
+
+class AdoptedDeviceDetailsState(str, Enum):
     ADOPTING = "ADOPTING"
     CONNECTION_INTERRUPTED = "CONNECTION_INTERRUPTED"
     DELETING = "DELETING"

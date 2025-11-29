@@ -18,10 +18,10 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
-from .api_client.models.device_overview_interfaces_item import (
-    DeviceOverviewInterfacesItem,
+from .api_client.models.adopted_device_overview_interfaces_item import (
+    AdoptedDeviceOverviewInterfacesItem,
 )
-from .api_client.models.device_overview_state import DeviceOverviewState
+from .api_client.models.adopted_device_overview_state import AdoptedDeviceOverviewState
 from .api_client.models.port_overview import PortOverview
 from .api_client.models.port_po_e_overview import PortPoEOverview
 from .api_client.types import UNSET
@@ -95,7 +95,7 @@ class UnifiDeviceStateSensor(UnifiDeviceSensor):
         state = getattr(device.overview, "state", None)
         if state is None or state is UNSET:
             return None
-        if isinstance(state, DeviceOverviewState):
+        if isinstance(state, AdoptedDeviceOverviewState):
             return state.value.lower().replace("_", " ").title()
         return str(state)
 
@@ -452,7 +452,7 @@ def _create_radio_sensors(
 ) -> list[UnifiDeviceSensor]:
     """Create radio frequency sensors if radio interface statistics are available."""
     interfaces = getattr(device.overview, "interfaces", None)
-    if not interfaces or DeviceOverviewInterfacesItem.RADIOS not in interfaces:
+    if not interfaces or AdoptedDeviceOverviewInterfacesItem.RADIOS not in interfaces:
         return []
 
     stats = device.latest_statistics

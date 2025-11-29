@@ -7,48 +7,32 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
 from ... import errors
 
-from ...models.hotspot_voucher_creation_request import HotspotVoucherCreationRequest
-from ...models.integration_voucher_creation_result_dto import IntegrationVoucherCreationResultDto
-from typing import cast
+from ...models.latest_statistics_for_a_device import LatestStatisticsForADevice
 from uuid import UUID
-
 
 
 def _get_kwargs(
     site_id: UUID,
-    *,
-    body: HotspotVoucherCreationRequest,
-
+    device_id: UUID,
 ) -> dict[str, Any]:
-    headers: dict[str, Any] = {}
-
-
-    
-
-    
-
     _kwargs: dict[str, Any] = {
-        "method": "post",
-        "url": "/v1/sites/{site_id}/hotspot/vouchers".format(site_id=site_id,),
+        "method": "get",
+        "url": "/v1/sites/{site_id}/devices/{device_id}/statistics/latest".format(
+            site_id=site_id,
+            device_id=device_id,
+        ),
     }
 
-    _kwargs["json"] = body.to_dict()
-
-
-    headers["Content-Type"] = "application/json"
-
-    _kwargs["headers"] = headers
     return _kwargs
 
 
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[LatestStatisticsForADevice]:
+    if response.status_code == 200:
+        response_200 = LatestStatisticsForADevice.from_dict(response.json())
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[IntegrationVoucherCreationResultDto]:
-    if response.status_code == 201:
-        response_201 = IntegrationVoucherCreationResultDto.from_dict(response.json())
-
-
-
-        return response_201
+        return response_200
 
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
@@ -56,7 +40,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[IntegrationVoucherCreationResultDto]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[LatestStatisticsForADevice]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -67,32 +53,30 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 def sync_detailed(
     site_id: UUID,
+    device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-    body: HotspotVoucherCreationRequest,
+) -> Response[LatestStatisticsForADevice]:
+    """Get Latest Adopted Device Statistics
 
-) -> Response[IntegrationVoucherCreationResultDto]:
-    """ Generate Vouchers
-
-     Create one or more Hotspot vouchers.
+     Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data
+    transmission rates, CPU and memory utilization.
 
     Args:
         site_id (UUID):
-        body (HotspotVoucherCreationRequest):
+        device_id (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[IntegrationVoucherCreationResultDto]
-     """
-
+        Response[LatestStatisticsForADevice]
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-body=body,
-
+        device_id=device_id,
     )
 
     response = client.get_httpx_client().request(
@@ -101,100 +85,97 @@ body=body,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     site_id: UUID,
+    device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-    body: HotspotVoucherCreationRequest,
+) -> Optional[LatestStatisticsForADevice]:
+    """Get Latest Adopted Device Statistics
 
-) -> Optional[IntegrationVoucherCreationResultDto]:
-    """ Generate Vouchers
-
-     Create one or more Hotspot vouchers.
+     Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data
+    transmission rates, CPU and memory utilization.
 
     Args:
         site_id (UUID):
-        body (HotspotVoucherCreationRequest):
+        device_id (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        IntegrationVoucherCreationResultDto
-     """
-
+        LatestStatisticsForADevice
+    """
 
     return sync_detailed(
         site_id=site_id,
-client=client,
-body=body,
-
+        device_id=device_id,
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     site_id: UUID,
+    device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-    body: HotspotVoucherCreationRequest,
+) -> Response[LatestStatisticsForADevice]:
+    """Get Latest Adopted Device Statistics
 
-) -> Response[IntegrationVoucherCreationResultDto]:
-    """ Generate Vouchers
-
-     Create one or more Hotspot vouchers.
+     Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data
+    transmission rates, CPU and memory utilization.
 
     Args:
         site_id (UUID):
-        body (HotspotVoucherCreationRequest):
+        device_id (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[IntegrationVoucherCreationResultDto]
-     """
-
+        Response[LatestStatisticsForADevice]
+    """
 
     kwargs = _get_kwargs(
         site_id=site_id,
-body=body,
-
+        device_id=device_id,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
 
+
 async def asyncio(
     site_id: UUID,
+    device_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-    body: HotspotVoucherCreationRequest,
+) -> Optional[LatestStatisticsForADevice]:
+    """Get Latest Adopted Device Statistics
 
-) -> Optional[IntegrationVoucherCreationResultDto]:
-    """ Generate Vouchers
-
-     Create one or more Hotspot vouchers.
+     Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data
+    transmission rates, CPU and memory utilization.
 
     Args:
         site_id (UUID):
-        body (HotspotVoucherCreationRequest):
+        device_id (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        IntegrationVoucherCreationResultDto
-     """
+        LatestStatisticsForADevice
+    """
 
-
-    return (await asyncio_detailed(
-        site_id=site_id,
-client=client,
-body=body,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            site_id=site_id,
+            device_id=device_id,
+            client=client,
+        )
+    ).parsed

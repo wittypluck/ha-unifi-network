@@ -6,41 +6,33 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from typing import cast
 from typing import Union
 
 if TYPE_CHECKING:
-  from ..models.guest_authorization_details import GuestAuthorizationDetails
-
-
-
+    from ..models.guest_authorization_details import GuestAuthorizationDetails
 
 
 T = TypeVar("T", bound="GuestAccessDetails")
 
 
-
 @_attrs_define
 class GuestAccessDetails:
-    """ 
-        Attributes:
-            type_ (str):
-            authorized (bool):
-            authorization (Union[Unset, GuestAuthorizationDetails]):
-     """
+    """
+    Attributes:
+        type_ (str):
+        authorized (bool):
+        authorization (Union[Unset, GuestAuthorizationDetails]):
+    """
 
     type_: str
     authorized: bool
-    authorization: Union[Unset, 'GuestAuthorizationDetails'] = UNSET
+    authorization: Union[Unset, "GuestAuthorizationDetails"] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.guest_authorization_details import GuestAuthorizationDetails
+
         type_ = self.type_
 
         authorized = self.authorized
@@ -49,23 +41,23 @@ class GuestAccessDetails:
         if not isinstance(self.authorization, Unset):
             authorization = self.authorization.to_dict()
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "type": type_,
-            "authorized": authorized,
-        })
+        field_dict.update(
+            {
+                "type": type_,
+                "authorized": authorized,
+            }
+        )
         if authorization is not UNSET:
             field_dict["authorization"] = authorization
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.guest_authorization_details import GuestAuthorizationDetails
+
         d = dict(src_dict)
         type_ = d.pop("type")
 
@@ -73,20 +65,16 @@ class GuestAccessDetails:
 
         _authorization = d.pop("authorization", UNSET)
         authorization: Union[Unset, GuestAuthorizationDetails]
-        if isinstance(_authorization,  Unset):
+        if isinstance(_authorization, Unset):
             authorization = UNSET
         else:
             authorization = GuestAuthorizationDetails.from_dict(_authorization)
-
-
-
 
         guest_access_details = cls(
             type_=type_,
             authorized=authorized,
             authorization=authorization,
         )
-
 
         guest_access_details.additional_properties = d
         return guest_access_details

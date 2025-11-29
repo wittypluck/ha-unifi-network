@@ -1,0 +1,8 @@
+project_name_override: "unifi-network-api-client"
+package_name_override: "unifi_network_api_client"
+
+# Run ruff to fix and format generated code
+post_hooks:
+  - "cp ../ruff.toml.template .ruff.toml"
+  - "ruff check . --fix"
+  - "ruff format ."

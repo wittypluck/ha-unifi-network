@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class PortOverviewConnector(str, Enum):
     QSFP28 = "QSFP28"
     RJ45 = "RJ45"

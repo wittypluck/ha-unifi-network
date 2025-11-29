@@ -7,7 +7,7 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
 from ... import errors
 
-from ...models.client_overview_page import ClientOverviewPage
+from ...models.adopted_device_overview_page import AdoptedDeviceOverviewPage
 from ...types import Unset
 from uuid import UUID
 
@@ -31,7 +31,7 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/v1/sites/{site_id}/clients".format(
+        "url": "/v1/sites/{site_id}/devices".format(
             site_id=site_id,
         ),
         "params": params,
@@ -42,9 +42,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[ClientOverviewPage]:
+) -> Optional[AdoptedDeviceOverviewPage]:
     if response.status_code == 200:
-        response_200 = ClientOverviewPage.from_dict(response.json())
+        response_200 = AdoptedDeviceOverviewPage.from_dict(response.json())
 
         return response_200
 
@@ -56,7 +56,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[ClientOverviewPage]:
+) -> Response[AdoptedDeviceOverviewPage]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -72,11 +72,10 @@ def sync_detailed(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-) -> Response[ClientOverviewPage]:
-    """List Connected Clients
+) -> Response[AdoptedDeviceOverviewPage]:
+    """List Adopted Devices
 
-     Retrieve a paginated list of all connected clients on a site, including physical devices (computers,
-    smartphones) and active VPN connections.
+     Retrieve a paginated list of all adopted devices on a site, including basic device information.
 
     <details>
     <summary>Filterable properties (click to expand)</summary>
@@ -84,12 +83,16 @@ def sync_detailed(
     |Name|Type|Allowed functions|
     |-|-|-|
     |`id`|`UUID`|`eq` `ne` `in` `notIn`|
-    |`type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`macAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`ipAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`connectedAt`|`TIMESTAMP`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|
-    |`access.type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`access.authorized`|`BOOLEAN`|`isNull` `isNotNull` `eq` `ne`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    |`interfaces`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
     </details>
 
     Args:
@@ -103,7 +106,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ClientOverviewPage]
+        Response[AdoptedDeviceOverviewPage]
     """
 
     kwargs = _get_kwargs(
@@ -127,11 +130,10 @@ def sync(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-) -> Optional[ClientOverviewPage]:
-    """List Connected Clients
+) -> Optional[AdoptedDeviceOverviewPage]:
+    """List Adopted Devices
 
-     Retrieve a paginated list of all connected clients on a site, including physical devices (computers,
-    smartphones) and active VPN connections.
+     Retrieve a paginated list of all adopted devices on a site, including basic device information.
 
     <details>
     <summary>Filterable properties (click to expand)</summary>
@@ -139,12 +141,16 @@ def sync(
     |Name|Type|Allowed functions|
     |-|-|-|
     |`id`|`UUID`|`eq` `ne` `in` `notIn`|
-    |`type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`macAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`ipAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`connectedAt`|`TIMESTAMP`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|
-    |`access.type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`access.authorized`|`BOOLEAN`|`isNull` `isNotNull` `eq` `ne`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    |`interfaces`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
     </details>
 
     Args:
@@ -158,7 +164,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ClientOverviewPage
+        AdoptedDeviceOverviewPage
     """
 
     return sync_detailed(
@@ -177,11 +183,10 @@ async def asyncio_detailed(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-) -> Response[ClientOverviewPage]:
-    """List Connected Clients
+) -> Response[AdoptedDeviceOverviewPage]:
+    """List Adopted Devices
 
-     Retrieve a paginated list of all connected clients on a site, including physical devices (computers,
-    smartphones) and active VPN connections.
+     Retrieve a paginated list of all adopted devices on a site, including basic device information.
 
     <details>
     <summary>Filterable properties (click to expand)</summary>
@@ -189,12 +194,16 @@ async def asyncio_detailed(
     |Name|Type|Allowed functions|
     |-|-|-|
     |`id`|`UUID`|`eq` `ne` `in` `notIn`|
-    |`type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`macAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`ipAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`connectedAt`|`TIMESTAMP`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|
-    |`access.type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`access.authorized`|`BOOLEAN`|`isNull` `isNotNull` `eq` `ne`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    |`interfaces`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
     </details>
 
     Args:
@@ -208,7 +217,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ClientOverviewPage]
+        Response[AdoptedDeviceOverviewPage]
     """
 
     kwargs = _get_kwargs(
@@ -230,11 +239,10 @@ async def asyncio(
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-) -> Optional[ClientOverviewPage]:
-    """List Connected Clients
+) -> Optional[AdoptedDeviceOverviewPage]:
+    """List Adopted Devices
 
-     Retrieve a paginated list of all connected clients on a site, including physical devices (computers,
-    smartphones) and active VPN connections.
+     Retrieve a paginated list of all adopted devices on a site, including basic device information.
 
     <details>
     <summary>Filterable properties (click to expand)</summary>
@@ -242,12 +250,16 @@ async def asyncio(
     |Name|Type|Allowed functions|
     |-|-|-|
     |`id`|`UUID`|`eq` `ne` `in` `notIn`|
-    |`type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`macAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`ipAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`connectedAt`|`TIMESTAMP`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|
-    |`access.type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`access.authorized`|`BOOLEAN`|`isNull` `isNotNull` `eq` `ne`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
+    |`interfaces`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
     </details>
 
     Args:
@@ -261,7 +273,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ClientOverviewPage
+        AdoptedDeviceOverviewPage
     """
 
     return (

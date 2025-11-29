@@ -3,7 +3,11 @@ from dataclasses import dataclass
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo
 
-from .api_client.models import DeviceDetails, DeviceOverview, LatestStatisticsForADevice
+from .api_client.models import (
+    AdoptedDeviceDetails,
+    AdoptedDeviceOverview,
+    LatestStatisticsForADevice,
+)
 from .api_client.types import Unset
 from .const import ATTR_MANUFACTURER, DOMAIN
 
@@ -12,9 +16,9 @@ from .const import ATTR_MANUFACTURER, DOMAIN
 class UnifiDevice:
     """Represents a Unifi device with its overview, statistics, and details."""
 
-    overview: DeviceOverview
+    overview: AdoptedDeviceOverview
     latest_statistics: LatestStatisticsForADevice | None
-    details: DeviceDetails | None
+    details: AdoptedDeviceDetails | None
 
     @property
     def id(self) -> str:

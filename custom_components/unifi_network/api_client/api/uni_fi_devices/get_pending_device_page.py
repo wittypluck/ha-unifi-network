@@ -7,13 +7,11 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
 from ... import errors
 
-from ...models.client_overview_page import ClientOverviewPage
+from ...models.device_pending_adoption_page import DevicePendingAdoptionPage
 from ...types import Unset
-from uuid import UUID
 
 
 def _get_kwargs(
-    site_id: UUID,
     *,
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
@@ -31,9 +29,7 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/v1/sites/{site_id}/clients".format(
-            site_id=site_id,
-        ),
+        "url": "/v1/pending-devices",
         "params": params,
     }
 
@@ -42,9 +38,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[ClientOverviewPage]:
+) -> Optional[DevicePendingAdoptionPage]:
     if response.status_code == 200:
-        response_200 = ClientOverviewPage.from_dict(response.json())
+        response_200 = DevicePendingAdoptionPage.from_dict(response.json())
 
         return response_200
 
@@ -56,7 +52,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[ClientOverviewPage]:
+) -> Response[DevicePendingAdoptionPage]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -66,34 +62,32 @@ def _build_response(
 
 
 def sync_detailed(
-    site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-) -> Response[ClientOverviewPage]:
-    """List Connected Clients
+) -> Response[DevicePendingAdoptionPage]:
+    """List Devices Pending Adoption
 
-     Retrieve a paginated list of all connected clients on a site, including physical devices (computers,
-    smartphones) and active VPN connections.
+     Retrieve a paginated list of devices pending adoption, including basic device information.
 
     <details>
     <summary>Filterable properties (click to expand)</summary>
 
     |Name|Type|Allowed functions|
     |-|-|-|
-    |`id`|`UUID`|`eq` `ne` `in` `notIn`|
-    |`type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`macAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`ipAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`connectedAt`|`TIMESTAMP`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|
-    |`access.type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`access.authorized`|`BOOLEAN`|`isNull` `isNotNull` `eq` `ne`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
     </details>
 
     Args:
-        site_id (UUID):
         offset (Union[Unset, Any]):  Default: 0.
         limit (Union[Unset, Any]):  Default: 25.
         filter_ (Union[Unset, str]):
@@ -103,11 +97,10 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ClientOverviewPage]
+        Response[DevicePendingAdoptionPage]
     """
 
     kwargs = _get_kwargs(
-        site_id=site_id,
         offset=offset,
         limit=limit,
         filter_=filter_,
@@ -121,34 +114,32 @@ def sync_detailed(
 
 
 def sync(
-    site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-) -> Optional[ClientOverviewPage]:
-    """List Connected Clients
+) -> Optional[DevicePendingAdoptionPage]:
+    """List Devices Pending Adoption
 
-     Retrieve a paginated list of all connected clients on a site, including physical devices (computers,
-    smartphones) and active VPN connections.
+     Retrieve a paginated list of devices pending adoption, including basic device information.
 
     <details>
     <summary>Filterable properties (click to expand)</summary>
 
     |Name|Type|Allowed functions|
     |-|-|-|
-    |`id`|`UUID`|`eq` `ne` `in` `notIn`|
-    |`type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`macAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`ipAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`connectedAt`|`TIMESTAMP`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|
-    |`access.type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`access.authorized`|`BOOLEAN`|`isNull` `isNotNull` `eq` `ne`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
     </details>
 
     Args:
-        site_id (UUID):
         offset (Union[Unset, Any]):  Default: 0.
         limit (Union[Unset, Any]):  Default: 25.
         filter_ (Union[Unset, str]):
@@ -158,11 +149,10 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ClientOverviewPage
+        DevicePendingAdoptionPage
     """
 
     return sync_detailed(
-        site_id=site_id,
         client=client,
         offset=offset,
         limit=limit,
@@ -171,34 +161,32 @@ def sync(
 
 
 async def asyncio_detailed(
-    site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-) -> Response[ClientOverviewPage]:
-    """List Connected Clients
+) -> Response[DevicePendingAdoptionPage]:
+    """List Devices Pending Adoption
 
-     Retrieve a paginated list of all connected clients on a site, including physical devices (computers,
-    smartphones) and active VPN connections.
+     Retrieve a paginated list of devices pending adoption, including basic device information.
 
     <details>
     <summary>Filterable properties (click to expand)</summary>
 
     |Name|Type|Allowed functions|
     |-|-|-|
-    |`id`|`UUID`|`eq` `ne` `in` `notIn`|
-    |`type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`macAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`ipAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`connectedAt`|`TIMESTAMP`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|
-    |`access.type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`access.authorized`|`BOOLEAN`|`isNull` `isNotNull` `eq` `ne`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
     </details>
 
     Args:
-        site_id (UUID):
         offset (Union[Unset, Any]):  Default: 0.
         limit (Union[Unset, Any]):  Default: 25.
         filter_ (Union[Unset, str]):
@@ -208,11 +196,10 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ClientOverviewPage]
+        Response[DevicePendingAdoptionPage]
     """
 
     kwargs = _get_kwargs(
-        site_id=site_id,
         offset=offset,
         limit=limit,
         filter_=filter_,
@@ -224,34 +211,32 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
     offset: Union[Unset, Any] = 0,
     limit: Union[Unset, Any] = 25,
     filter_: Union[Unset, str] = UNSET,
-) -> Optional[ClientOverviewPage]:
-    """List Connected Clients
+) -> Optional[DevicePendingAdoptionPage]:
+    """List Devices Pending Adoption
 
-     Retrieve a paginated list of all connected clients on a site, including physical devices (computers,
-    smartphones) and active VPN connections.
+     Retrieve a paginated list of devices pending adoption, including basic device information.
 
     <details>
     <summary>Filterable properties (click to expand)</summary>
 
     |Name|Type|Allowed functions|
     |-|-|-|
-    |`id`|`UUID`|`eq` `ne` `in` `notIn`|
-    |`type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`macAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`ipAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|
-    |`connectedAt`|`TIMESTAMP`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|
-    |`access.type`|`STRING`|`eq` `ne` `in` `notIn`|
-    |`access.authorized`|`BOOLEAN`|`isNull` `isNotNull` `eq` `ne`|
+    |`macAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`ipAddress`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`model`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`state`|`STRING`|`eq` `ne` `in` `notIn`|
+    |`supported`|`BOOLEAN`|`eq` `ne`|
+    |`firmwareVersion`|`STRING`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le` `like` `in` `notIn`|
+    |`firmwareUpdatable`|`BOOLEAN`|`eq` `ne`|
+    |`features`|`SET(STRING)`|`isEmpty` `contains` `containsAny` `containsAll` `containsExactly`|
     </details>
 
     Args:
-        site_id (UUID):
         offset (Union[Unset, Any]):  Default: 0.
         limit (Union[Unset, Any]):  Default: 25.
         filter_ (Union[Unset, str]):
@@ -261,12 +246,11 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ClientOverviewPage
+        DevicePendingAdoptionPage
     """
 
     return (
         await asyncio_detailed(
-            site_id=site_id,
             client=client,
             offset=offset,
             limit=limit,

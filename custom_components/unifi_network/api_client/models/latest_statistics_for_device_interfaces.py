@@ -6,37 +6,33 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from typing import cast
 from typing import Union
 
 if TYPE_CHECKING:
-  from ..models.latest_statistics_for_wireless_radio import LatestStatisticsForWirelessRadio
-
-
-
+    from ..models.latest_statistics_for_wireless_radio import (
+        LatestStatisticsForWirelessRadio,
+    )
 
 
 T = TypeVar("T", bound="LatestStatisticsForDeviceInterfaces")
 
 
-
 @_attrs_define
 class LatestStatisticsForDeviceInterfaces:
-    """ 
-        Attributes:
-            radios (Union[Unset, list['LatestStatisticsForWirelessRadio']]):
-     """
+    """
+    Attributes:
+        radios (Union[Unset, list['LatestStatisticsForWirelessRadio']]):
+    """
 
-    radios: Union[Unset, list['LatestStatisticsForWirelessRadio']] = UNSET
+    radios: Union[Unset, list["LatestStatisticsForWirelessRadio"]] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
-        from ..models.latest_statistics_for_wireless_radio import LatestStatisticsForWirelessRadio
+        from ..models.latest_statistics_for_wireless_radio import (
+            LatestStatisticsForWirelessRadio,
+        )
+
         radios: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.radios, Unset):
             radios = []
@@ -44,38 +40,31 @@ class LatestStatisticsForDeviceInterfaces:
                 radios_item = radios_item_data.to_dict()
                 radios.append(radios_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-        })
+        field_dict.update({})
         if radios is not UNSET:
             field_dict["radios"] = radios
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.latest_statistics_for_wireless_radio import LatestStatisticsForWirelessRadio
+        from ..models.latest_statistics_for_wireless_radio import (
+            LatestStatisticsForWirelessRadio,
+        )
+
         d = dict(src_dict)
         radios = []
         _radios = d.pop("radios", UNSET)
-        for radios_item_data in (_radios or []):
+        for radios_item_data in _radios or []:
             radios_item = LatestStatisticsForWirelessRadio.from_dict(radios_item_data)
 
-
-
             radios.append(radios_item)
-
 
         latest_statistics_for_device_interfaces = cls(
             radios=radios,
         )
-
 
         latest_statistics_for_device_interfaces.additional_properties = d
         return latest_statistics_for_device_interfaces
