@@ -1,7 +1,7 @@
 {
   "domain": "unifi_network",
   "name": "Unifi Network (Local API)",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "documentation": "https://github.com/wittypluck/ha-unifi-network",
   "issue_tracker": "https://github.com/wittypluck/ha-unifi-network/issues",
   "requirements": [],
