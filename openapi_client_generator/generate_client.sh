@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # Normalize and filter API json
-python3 normalize_openapi.py integration.json --output-file integration-fix.json --rename "IP Address selector:IP_Address_selector_2" --filter-tags "Sites" "UniFi Devices" "Clients"
+python3 normalize_openapi.py integration.json \
+    --output-file integration-fix.json \
+    --rename "IP Address selector:IP_Address_selector_2" \
+    --filter-tags "Sites" "UniFi Devices" "Clients" \
+    --fix-type "frequencyGHz:number"
 
 # Remove previous client
 rm -rf unifi-network-api-client

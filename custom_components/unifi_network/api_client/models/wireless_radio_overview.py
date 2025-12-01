@@ -6,9 +6,6 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..models.wireless_radio_overview_frequency_g_hz import (
-    WirelessRadioOverviewFrequencyGHz,
-)
 from ..models.wireless_radio_overview_wlan_standard import (
     WirelessRadioOverviewWlanStandard,
 )
@@ -23,13 +20,13 @@ class WirelessRadioOverview:
     """
     Attributes:
         wlan_standard (WirelessRadioOverviewWlanStandard):
-        frequency_g_hz (WirelessRadioOverviewFrequencyGHz):
+        frequency_g_hz (float):
         channel_width_m_hz (int):  Example: 40.
         channel (Union[Unset, int]):  Example: 36.
     """
 
     wlan_standard: WirelessRadioOverviewWlanStandard
-    frequency_g_hz: WirelessRadioOverviewFrequencyGHz
+    frequency_g_hz: float
     channel_width_m_hz: int
     channel: Union[Unset, int] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -37,7 +34,7 @@ class WirelessRadioOverview:
     def to_dict(self) -> dict[str, Any]:
         wlan_standard = self.wlan_standard.value
 
-        frequency_g_hz = self.frequency_g_hz.value
+        frequency_g_hz = self.frequency_g_hz
 
         channel_width_m_hz = self.channel_width_m_hz
 
@@ -62,7 +59,7 @@ class WirelessRadioOverview:
         d = dict(src_dict)
         wlan_standard = WirelessRadioOverviewWlanStandard(d.pop("wlanStandard"))
 
-        frequency_g_hz = WirelessRadioOverviewFrequencyGHz(d.pop("frequencyGHz"))
+        frequency_g_hz = d.pop("frequencyGHz")
 
         channel_width_m_hz = d.pop("channelWidthMHz")
 

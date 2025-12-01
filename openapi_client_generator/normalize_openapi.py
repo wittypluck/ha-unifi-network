@@ -64,6 +64,73 @@ def normalize_schema_name(name: str) -> str:
     return normalized
 
 
+def walk_and_fix_properties(obj: Any, property_fixes: Dict[str, Dict[str, Any]]) -> Any:
+    """
+    Recursively walk the spec and replace matching properties.
+    
+    This mimics jq's walk function, replacing entire property definitions
+    when a matching property name is found.
+    
+    Args:
+        obj: The object to walk (can be dict, list, or primitive)
+        property_fixes: Dictionary mapping property names to their new definitions
+                       e.g., {'frequencyGHz': {'type': 'number', 'format': 'double'}}
+        
+    Returns:
+        The modified object
+    """
+    if isinstance(obj, dict):
+        # Check if this dict has any of the properties to fix
+        for prop_name, new_definition in property_fixes.items():
+            if prop_name in obj:
+                # Replace the entire property definition
+                obj[prop_name] = new_definition.copy()
+        
+        # Recursively process all values
+        for key, value in obj.items():
+            obj[key] = walk_and_fix_properties(value, property_fixes)
+    
+    elif isinstance(obj, list):
+        # Recursively process all items
+        return [walk_and_fix_properties(item, property_fixes) for item in obj]
+    
+    return obj
+
+
+def fix_integer_enum_values(obj: Any) -> Any:
+    """
+    Recursively walk the spec and convert enum values to numbers for integer type schemas.
+    
+    This mimics the second jq walk: converting enum values to match integer types.
+    
+    Args:
+        obj: The object to walk (can be dict, list, or primitive)
+        
+    Returns:
+        The modified object
+    """
+    if isinstance(obj, dict):
+        # Check if this is an integer type with enum array
+        if obj.get('type') == 'integer' and 'enum' in obj and isinstance(obj['enum'], list):
+            # Convert enum values to numbers
+            try:
+                obj['enum'] = [int(float(v)) if not isinstance(v, (int, float)) else int(v) 
+                              for v in obj['enum']]
+            except (ValueError, TypeError):
+                # Keep original if conversion fails
+                pass
+        
+        # Recursively process all values
+        for key, value in obj.items():
+            obj[key] = fix_integer_enum_values(value)
+    
+    elif isinstance(obj, list):
+        # Recursively process all items
+        return [fix_integer_enum_values(item) for item in obj]
+    
+    return obj
+
+
 def fix_enum_type_mismatch(schema: Dict[str, Any]) -> None:
     """
     Fix enum type mismatches by converting enum values to match the type field.
@@ -357,7 +424,8 @@ def add_security_to_operations(spec: Dict[str, Any], verbose: bool = True) -> No
 
 
 def normalize_openapi_spec(spec: Dict[str, Any], custom_renames: Dict[str, str] = None, 
-                          filter_tags: List[str] = None, verbose: bool = True) -> Dict[str, Any]:
+                          filter_tags: List[str] = None, type_fixes: List[tuple] = None,
+                          verbose: bool = True) -> Dict[str, Any]:
     """
     Normalize an OpenAPI specification to comply with OpenAPI 3.0+ requirements.
     
@@ -365,6 +433,7 @@ def normalize_openapi_spec(spec: Dict[str, Any], custom_renames: Dict[str, str] 
         spec: The OpenAPI specification dictionary
         custom_renames: Optional dictionary of custom schema name replacements (old_name -> new_name)
         filter_tags: Optional list of tags to filter endpoints by
+        type_fixes: Optional list of tuples (property_name, new_type) to fix property types
         verbose: Whether to print progress messages
         
     Returns:
@@ -428,14 +497,54 @@ def normalize_openapi_spec(spec: Dict[str, Any], custom_renames: Dict[str, str] 
                 print(f"\nUpdating {len(name_mapping)} schema references throughout the spec...")
             update_schema_references(normalized_spec, name_mapping)
     
-    # Fix 3: Fix enum type mismatches in all schemas
+    # Fix 3: Fix property types that don't match API behavior (walk-based replacement)
+    if type_fixes:
+        if verbose:
+            print("\nFixing property types to match API behavior...")
+        
+        # Convert type_fixes list to property_fixes dict
+        property_fixes = {}
+        for property_name, new_type in type_fixes:
+            if new_type == 'number':
+                property_fixes[property_name] = {'type': 'number', 'format': 'double'}
+            elif new_type == 'integer':
+                property_fixes[property_name] = {'type': 'integer', 'format': 'int32'}
+            elif new_type == 'string':
+                property_fixes[property_name] = {'type': 'string'}
+            elif new_type == 'boolean':
+                property_fixes[property_name] = {'type': 'boolean'}
+            
+            if verbose:
+                print(f"  Will replace all '{property_name}' properties with: {property_fixes[property_name]}")
+        
+        # Walk the entire spec and replace matching properties
+        normalized_spec = walk_and_fix_properties(normalized_spec, property_fixes)
+        
+        if verbose:
+            print(f"  Completed property replacement walk")
+    
+    # Fix 4: Convert enum values to numbers for integer types
+    if verbose:
+        print("\nFixing integer enum values...")
+    normalized_spec = fix_integer_enum_values(normalized_spec)
+    if verbose:
+        print("  Completed integer enum conversion")
+    
+    # Fix 4: Convert enum values to numbers for integer types
+    if verbose:
+        print("\nFixing integer enum values...")
+    normalized_spec = fix_integer_enum_values(normalized_spec)
+    if verbose:
+        print("  Completed integer enum conversion")
+    
+    # Fix 5: Fix enum type mismatches in all schemas
     if 'components' in normalized_spec and 'schemas' in normalized_spec['components']:
         if verbose:
             print("\nFixing enum type mismatches...")
         for schema_name, schema in normalized_spec['components']['schemas'].items():
             fix_enum_type_mismatch(schema)
     
-    # Fix 4: Also fix enum type mismatches in path parameters and request/response bodies
+    # Fix 6: Also fix enum type mismatches in path parameters and request/response bodies
     if 'paths' in normalized_spec:
         for path, path_item in normalized_spec['paths'].items():
             if isinstance(path_item, dict):
@@ -456,12 +565,12 @@ def normalize_openapi_spec(spec: Dict[str, Any], custom_renames: Dict[str, str] 
                             for response in operation['responses'].values():
                                 fix_enum_type_mismatch(response)
     
-    # Fix 5: Fix x-tags fields that should be arrays
+    # Fix 7: Fix x-tags fields that should be arrays
     if verbose:
         print("\nFixing x-tags fields...")
     fix_x_tags_fields(normalized_spec)
     
-    # Fix 6: Add security to operations that are missing it
+    # Fix 8: Add security to operations that are missing it
     if verbose:
         print("\nAdding security definitions to operations...")
     add_security_to_operations(normalized_spec, verbose)
@@ -490,6 +599,9 @@ Examples:
   
   # With custom schema renames (case sensitive)
   %(prog)s integration.json --rename "Error Message:ErrorMessage" --output-file result.json
+  
+  # Fix property types to match API behavior
+  %(prog)s integration.json --fix-type "frequencyGHz:number" --output-file result.json
         """
     )
     
@@ -510,6 +622,12 @@ Examples:
         nargs='+',
         metavar='TAG',
         help='Only include endpoints with these tags (can specify multiple tags)'
+    )
+    parser.add_argument(
+        '--fix-type',
+        action='append',
+        metavar='PROPERTY:TYPE',
+        help='Fix property type (e.g., "frequencyGHz:number", can be used multiple times)'
     )
     
     args = parser.parse_args()
@@ -543,6 +661,25 @@ Examples:
                 print(f"  '{old}' -> '{new}'")
             print()
     
+    # Parse type fixes
+    type_fixes = []
+    if args.fix_type:
+        for fix_pair in args.fix_type:
+            if ':' not in fix_pair:
+                print(f"Error: Invalid fix-type format '{fix_pair}'. Expected format: 'PROPERTY:TYPE'", file=sys.stderr)
+                sys.exit(1)
+            property_name, new_type = fix_pair.split(':', 1)
+            if new_type not in ['string', 'number', 'integer', 'boolean']:
+                print(f"Error: Invalid type '{new_type}'. Must be one of: string, number, integer, boolean", file=sys.stderr)
+                sys.exit(1)
+            type_fixes.append((property_name, new_type))
+        
+        if not output_to_stdout:
+            print(f"Property type fixes specified: {len(type_fixes)}")
+            for prop, typ in type_fixes:
+                print(f"  '{prop}' -> {typ}")
+            print()
+    
     if not output_to_stdout:
         print(f"Loading OpenAPI spec from {input_file}...")
     
@@ -561,6 +698,7 @@ Examples:
     
     normalized_spec = normalize_openapi_spec(spec, custom_renames, 
                                             filter_tags=args.filter_tags,
+                                            type_fixes=type_fixes if type_fixes else None,
                                             verbose=not output_to_stdout)
     
     # Write output

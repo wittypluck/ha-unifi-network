@@ -38,9 +38,6 @@ from .latest_statistics_for_a_device_uplink_interface import (
 )
 from .latest_statistics_for_device_interfaces import LatestStatisticsForDeviceInterfaces
 from .latest_statistics_for_wireless_radio import LatestStatisticsForWirelessRadio
-from .latest_statistics_for_wireless_radio_frequency_g_hz import (
-    LatestStatisticsForWirelessRadioFrequencyGHz,
-)
 from .local_client_access_details import LocalClientAccessDetails
 from .local_client_access_overview import LocalClientAccessOverview
 from .port_action_request import PortActionRequest
@@ -66,7 +63,6 @@ from .wired_client_overview import WiredClientOverview
 from .wireless_client_details import WirelessClientDetails
 from .wireless_client_overview import WirelessClientOverview
 from .wireless_radio_overview import WirelessRadioOverview
-from .wireless_radio_overview_frequency_g_hz import WirelessRadioOverviewFrequencyGHz
 from .wireless_radio_overview_wlan_standard import WirelessRadioOverviewWlanStandard
 
 __all__ = (
@@ -104,7 +100,6 @@ __all__ = (
     "LatestStatisticsForADeviceUplinkInterface",
     "LatestStatisticsForDeviceInterfaces",
     "LatestStatisticsForWirelessRadio",
-    "LatestStatisticsForWirelessRadioFrequencyGHz",
     "LocalClientAccessDetails",
     "LocalClientAccessOverview",
     "PortActionRequest",
@@ -130,6 +125,5 @@ __all__ = (
     "WirelessClientDetails",
     "WirelessClientOverview",
     "WirelessRadioOverview",
-    "WirelessRadioOverviewFrequencyGHz",
     "WirelessRadioOverviewWlanStandard",
 )
