@@ -77,9 +77,7 @@ Current implementation focuses on core monitoring and basic device control funct
 
 - **UniFi Network Application**: UniFi OS / Network Application version that supports the Integration API
   - Must have "Integrations" feature available in Network settings
-  - API Key generation capability:
-    - **UniFi OS 4.4.x and earlier**: UniFi Network → Settings → Control Plane → Integrations → Create API key
-    - **UniFi OS 5.0.x and later**: UniFi Network → Integrations (next to Settings at bottom left) → Create New Api Key
+  - API Key generation capability (see Configuration section below for version-specific instructions)
 - **Network Access**: Home Assistant must have network access to your UniFi Network Application
   - Typically runs on port 443 (HTTPS) or 8443
   - Integration API endpoint: `/proxy/network/integration`
