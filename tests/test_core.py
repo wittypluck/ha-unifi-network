@@ -202,6 +202,92 @@ async def test_init_without_coordinators(
 
 @patch("custom_components.unifi_network.core.create_async_httpx_client")
 @patch("custom_components.unifi_network.core.Client")
+@patch("custom_components.unifi_network.core.UnifiDeviceCoordinator")
+@patch("custom_components.unifi_network.core.UnifiClientCoordinator")
+@pytest.mark.asyncio
+async def test_init_passes_filters_to_coordinators(
+    mock_client_coordinator,
+    mock_device_coordinator,
+    mock_client_class,
+    mock_create_client,
+    mock_hass,
+):
+    """Test that filter parameters are passed through to coordinators."""
+    mock_client = Mock()
+    mock_httpx_client = Mock()
+    mock_httpx_client.headers = Mock()
+    mock_client_class.return_value = mock_client
+    mock_create_client.return_value = mock_httpx_client
+
+    mock_device_coordinator.return_value = AsyncMock()
+    mock_client_coordinator.return_value = AsyncMock()
+
+    UnifiNetworkCore(
+        hass=mock_hass,
+        base_url="https://unifi.example.com",
+        site_id="default",
+        api_key="test-key",
+        enable_devices=True,
+        enable_clients=True,
+        verify_ssl=True,
+        devices_filter="ipAddress.eq('192.168.1.1')",
+        clients_filter="not(ipAddress.eq('192.168.1.1'))",
+    )
+
+    # Verify device coordinator was created with the devices filter
+    mock_device_coordinator.assert_called_once()
+    assert (
+        mock_device_coordinator.call_args.kwargs["filter_"]
+        == "ipAddress.eq('192.168.1.1')"
+    )
+
+    # Verify client coordinator was created with the clients filter
+    mock_client_coordinator.assert_called_once()
+    assert (
+        mock_client_coordinator.call_args.kwargs["filter_"]
+        == "not(ipAddress.eq('192.168.1.1'))"
+    )
+
+
+@patch("custom_components.unifi_network.core.create_async_httpx_client")
+@patch("custom_components.unifi_network.core.Client")
+@patch("custom_components.unifi_network.core.UnifiDeviceCoordinator")
+@patch("custom_components.unifi_network.core.UnifiClientCoordinator")
+@pytest.mark.asyncio
+async def test_init_passes_none_filters_by_default(
+    mock_client_coordinator,
+    mock_device_coordinator,
+    mock_client_class,
+    mock_create_client,
+    mock_hass,
+):
+    """Test that filter parameters default to None when not provided."""
+    mock_client = Mock()
+    mock_httpx_client = Mock()
+    mock_httpx_client.headers = Mock()
+    mock_client_class.return_value = mock_client
+    mock_create_client.return_value = mock_httpx_client
+
+    mock_device_coordinator.return_value = AsyncMock()
+    mock_client_coordinator.return_value = AsyncMock()
+
+    UnifiNetworkCore(
+        hass=mock_hass,
+        base_url="https://unifi.example.com",
+        site_id="default",
+        api_key="test-key",
+        enable_devices=True,
+        enable_clients=True,
+        verify_ssl=True,
+    )
+
+    # Verify coordinators were created with filter_=None (the default)
+    assert mock_device_coordinator.call_args.kwargs["filter_"] is None
+    assert mock_client_coordinator.call_args.kwargs["filter_"] is None
+
+
+@patch("custom_components.unifi_network.core.create_async_httpx_client")
+@patch("custom_components.unifi_network.core.Client")
 @pytest.mark.asyncio
 async def test_init_without_api_key(
     mock_client_class,
