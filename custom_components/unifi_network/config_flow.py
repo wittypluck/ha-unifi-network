@@ -5,7 +5,13 @@ from typing import Any
 
 import voluptuous as vol
 from aiohttp import ClientError
-from homeassistant import config_entries
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlowWithReload,
+)
+from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 
@@ -17,10 +23,18 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class UnifiNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
     """Config flow for Unifi Network integration."""
 
     VERSION = 1
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: ConfigEntry,
+    ) -> OptionsFlowHandler:
+        """Create the options flow."""
+        return OptionsFlowHandler()
 
     def __init__(self) -> None:
         self._base_url = None
@@ -147,4 +161,32 @@ class UnifiNetworkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="select_features", data_schema=schema, errors=errors
+        )
+
+
+class OptionsFlowHandler(OptionsFlowWithReload):
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Optional step: user sets filters for devices and clients."""
+
+        if user_input is not None:
+            return self.async_create_entry(data=user_input)
+
+        schema = vol.Schema(
+            {
+                vol.Optional("devices_filter"): selector.TextSelector(
+                    selector.TextSelectorConfig(type=selector.TextSelectorType.TEXT)
+                ),
+                vol.Optional("clients_filter"): selector.TextSelector(
+                    selector.TextSelectorConfig(type=selector.TextSelectorType.TEXT)
+                ),
+            }
+        )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=self.add_suggested_values_to_schema(
+                schema, self.config_entry.options
+            ),
         )

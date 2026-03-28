@@ -21,6 +21,8 @@ class UnifiNetworkCore:
         enable_devices: bool = True,
         enable_clients: bool = True,
         verify_ssl: bool = True,
+        devices_filter: str | None = None,
+        clients_filter: str | None = None,
     ) -> None:
         """Initialize Unifi Network core."""
         self.hass = hass
@@ -47,12 +49,12 @@ class UnifiNetworkCore:
 
         if enable_devices:
             self.device_coordinator = UnifiDeviceCoordinator(
-                hass=hass, client=self.client, site_id=site_id
+                hass=hass, client=self.client, site_id=site_id, filter_=devices_filter
             )
 
         if enable_clients:
             self.client_coordinator = UnifiClientCoordinator(
-                hass=hass, client=self.client, site_id=site_id
+                hass=hass, client=self.client, site_id=site_id, filter_=clients_filter
             )
 
     async def async_init(self) -> None:

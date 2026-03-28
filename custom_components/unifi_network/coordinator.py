@@ -17,6 +17,7 @@ from .api_client.api.uni_fi_devices import (
     get_adopted_device_latest_statistics,
     get_adopted_device_overview_page,
 )
+from .api_client.types import UNSET
 from .api_helpers import fetch_all_pages
 from .const import DEFAULT_UPDATE_INTERVAL, DOMAIN
 from .unifi_client import UnifiClient
@@ -33,6 +34,7 @@ class UnifiCoordinator(DataUpdateCoordinator):
         hass: HomeAssistant,
         client: Client,
         site_id: str,
+        filter_: str | None,
         name: str,
         update_method: Callable[[], Coroutine[Any, Any, Any]],
     ):
@@ -45,6 +47,10 @@ class UnifiCoordinator(DataUpdateCoordinator):
         )
         self.client = client
         self.site_id = site_id
+        if filter_ is None:
+            self.filter_ = UNSET
+        else:
+            self.filter_ = filter_
         self._update_method = update_method
 
     async def _async_update_data(self) -> dict[str, Any]:
@@ -60,11 +66,18 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
     in a dict mapping device_id to UnifiDevice.
     """
 
-    def __init__(self, hass: HomeAssistant, client: Client, site_id: str):
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        client: Client,
+        site_id: str,
+        filter_: str | None = None,
+    ):
         super().__init__(
             hass=hass,
             client=client,
             site_id=site_id,
+            filter_=filter_,
             name="devices",
             update_method=self._fetch_and_merge,
         )
@@ -82,6 +95,7 @@ class UnifiDeviceCoordinator(UnifiCoordinator):
                 get_adopted_device_overview_page.asyncio_detailed,
                 client=self.client,
                 site_id=self.site_id,
+                filter_=self.filter_,
             )
 
             # Prepare tasks to fetch statistics and details for each device concurrently
@@ -160,11 +174,18 @@ class UnifiClientCoordinator(UnifiCoordinator):
     in a dict mapping client_id to UnifiClient.
     """
 
-    def __init__(self, hass: HomeAssistant, client: Client, site_id: str):
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        client: Client,
+        site_id: str,
+        filter_: str | None = None,
+    ):
         super().__init__(
             hass=hass,
             client=client,
             site_id=site_id,
+            filter_=filter_,
             name="clients",
             update_method=self._fetch_and_merge,
         )
@@ -183,6 +204,7 @@ class UnifiClientCoordinator(UnifiCoordinator):
                 get_connected_client_overview_page.asyncio_detailed,
                 client=self.client,
                 site_id=self.site_id,
+                filter_=self.filter_,
             )
 
             # Prepare tasks to fetch details for each client concurrently
