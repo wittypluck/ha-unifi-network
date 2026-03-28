@@ -45,6 +45,22 @@
       "no_features_selected": "Please select at least one feature to enable."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Optional Filters",
+        "description": "See API documentation for filter syntax and filterable properties",
+        "data": {
+          "devices_filter": "Devices Filter",
+          "clients_filter": "Clients Filter"
+        },
+        "data_description": {
+          "devices_filter": "e.g., and(not(ipAddress.eq('192.168.1.5')), not(ipAddress.eq('192.168.1.10'))) ignores 192.168.1.5 and 192.168.1.10",
+          "clients_filter": "e.g., macAddress.eq('00:1a:2b:3c:4d:5e') only tracks 00:1A:2B:3C:4D:5E"
+        }
+      }
+    }
+  },
   "entity": {
     "sensor": {
       "device_state": { "name": "State" },
