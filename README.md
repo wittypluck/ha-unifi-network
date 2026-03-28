@@ -135,6 +135,17 @@ Current implementation focuses on core monitoring and basic device control funct
 
 The integration will automatically discover all devices and clients using API pagination to ensure complete coverage. Entities are created dynamically based on device capabilities (e.g., PoE sensors and buttons only appear for ports with PoE support, radio sensors only for devices with wireless radios).
 
+## Optional Configuration
+
+1. To configure options after initial setup, go to **Settings → Devices & Services → Unifi Network** → click the gear icon.
+
+2. **Optional Filters**: Configure filters to be used when enumerating devices and clients. See API documentation for [filter syntax](https://developer.ui.com/network/v10.0.162/filtering).
+   - **Devices Filter**: See API documentation for [filterable properties](https://developer.ui.com/network/v10.0.162/getadopteddeviceoverviewpage).
+     - Example: `and(not(ipAddress.eq('192.168.1.5')), not(ipAddress.eq('192.168.1.10')))` ignores 192.168.1.5 and 192.168.1.10
+   - **Clients Filter**: See API documentation for [filterable properties](https://developer.ui.com/network/v10.0.162/getconnectedclientoverviewpage).
+     - Example: `macAddress.eq('00:1a:2b:3c:4d:5e')` only tracks 00:1A:2B:3C:4D:5E
+     - Note: filter does not appear to match uppercase MAC addresses
+
 ## Notes and troubleshooting
 
 - **SSL Certificates**: If using self-signed certificates, disable SSL verification in the integration settings or ensure your Home Assistant host trusts the UniFi certificate.
