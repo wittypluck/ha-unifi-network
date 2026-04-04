@@ -15,8 +15,8 @@ from uuid import UUID
 def _get_kwargs(
     site_id: UUID,
     *,
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> dict[str, Any]:
     params: dict[str, Any] = {}
@@ -69,8 +69,8 @@ def sync_detailed(
     site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> Response[AdoptedDeviceOverviewPage]:
     """List Adopted Devices
@@ -97,8 +97,8 @@ def sync_detailed(
 
     Args:
         site_id (UUID):
-        offset (Union[Unset, Any]):  Default: 0.
-        limit (Union[Unset, Any]):  Default: 25.
+        offset (Union[Unset, int]):  Default: 0.
+        limit (Union[Unset, int]):  Default: 25.
         filter_ (Union[Unset, str]):
 
     Raises:
@@ -127,8 +127,8 @@ def sync(
     site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> Optional[AdoptedDeviceOverviewPage]:
     """List Adopted Devices
@@ -155,8 +155,8 @@ def sync(
 
     Args:
         site_id (UUID):
-        offset (Union[Unset, Any]):  Default: 0.
-        limit (Union[Unset, Any]):  Default: 25.
+        offset (Union[Unset, int]):  Default: 0.
+        limit (Union[Unset, int]):  Default: 25.
         filter_ (Union[Unset, str]):
 
     Raises:
@@ -180,8 +180,8 @@ async def asyncio_detailed(
     site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> Response[AdoptedDeviceOverviewPage]:
     """List Adopted Devices
@@ -208,8 +208,8 @@ async def asyncio_detailed(
 
     Args:
         site_id (UUID):
-        offset (Union[Unset, Any]):  Default: 0.
-        limit (Union[Unset, Any]):  Default: 25.
+        offset (Union[Unset, int]):  Default: 0.
+        limit (Union[Unset, int]):  Default: 25.
         filter_ (Union[Unset, str]):
 
     Raises:
@@ -236,8 +236,8 @@ async def asyncio(
     site_id: UUID,
     *,
     client: Union[AuthenticatedClient, Client],
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> Optional[AdoptedDeviceOverviewPage]:
     """List Adopted Devices
@@ -264,8 +264,8 @@ async def asyncio(
 
     Args:
         site_id (UUID):
-        offset (Union[Unset, Any]):  Default: 0.
-        limit (Union[Unset, Any]):  Default: 25.
+        offset (Union[Unset, int]):  Default: 0.
+        limit (Union[Unset, int]):  Default: 25.
         filter_ (Union[Unset, str]):
 
     Raises:
