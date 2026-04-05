@@ -10,6 +10,7 @@ class AdoptedDeviceOverviewState(str, Enum):
     OFFLINE = "OFFLINE"
     ONLINE = "ONLINE"
     PENDING_ADOPTION = "PENDING_ADOPTION"
+    U5G_INCORRECT_TOPOLOGY = "U5G_INCORRECT_TOPOLOGY"
     UPDATING = "UPDATING"
 
     def __str__(self) -> str:

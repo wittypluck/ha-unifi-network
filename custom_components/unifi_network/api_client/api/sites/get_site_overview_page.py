@@ -13,8 +13,8 @@ from ...types import Unset
 
 def _get_kwargs(
     *,
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> dict[str, Any]:
     params: dict[str, Any] = {}
@@ -64,8 +64,8 @@ def _build_response(
 def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> Response[SiteOverviewPage]:
     """List Local Sites
@@ -84,8 +84,8 @@ def sync_detailed(
     </details>
 
     Args:
-        offset (Union[Unset, Any]):  Default: 0.
-        limit (Union[Unset, Any]):  Default: 25.
+        offset (Union[Unset, int]):  Default: 0.
+        limit (Union[Unset, int]):  Default: 25.
         filter_ (Union[Unset, str]):
 
     Raises:
@@ -112,8 +112,8 @@ def sync_detailed(
 def sync(
     *,
     client: Union[AuthenticatedClient, Client],
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> Optional[SiteOverviewPage]:
     """List Local Sites
@@ -132,8 +132,8 @@ def sync(
     </details>
 
     Args:
-        offset (Union[Unset, Any]):  Default: 0.
-        limit (Union[Unset, Any]):  Default: 25.
+        offset (Union[Unset, int]):  Default: 0.
+        limit (Union[Unset, int]):  Default: 25.
         filter_ (Union[Unset, str]):
 
     Raises:
@@ -155,8 +155,8 @@ def sync(
 async def asyncio_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> Response[SiteOverviewPage]:
     """List Local Sites
@@ -175,8 +175,8 @@ async def asyncio_detailed(
     </details>
 
     Args:
-        offset (Union[Unset, Any]):  Default: 0.
-        limit (Union[Unset, Any]):  Default: 25.
+        offset (Union[Unset, int]):  Default: 0.
+        limit (Union[Unset, int]):  Default: 25.
         filter_ (Union[Unset, str]):
 
     Raises:
@@ -201,8 +201,8 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Union[AuthenticatedClient, Client],
-    offset: Union[Unset, Any] = 0,
-    limit: Union[Unset, Any] = 25,
+    offset: Union[Unset, int] = 0,
+    limit: Union[Unset, int] = 25,
     filter_: Union[Unset, str] = UNSET,
 ) -> Optional[SiteOverviewPage]:
     """List Local Sites
@@ -221,8 +221,8 @@ async def asyncio(
     </details>
 
     Args:
-        offset (Union[Unset, Any]):  Default: 0.
-        limit (Union[Unset, Any]):  Default: 25.
+        offset (Union[Unset, int]):  Default: 0.
+        limit (Union[Unset, int]):  Default: 25.
         filter_ (Union[Unset, str]):
 
     Raises:

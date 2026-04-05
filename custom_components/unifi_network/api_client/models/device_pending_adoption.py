@@ -12,6 +12,7 @@ from ..models.device_pending_adoption_features_item import (
 from ..models.device_pending_adoption_state import DevicePendingAdoptionState
 from typing import cast
 from typing import Union
+from uuid import UUID
 
 
 T = TypeVar("T", bound="DevicePendingAdoption")
@@ -28,6 +29,7 @@ class DevicePendingAdoption:
         supported (bool):
         firmware_updatable (bool):
         features (list[DevicePendingAdoptionFeaturesItem]):
+        adoption_target_site_ids (list[UUID]):
         firmware_version (Union[Unset, str]):  Example: 6.6.55.
     """
 
@@ -38,6 +40,7 @@ class DevicePendingAdoption:
     supported: bool
     firmware_updatable: bool
     features: list[DevicePendingAdoptionFeaturesItem]
+    adoption_target_site_ids: list[UUID]
     firmware_version: Union[Unset, str] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -59,6 +62,11 @@ class DevicePendingAdoption:
             features_item = features_item_data.value
             features.append(features_item)
 
+        adoption_target_site_ids = []
+        for adoption_target_site_ids_item_data in self.adoption_target_site_ids:
+            adoption_target_site_ids_item = str(adoption_target_site_ids_item_data)
+            adoption_target_site_ids.append(adoption_target_site_ids_item)
+
         firmware_version = self.firmware_version
 
         field_dict: dict[str, Any] = {}
@@ -72,6 +80,7 @@ class DevicePendingAdoption:
                 "supported": supported,
                 "firmwareUpdatable": firmware_updatable,
                 "features": features,
+                "adoptionTargetSiteIds": adoption_target_site_ids,
             }
         )
         if firmware_version is not UNSET:
@@ -101,6 +110,13 @@ class DevicePendingAdoption:
 
             features.append(features_item)
 
+        adoption_target_site_ids = []
+        _adoption_target_site_ids = d.pop("adoptionTargetSiteIds")
+        for adoption_target_site_ids_item_data in _adoption_target_site_ids:
+            adoption_target_site_ids_item = UUID(adoption_target_site_ids_item_data)
+
+            adoption_target_site_ids.append(adoption_target_site_ids_item)
+
         firmware_version = d.pop("firmwareVersion", UNSET)
 
         device_pending_adoption = cls(
@@ -111,6 +127,7 @@ class DevicePendingAdoption:
             supported=supported,
             firmware_updatable=firmware_updatable,
             features=features,
+            adoption_target_site_ids=adoption_target_site_ids,
             firmware_version=firmware_version,
         )
 

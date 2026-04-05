@@ -32,6 +32,7 @@ from .guest_authorization_details_authorization_method import (
     GuestAuthorizationDetailsAuthorizationMethod,
 )
 from .guest_authorization_usage_details import GuestAuthorizationUsageDetails
+from .integration_device_adoption_request_dto import IntegrationDeviceAdoptionRequestDto
 from .latest_statistics_for_a_device import LatestStatisticsForADevice
 from .latest_statistics_for_a_device_uplink_interface import (
     LatestStatisticsForADeviceUplinkInterface,
@@ -96,6 +97,7 @@ __all__ = (
     "GuestAuthorizationDetails",
     "GuestAuthorizationDetailsAuthorizationMethod",
     "GuestAuthorizationUsageDetails",
+    "IntegrationDeviceAdoptionRequestDto",
     "LatestStatisticsForADevice",
     "LatestStatisticsForADeviceUplinkInterface",
     "LatestStatisticsForDeviceInterfaces",
