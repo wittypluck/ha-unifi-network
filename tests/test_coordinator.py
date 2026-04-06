@@ -8,6 +8,7 @@ import pytest
 
 # Import conftest to set up mocks
 import tests.conftest
+from custom_components.unifi_network.api_client.types import UNSET
 
 # Now import the modules after mocks are set up
 from custom_components.unifi_network.coordinator import (
@@ -227,6 +228,46 @@ class TestUnifiDeviceCoordinator:
         result = device_coordinator.get_device("device-123")
         assert result is None
 
+    def test_default_filter_becomes_unset(self, mock_hass, mock_api_client):
+        """Test that filter_ defaults to UNSET when omitted."""
+        coord = UnifiDeviceCoordinator(mock_hass, mock_api_client, "test-site")
+        assert coord.filter_ is UNSET
+
+    def test_none_filter_becomes_unset(self, mock_hass, mock_api_client):
+        """Test that filter_=None is converted to UNSET."""
+        coord = UnifiDeviceCoordinator(
+            mock_hass, mock_api_client, "test-site", filter_=None
+        )
+        assert coord.filter_ is UNSET
+
+    def test_string_filter_preserved(self, mock_hass, mock_api_client):
+        """Test that a string filter value is stored as-is."""
+        coord = UnifiDeviceCoordinator(
+            mock_hass,
+            mock_api_client,
+            "test-site",
+            filter_="ipAddress.eq('192.168.1.1')",
+        )
+        assert coord.filter_ == "ipAddress.eq('192.168.1.1')"
+
+    async def test_filter_passed_to_fetch_all_pages(self, mock_hass, mock_api_client):
+        """Test that filter_ is passed through to fetch_all_pages."""
+        coord = UnifiDeviceCoordinator(
+            mock_hass,
+            mock_api_client,
+            "test-site",
+            filter_="ipAddress.eq('192.168.1.1')",
+        )
+
+        with patch(
+            "custom_components.unifi_network.coordinator.fetch_all_pages",
+            return_value=[],
+        ) as mock_fetch:
+            await coord._fetch_and_merge()
+
+        mock_fetch.assert_called_once()
+        assert mock_fetch.call_args.kwargs["filter_"] == "ipAddress.eq('192.168.1.1')"
+
 
 class TestUnifiClientCoordinator:
     """Test the UniFi Client coordinator."""
@@ -342,3 +383,45 @@ class TestUnifiClientCoordinator:
 
         result = client_coordinator.get_client("nonexistent")
         assert result is None
+
+    def test_default_filter_becomes_unset(self, mock_hass, mock_api_client):
+        """Test that filter_ defaults to UNSET when omitted."""
+        coord = UnifiClientCoordinator(mock_hass, mock_api_client, "test-site")
+        assert coord.filter_ is UNSET
+
+    def test_none_filter_becomes_unset(self, mock_hass, mock_api_client):
+        """Test that filter_=None is converted to UNSET."""
+        coord = UnifiClientCoordinator(
+            mock_hass, mock_api_client, "test-site", filter_=None
+        )
+        assert coord.filter_ is UNSET
+
+    def test_string_filter_preserved(self, mock_hass, mock_api_client):
+        """Test that a string filter value is stored as-is."""
+        coord = UnifiClientCoordinator(
+            mock_hass,
+            mock_api_client,
+            "test-site",
+            filter_="not(ipAddress.eq('192.168.1.1'))",
+        )
+        assert coord.filter_ == "not(ipAddress.eq('192.168.1.1'))"
+
+    async def test_filter_passed_to_fetch_all_pages(self, mock_hass, mock_api_client):
+        """Test that filter_ is passed through to fetch_all_pages."""
+        coord = UnifiClientCoordinator(
+            mock_hass,
+            mock_api_client,
+            "test-site",
+            filter_="not(ipAddress.eq('192.168.1.1'))",
+        )
+
+        with patch(
+            "custom_components.unifi_network.coordinator.fetch_all_pages",
+            return_value=[],
+        ) as mock_fetch:
+            await coord._fetch_and_merge()
+
+        mock_fetch.assert_called_once()
+        assert (
+            mock_fetch.call_args.kwargs["filter_"] == "not(ipAddress.eq('192.168.1.1'))"
+        )

@@ -19,6 +19,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         enable_devices=entry.data.get("enable_devices", True),
         enable_clients=entry.data.get("enable_clients", True),
         verify_ssl=entry.data.get("verify_ssl", True),
+        devices_filter=entry.options.get("devices_filter"),
+        clients_filter=entry.options.get("clients_filter"),
     )
     await core.async_init()
 
