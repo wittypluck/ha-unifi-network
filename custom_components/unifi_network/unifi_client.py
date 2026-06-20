@@ -59,6 +59,22 @@ class UnifiClient:
         return None
 
     @property
+    def uplink_device_id(self) -> str | None:
+        """Return the uplink device ID for this client, or None if unavailable."""
+        # Prefer value from overview, then fall back to details if present.
+        for src in (self.overview, self.details):
+            if not src:
+                continue
+            additional = getattr(src, "additional_properties", None)
+            if isinstance(additional, dict):
+                uplink_device_id = additional.get("uplinkDeviceId")
+                if uplink_device_id is not None and isinstance(uplink_device_id, Unset):
+                    return None
+                if uplink_device_id:
+                    return str(uplink_device_id)
+        return None
+
+    @property
     def device_info(self) -> DeviceInfo:
         """Return DeviceInfo for this UniFi client with vendor as manufacturer."""
         identifiers = {(DOMAIN, self.id)}

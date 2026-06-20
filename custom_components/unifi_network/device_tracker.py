@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .api_client.types import UNSET
 from .const import DOMAIN
-from .coordinator import UnifiClientCoordinator
+from .coordinator import UnifiClientCoordinator, UnifiDeviceCoordinator
 
 
 async def async_setup_entry(
@@ -19,7 +19,8 @@ async def async_setup_entry(
 ) -> None:
     """Set up Unifi device_tracker platform."""
     core = hass.data[DOMAIN][entry.entry_id]
-    coordinator = core.client_coordinator
+    coordinator: UnifiClientCoordinator = core.client_coordinator
+    device_coordinator: UnifiDeviceCoordinator | None = core.device_coordinator
 
     # Keep track of client IDs that already got entities
     tracked_clients: set[str] = set()
@@ -35,7 +36,9 @@ async def async_setup_entry(
             if client_id in tracked_clients:
                 continue
 
-            new_entities.append(UnifiClientTracker(coordinator, client_id))
+            new_entities.append(
+                UnifiClientTracker(coordinator, client_id, device_coordinator)
+            )
             tracked_clients.add(client_id)
 
         if new_entities:
@@ -56,9 +59,15 @@ class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_source_type = SourceType.ROUTER
 
-    def __init__(self, coordinator: UnifiClientCoordinator, client_id: str) -> None:
+    def __init__(
+        self,
+        coordinator: UnifiClientCoordinator,
+        client_id: str,
+        device_coordinator: UnifiDeviceCoordinator | None,
+    ) -> None:
         super().__init__(coordinator)
         self.client_id = client_id
+        self._device_coordinator = device_coordinator
         self._attr_unique_id = f"unifi_client_{client_id}_device_tracker"
 
     @property
@@ -94,7 +103,15 @@ class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
             "mac": client.mac,
             "ip": client.ip,
             "last_seen": client.last_seen,
+            "uplink_mac": None,
+            "uplink_device_name": None,
         }
+
+        if self._device_coordinator and client.uplink_device_id:
+            uplink_device = self._device_coordinator.get_device(client.uplink_device_id)
+            if uplink_device:
+                attrs["uplink_mac"] = uplink_device.mac
+                attrs["uplink_device_name"] = uplink_device.name
 
         connected_at = getattr(client.overview, "connected_at", None)
         if connected_at is not None and connected_at is not UNSET:
