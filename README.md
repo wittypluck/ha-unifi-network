@@ -23,7 +23,18 @@ Home Assistant custom integration for UniFi Network that uses UniFi's official I
 
 #### Device Trackers
 
-- **UniFi Client Tracker**: Reports `home` when client is currently connected, `not_home` otherwise. Attributes include IP address, MAC address, last seen timestamp, connected at timestamp (when available), and `source_type=router`. Automatically created for all discovered clients when client tracking is enabled.
+- **UniFi Client Tracker**: Reports `home` when client is currently connected, `not_home` otherwise. 
+  
+  Attributes include:
+  - `mac` — client MAC address
+  - `ip` — client IP address
+  - `last_seen` — timestamp of last observed connection
+  - `connected_at` — connection start timestamp (when available)
+  - `uplink_mac` — MAC address of the UniFi device the client is connected through (`null` when devices feature is disabled or uplink is unresolved)
+  - `uplink_device_name` — name of the UniFi device the client is connected through (`null` when devices feature is disabled or uplink is unresolved)
+  - `source_type=router`
+
+  Automatically created for all discovered clients when client tracking is enabled. The `uplink_mac` and `uplink_device_name` attributes are populated when both client tracking and device monitoring are enabled simultaneously.
 
 #### Device Sensors
 
