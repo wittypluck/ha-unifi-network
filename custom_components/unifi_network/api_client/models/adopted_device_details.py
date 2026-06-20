@@ -14,8 +14,8 @@ from uuid import UUID
 import datetime
 
 if TYPE_CHECKING:
-    from ..models.device_physical_interfaces import DevicePhysicalInterfaces
     from ..models.device_features import DeviceFeatures
+    from ..models.device_physical_interfaces import DevicePhysicalInterfaces
     from ..models.device_uplink_interface_overview import DeviceUplinkInterfaceOverview
 
 
@@ -62,8 +62,8 @@ class AdoptedDeviceDetails:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.device_physical_interfaces import DevicePhysicalInterfaces
         from ..models.device_features import DeviceFeatures
+        from ..models.device_physical_interfaces import DevicePhysicalInterfaces
         from ..models.device_uplink_interface_overview import (
             DeviceUplinkInterfaceOverview,
         )
@@ -134,8 +134,8 @@ class AdoptedDeviceDetails:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.device_physical_interfaces import DevicePhysicalInterfaces
         from ..models.device_features import DeviceFeatures
+        from ..models.device_physical_interfaces import DevicePhysicalInterfaces
         from ..models.device_uplink_interface_overview import (
             DeviceUplinkInterfaceOverview,
         )

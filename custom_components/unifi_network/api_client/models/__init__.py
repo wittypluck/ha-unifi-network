@@ -22,6 +22,7 @@ from .device_pending_adoption_page import DevicePendingAdoptionPage
 from .device_pending_adoption_state import DevicePendingAdoptionState
 from .device_physical_interfaces import DevicePhysicalInterfaces
 from .device_uplink_interface_overview import DeviceUplinkInterfaceOverview
+from .entity_metadata import EntityMetadata
 from .guest_access_authorization_request import GuestAccessAuthorizationRequest
 from .guest_access_authorization_response import GuestAccessAuthorizationResponse
 from .guest_access_details import GuestAccessDetails
@@ -32,7 +33,14 @@ from .guest_authorization_details_authorization_method import (
     GuestAuthorizationDetailsAuthorizationMethod,
 )
 from .guest_authorization_usage_details import GuestAuthorizationUsageDetails
+from .integration_derived_site_to_site_tunnel_metadata import (
+    IntegrationDerivedSiteToSiteTunnelMetadata,
+)
+from .integration_derived_site_to_site_tunnel_metadata_source import (
+    IntegrationDerivedSiteToSiteTunnelMetadataSource,
+)
 from .integration_device_adoption_request_dto import IntegrationDeviceAdoptionRequestDto
+from .integration_local_lag_local_dto import IntegrationLocalLagLocalDto
 from .latest_statistics_for_a_device import LatestStatisticsForADevice
 from .latest_statistics_for_a_device_uplink_interface import (
     LatestStatisticsForADeviceUplinkInterface,
@@ -51,10 +59,22 @@ from .port_po_e_overview_state import PortPoEOverviewState
 from .port_po_e_overview_type import PortPoEOverviewType
 from .site_overview import SiteOverview
 from .site_overview_page import SiteOverviewPage
+from .site_to_site_vpn_tunnel_metadata import SiteToSiteVPNTunnelMetadata
+from .switching_feature_overview import SwitchingFeatureOverview
 from .teleport_client_access_details import TeleportClientAccessDetails
 from .teleport_client_access_overview import TeleportClientAccessOverview
 from .teleport_client_connection_details import TeleportClientConnectionDetails
 from .teleport_client_connection_overview import TeleportClientConnectionOverview
+from .user_defined_entity_metadata import UserDefinedEntityMetadata
+from .user_defined_or_derived_entity_metadata import UserDefinedOrDerivedEntityMetadata
+from .user_or_derived_or_orchestrated_entity_metadata import (
+    UserOrDerivedOrOrchestratedEntityMetadata,
+)
+from .user_or_orchestrated_entity_metadata import UserOrOrchestratedEntityMetadata
+from .user_or_system_defined_entity_metadata import UserOrSystemDefinedEntityMetadata
+from .user_or_system_defined_or_orchestrated_entity_metadata import (
+    UserOrSystemDefinedOrOrchestratedEntityMetadata,
+)
 from .vpn_client_access_details import VPNClientAccessDetails
 from .vpn_client_access_overview import VPNClientAccessOverview
 from .vpn_client_connection_details import VPNClientConnectionDetails
@@ -89,6 +109,7 @@ __all__ = (
     "DevicePendingAdoptionState",
     "DevicePhysicalInterfaces",
     "DeviceUplinkInterfaceOverview",
+    "EntityMetadata",
     "GuestAccessAuthorizationRequest",
     "GuestAccessAuthorizationResponse",
     "GuestAccessDetails",
@@ -97,7 +118,10 @@ __all__ = (
     "GuestAuthorizationDetails",
     "GuestAuthorizationDetailsAuthorizationMethod",
     "GuestAuthorizationUsageDetails",
+    "IntegrationDerivedSiteToSiteTunnelMetadata",
+    "IntegrationDerivedSiteToSiteTunnelMetadataSource",
     "IntegrationDeviceAdoptionRequestDto",
+    "IntegrationLocalLagLocalDto",
     "LatestStatisticsForADevice",
     "LatestStatisticsForADeviceUplinkInterface",
     "LatestStatisticsForDeviceInterfaces",
@@ -114,10 +138,18 @@ __all__ = (
     "PortPoEOverviewType",
     "SiteOverview",
     "SiteOverviewPage",
+    "SiteToSiteVPNTunnelMetadata",
+    "SwitchingFeatureOverview",
     "TeleportClientAccessDetails",
     "TeleportClientAccessOverview",
     "TeleportClientConnectionDetails",
     "TeleportClientConnectionOverview",
+    "UserDefinedEntityMetadata",
+    "UserDefinedOrDerivedEntityMetadata",
+    "UserOrDerivedOrOrchestratedEntityMetadata",
+    "UserOrOrchestratedEntityMetadata",
+    "UserOrSystemDefinedEntityMetadata",
+    "UserOrSystemDefinedOrOrchestratedEntityMetadata",
     "VPNClientAccessDetails",
     "VPNClientAccessOverview",
     "VPNClientConnectionDetails",

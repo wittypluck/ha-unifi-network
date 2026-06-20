@@ -6,7 +6,11 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
+from typing import cast
 from typing import Union
+
+if TYPE_CHECKING:
+    from ..models.switching_feature_overview import SwitchingFeatureOverview
 
 
 T = TypeVar("T", bound="DeviceFeatures")
@@ -16,16 +20,20 @@ T = TypeVar("T", bound="DeviceFeatures")
 class DeviceFeatures:
     """
     Attributes:
-        switching (Union[Unset, Any]):
+        switching (Union[Unset, SwitchingFeatureOverview]):
         access_point (Union[Unset, Any]):
     """
 
-    switching: Union[Unset, Any] = UNSET
+    switching: Union[Unset, "SwitchingFeatureOverview"] = UNSET
     access_point: Union[Unset, Any] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        switching = self.switching
+        from ..models.switching_feature_overview import SwitchingFeatureOverview
+
+        switching: Union[Unset, dict[str, Any]] = UNSET
+        if not isinstance(self.switching, Unset):
+            switching = self.switching.to_dict()
 
         access_point = self.access_point
 
@@ -41,8 +49,15 @@ class DeviceFeatures:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.switching_feature_overview import SwitchingFeatureOverview
+
         d = dict(src_dict)
-        switching = d.pop("switching", UNSET)
+        _switching = d.pop("switching", UNSET)
+        switching: Union[Unset, SwitchingFeatureOverview]
+        if isinstance(_switching, Unset):
+            switching = UNSET
+        else:
+            switching = SwitchingFeatureOverview.from_dict(_switching)
 
         access_point = d.pop("accessPoint", UNSET)
 
