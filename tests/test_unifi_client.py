@@ -139,6 +139,70 @@ class TestUnifiClient:
 
         assert client.mac is None
 
+    def test_client_uplink_device_id_from_overview(self):
+        """Test uplink device ID from overview additional_properties."""
+        mock_overview = MagicMock()
+        mock_overview.id = "client_123"
+        mock_overview.additional_properties = {
+            "uplinkDeviceId": "device-overview-123",
+        }
+
+        client = UnifiClient(overview=mock_overview, details=None)
+
+        assert client.uplink_device_id == "device-overview-123"
+
+    def test_client_uplink_device_id_from_details(self):
+        """Test uplink device ID from details when missing in overview."""
+        mock_overview = MagicMock()
+        mock_overview.id = "client_123"
+        mock_overview.additional_properties = {}
+
+        mock_details = MagicMock()
+        mock_details.additional_properties = {
+            "uplinkDeviceId": "device-details-456",
+        }
+
+        client = UnifiClient(overview=mock_overview, details=mock_details)
+
+        assert client.uplink_device_id == "device-details-456"
+
+    def test_client_uplink_device_id_prioritizes_overview(self):
+        """Test overview uplink device ID is preferred over details."""
+        mock_overview = MagicMock()
+        mock_overview.id = "client_123"
+        mock_overview.additional_properties = {
+            "uplinkDeviceId": "device-overview-priority",
+        }
+
+        mock_details = MagicMock()
+        mock_details.additional_properties = {
+            "uplinkDeviceId": "device-details-fallback",
+        }
+
+        client = UnifiClient(overview=mock_overview, details=mock_details)
+
+        assert client.uplink_device_id == "device-overview-priority"
+
+    def test_client_uplink_device_id_with_unset(self):
+        """Test uplink device ID property when value is Unset."""
+        mock_overview = MagicMock()
+        mock_overview.id = "client_123"
+        mock_overview.additional_properties = {"uplinkDeviceId": Unset()}
+
+        client = UnifiClient(overview=mock_overview, details=None)
+
+        assert client.uplink_device_id is None
+
+    def test_client_uplink_device_id_missing(self):
+        """Test uplink device ID property when field is missing."""
+        mock_overview = MagicMock()
+        mock_overview.id = "client_123"
+        mock_overview.additional_properties = {}
+
+        client = UnifiClient(overview=mock_overview, details=None)
+
+        assert client.uplink_device_id is None
+
     def test_device_info_with_complete_data(self):
         """Test DeviceInfo generation with complete client data."""
         mock_overview = MagicMock()
