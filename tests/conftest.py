@@ -90,6 +90,23 @@ class UpdateFailed(Exception):
     """Mock UpdateFailed exception."""
 
 
+class MockCoordinatorEntity:
+    """Mock CoordinatorEntity base class."""
+
+    def __init__(self, coordinator):
+        self.coordinator = coordinator
+
+
+class MockTrackerEntity:
+    """Mock TrackerEntity base class."""
+
+
+class MockSourceType:
+    """Mock SourceType enum-like container."""
+
+    ROUTER = "router"
+
+
 # Mock config_entries module
 config_entries = Mock()
 config_entries.ConfigFlow = MockConfigFlow
@@ -121,9 +138,14 @@ entity_platform.AddEntitiesCallback = Mock()
 
 # Mock update coordinator
 update_coordinator = Mock()
-update_coordinator.CoordinatorEntity = Mock()
+update_coordinator.CoordinatorEntity = MockCoordinatorEntity
 update_coordinator.DataUpdateCoordinator = MockUpdateCoordinator
 update_coordinator.UpdateFailed = UpdateFailed
+
+# Mock device tracker components
+device_tracker = Mock()
+device_tracker.TrackerEntity = MockTrackerEntity
+device_tracker.SourceType = MockSourceType
 
 # Mock httpx_client helper
 httpx_client = Mock()
@@ -135,6 +157,7 @@ homeassistant = Mock()
 homeassistant.config_entries = config_entries
 homeassistant.core.HomeAssistant = MockHomeAssistant
 homeassistant.components.sensor = sensor
+homeassistant.components.device_tracker = device_tracker
 homeassistant.const = const
 homeassistant.helpers.entity = entity
 homeassistant.helpers.entity_platform = entity_platform
@@ -150,6 +173,7 @@ sys.modules["homeassistant.const"] = const
 sys.modules["homeassistant.data_entry_flow"] = data_entry_flow
 sys.modules["homeassistant.components"] = Mock()
 sys.modules["homeassistant.components.sensor"] = sensor
+sys.modules["homeassistant.components.device_tracker"] = device_tracker
 sys.modules["homeassistant.helpers"] = Mock()
 sys.modules["homeassistant.helpers.entity"] = entity
 sys.modules["homeassistant.helpers.entity_platform"] = entity_platform
