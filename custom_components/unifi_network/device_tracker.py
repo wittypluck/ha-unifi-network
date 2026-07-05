@@ -75,8 +75,8 @@ class UnifiClientTracker(CoordinatorEntity, ScannerEntity):
     @property
     def is_connected(self) -> bool:
         """Return whether the client is currently connected."""
-        client = self.coordinator.data.get(self.client_id)
-        return client is not None
+        data = self.coordinator.data
+        return data is not None and self.client_id in data
 
     @property
     def mac_address(self) -> str | None:
