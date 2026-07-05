@@ -11,6 +11,33 @@ from custom_components.unifi_network.device_tracker import UnifiClientTracker
 class TestUnifiClientTracker:
     """Test client tracker attribute behavior."""
 
+    def test_hostname_returns_client_name(self):
+        """Expose client name via hostname property."""
+        client_id = "client_123"
+
+        client = Mock()
+        client.name = "laptop-01"
+
+        client_coordinator = Mock()
+        client_coordinator.data = {client_id: client}
+        client_coordinator.get_client.return_value = client
+
+        tracker = UnifiClientTracker(client_coordinator, client_id, None)
+
+        assert tracker.hostname == "laptop-01"
+
+    def test_hostname_returns_none_when_client_missing(self):
+        """Return None hostname when coordinator cannot resolve client."""
+        client_id = "client_123"
+
+        client_coordinator = Mock()
+        client_coordinator.data = {}
+        client_coordinator.get_client.return_value = None
+
+        tracker = UnifiClientTracker(client_coordinator, client_id, None)
+
+        assert tracker.hostname is None
+
     def test_extra_state_attributes_with_resolved_uplink_device(self):
         """Expose resolved uplink MAC and name when lookup succeeds."""
         client_id = "client_123"
@@ -40,8 +67,6 @@ class TestUnifiClientTracker:
         attrs = tracker.extra_state_attributes
 
         assert attrs is not None
-        assert attrs["mac"] == "aa:bb:cc:dd:ee:ff"
-        assert attrs["ip"] == "192.168.1.10"
         assert attrs["last_seen"] == now
         assert attrs["connected_at"] == "2026-01-01T00:00:00+00:00"
         assert attrs["uplink_mac"] == "11:22:33:44:55:66"
