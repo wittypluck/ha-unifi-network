@@ -30,6 +30,12 @@ async def async_setup_entry(
 
     # Track mappings to find conflicts
     for reg_entry in registry_entries:
+        if reg_entry.config_entry_id != entry.entry_id:
+            continue
+
+        if reg_entry.platform != "device_tracker":
+            continue
+
         # Identify the NEW duplicate entity that has the '_2' suffix
         if reg_entry.entity_id.endswith("_2"):
             base_entity_id = reg_entry.entity_id[
