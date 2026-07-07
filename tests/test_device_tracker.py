@@ -311,7 +311,6 @@ async def test_async_setup_entry_skips_non_device_tracker_entries():
     wrong_config_entry.entity_id = "device_tracker.unifi_client_client_1_2"
     wrong_config_entry.platform = "device_tracker"
     wrong_config_entry.config_entry_id = "other-entry"
-    wrong_platform.config_entry_id = entry_id
 
     entity_registry = Mock()
 
