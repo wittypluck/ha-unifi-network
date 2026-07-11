@@ -1,12 +1,73 @@
 from __future__ import annotations
 
+import logging
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceEntry
 
 from .const import DOMAIN, PLATFORMS
 from .core import UnifiNetworkCore
 from .services import async_register_services, async_unregister_services
+
+_LOGGER = logging.getLogger(__name__)
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Migrate old config entries and related entity registry records."""
+    _LOGGER.info(
+        "Check migration config entry %s from version %s", entry.entry_id, entry.version
+    )
+    if entry.version != 1:
+        return True
+
+    _LOGGER.info(
+        "Migrating config entry %s from version %s", entry.entry_id, entry.version
+    )
+
+    ent_reg = er.async_get(hass)
+    registry_entries = er.async_entries_for_config_entry(ent_reg, entry.entry_id)
+
+    for reg_entry in registry_entries:
+        _LOGGER.info(
+            "Considering entry %s entity_id %s",
+            reg_entry.unique_id,
+            reg_entry.entity_id,
+        )
+
+        if reg_entry.config_entry_id != entry.entry_id:
+            _LOGGER.info("1")
+            continue
+        if not reg_entry.entity_id.startswith("device_tracker."):
+            _LOGGER.info("2")
+            continue
+        if not reg_entry.entity_id.endswith("_2"):
+            _LOGGER.info("3")
+            continue
+        _LOGGER.info(
+            "Looking for old entry for entry %s entity_id %s",
+            reg_entry.unique_id,
+            reg_entry.entity_id,
+        )
+
+        base_entity_id = reg_entry.entity_id[:-2]
+        old_entry = ent_reg.async_get(base_entity_id)
+        if old_entry and old_entry.config_entry_id == entry.entry_id:
+            _LOGGER.info(
+                "Found old entry %s entity_id %s",
+                old_entry.unique_id,
+                old_entry.entity_id,
+            )
+
+            ent_reg.async_remove(base_entity_id)
+            ent_reg.async_update_entity(
+                reg_entry.entity_id, new_entity_id=base_entity_id
+            )
+
+    hass.config_entries.async_update_entry(entry, version=2)
+    _LOGGER.info("Migration to version 2 successful for entry %s", entry.entry_id)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

@@ -2,12 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.device_tracker import SourceType
 from homeassistant.components.device_tracker.config_entry import ScannerEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -23,36 +20,6 @@ async def async_setup_entry(
     core = hass.data[DOMAIN][entry.entry_id]
     coordinator: UnifiClientCoordinator = core.client_coordinator
     device_coordinator: UnifiDeviceCoordinator | None = core.device_coordinator
-
-    # --- Automated migration to ScannerEntity cleanup ---
-    ent_reg = er.async_get(hass)
-    registry_entries = er.async_entries_for_config_entry(ent_reg, entry.entry_id)
-
-    # Track mappings to find conflicts
-    for reg_entry in registry_entries:
-        if reg_entry.config_entry_id != entry.entry_id:
-            continue
-
-        if reg_entry.platform != "device_tracker":
-            continue
-
-        # Identify the NEW duplicate entity that has the '_2' suffix
-        if reg_entry.entity_id.endswith("_2"):
-            base_entity_id = reg_entry.entity_id[
-                :-2
-            ]  # Strips the '_2' to find what the original ID was
-
-            # Look up if the old, orphaned entity is blocking our base ID
-            old_entry = ent_reg.async_get(base_entity_id)
-            if old_entry and old_entry.config_entry_id == entry.entry_id:
-                # Delete the old unavailable entity to free up the slot!
-                ent_reg.async_remove(base_entity_id)
-
-                # Force rename the new operational unique_id entry to take over the clean base ID
-                ent_reg.async_update_entity(
-                    reg_entry.entity_id, new_entity_id=base_entity_id
-                )
-    # -------------------------------------------
 
     # Keep track of client IDs that already got entities
     tracked_clients: set[str] = set()

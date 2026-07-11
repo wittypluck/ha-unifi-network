@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -172,8 +172,8 @@ class TestUnifiClientTracker:
 
 
 @pytest.mark.asyncio
-async def test_async_setup_entry_migrates_duplicate_suffix_entity_id():
-    """Remove old orphaned entry and rename '_2' entity to base entity_id."""
+async def test_async_setup_entry_adds_clients_and_listener():
+    """Create initial tracker entities and register a listener."""
     entry_id = "entry-1"
     client_id = "client-1"
 
@@ -190,142 +190,13 @@ async def test_async_setup_entry_migrates_duplicate_suffix_entity_id():
 
     entry = Mock()
     entry.entry_id = entry_id
-
-    duplicate_entry = Mock()
-    duplicate_entry.entity_id = "device_tracker.unifi_client_client_1_2"
-    duplicate_entry.platform = "device_tracker"
-    duplicate_entry.config_entry_id = entry_id
-
-    old_entry = Mock()
-    old_entry.config_entry_id = entry_id
-
-    entity_registry = Mock()
-    entity_registry.async_get.side_effect = lambda entity_id: (
-        old_entry if entity_id == "device_tracker.unifi_client_client_1" else None
-    )
 
     added_entities: list[UnifiClientTracker] = []
 
     def _async_add_entities(entities):
         added_entities.extend(entities)
 
-    with (
-        patch(
-            "custom_components.unifi_network.device_tracker.er.async_get",
-            return_value=entity_registry,
-        ),
-        patch(
-            "custom_components.unifi_network.device_tracker.er.async_entries_for_config_entry",
-            return_value=[duplicate_entry],
-        ),
-    ):
-        await async_setup_entry(hass, entry, _async_add_entities)
-
-    entity_registry.async_remove.assert_called_once_with(
-        "device_tracker.unifi_client_client_1"
-    )
-    entity_registry.async_update_entity.assert_called_once_with(
-        "device_tracker.unifi_client_client_1_2",
-        new_entity_id="device_tracker.unifi_client_client_1",
-    )
+    await async_setup_entry(hass, entry, _async_add_entities)
     coordinator.async_add_listener.assert_called_once()
     assert len(added_entities) == 1
     assert isinstance(added_entities[0], UnifiClientTracker)
-
-
-@pytest.mark.asyncio
-async def test_async_setup_entry_skips_migration_when_old_entry_is_not_from_config_entry():
-    """Do not remove/rename when base entity belongs to a different config entry."""
-    entry_id = "entry-1"
-    client_id = "client-1"
-
-    coordinator = Mock()
-    coordinator.data = {client_id: Mock()}
-    coordinator.async_add_listener = Mock()
-
-    core = Mock()
-    core.client_coordinator = coordinator
-    core.device_coordinator = None
-
-    hass = Mock()
-    hass.data = {DOMAIN: {entry_id: core}}
-
-    entry = Mock()
-    entry.entry_id = entry_id
-
-    duplicate_entry = Mock()
-    duplicate_entry.entity_id = "device_tracker.unifi_client_client_1_2"
-    duplicate_entry.platform = "device_tracker"
-    duplicate_entry.config_entry_id = entry_id
-
-    old_entry = Mock()
-    old_entry.config_entry_id = "different-entry"
-
-    entity_registry = Mock()
-    entity_registry.async_get.side_effect = lambda entity_id: (
-        old_entry if entity_id == "device_tracker.unifi_client_client_1" else None
-    )
-
-    with (
-        patch(
-            "custom_components.unifi_network.device_tracker.er.async_get",
-            return_value=entity_registry,
-        ),
-        patch(
-            "custom_components.unifi_network.device_tracker.er.async_entries_for_config_entry",
-            return_value=[duplicate_entry],
-        ),
-    ):
-        await async_setup_entry(hass, entry, Mock())
-
-    entity_registry.async_remove.assert_not_called()
-    entity_registry.async_update_entity.assert_not_called()
-
-
-@pytest.mark.asyncio
-async def test_async_setup_entry_skips_non_device_tracker_entries():
-    """Skip migration candidates not from this config entry or non-device_tracker."""
-    entry_id = "entry-1"
-    client_id = "client-1"
-
-    coordinator = Mock()
-    coordinator.data = {client_id: Mock()}
-    coordinator.async_add_listener = Mock()
-
-    core = Mock()
-    core.client_coordinator = coordinator
-    core.device_coordinator = None
-
-    hass = Mock()
-    hass.data = {DOMAIN: {entry_id: core}}
-
-    entry = Mock()
-    entry.entry_id = entry_id
-
-    wrong_platform = Mock()
-    wrong_platform.entity_id = "sensor.unifi_client_client_1_2"
-    wrong_platform.platform = "sensor"
-    wrong_platform.config_entry_id = entry_id
-
-    wrong_config_entry = Mock()
-    wrong_config_entry.entity_id = "device_tracker.unifi_client_client_1_2"
-    wrong_config_entry.platform = "device_tracker"
-    wrong_config_entry.config_entry_id = "other-entry"
-
-    entity_registry = Mock()
-
-    with (
-        patch(
-            "custom_components.unifi_network.device_tracker.er.async_get",
-            return_value=entity_registry,
-        ),
-        patch(
-            "custom_components.unifi_network.device_tracker.er.async_entries_for_config_entry",
-            return_value=[wrong_platform, wrong_config_entry],
-        ),
-    ):
-        await async_setup_entry(hass, entry, Mock())
-
-    entity_registry.async_get.assert_not_called()
-    entity_registry.async_remove.assert_not_called()
-    entity_registry.async_update_entity.assert_not_called()
