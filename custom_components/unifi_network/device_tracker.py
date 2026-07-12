@@ -48,7 +48,7 @@ async def async_setup_entry(
     _discover_new_clients()
 
     # Add new clients whenever coordinator updates
-    coordinator.async_add_listener(_discover_new_clients)
+    entry.async_on_unload(coordinator.async_add_listener(_discover_new_clients))
 
 
 class UnifiClientTracker(CoordinatorEntity, BaseScannerEntity):
