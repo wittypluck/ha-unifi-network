@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import logging
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntry
@@ -9,8 +7,6 @@ from homeassistant.helpers.device_registry import DeviceEntry
 from .const import DOMAIN, PLATFORMS
 from .core import UnifiNetworkCore
 from .services import async_register_services, async_unregister_services
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
