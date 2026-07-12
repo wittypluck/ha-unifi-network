@@ -4,8 +4,8 @@ from typing import Any
 
 from homeassistant.components.device_tracker import BaseScannerEntity, SourceType
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -100,6 +100,14 @@ class UnifiClientTracker(CoordinatorEntity, BaseScannerEntity):
         if not client:
             return None
         return client.name
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        client = self.coordinator.get_client(self.client_id)
+        if not client:
+            return None
+
+        return client.device_info
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
