@@ -96,9 +96,17 @@ class MockCoordinatorEntity:
     def __init__(self, coordinator):
         self.coordinator = coordinator
 
+    @property
+    def unique_id(self):
+        return getattr(self, "_attr_unique_id", None)
+
 
 class MockScannerEntity:
     """Mock ScannerEntity base class."""
+
+
+class MockBaseScannerEntity:
+    """Mock BaseScannerEntity base class."""
 
 
 class MockSourceType:
@@ -145,6 +153,7 @@ update_coordinator.UpdateFailed = UpdateFailed
 # Mock device tracker components
 device_tracker = Mock()
 device_tracker.SourceType = MockSourceType
+device_tracker.BaseScannerEntity = MockBaseScannerEntity
 
 device_tracker_config_entry = Mock()
 device_tracker_config_entry.ScannerEntity = MockScannerEntity

@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.device_tracker.config_entry import ScannerEntity
+from homeassistant.components.device_tracker import BaseScannerEntity, SourceType
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -50,7 +51,7 @@ async def async_setup_entry(
     coordinator.async_add_listener(_discover_new_clients)
 
 
-class UnifiClientTracker(CoordinatorEntity, ScannerEntity):
+class UnifiClientTracker(CoordinatorEntity, BaseScannerEntity):
     """Represents a Unifi client tracker (state based on client connection status)."""
 
     _attr_has_entity_name = True
@@ -99,14 +100,6 @@ class UnifiClientTracker(CoordinatorEntity, ScannerEntity):
         if not client:
             return None
         return client.name
-
-    @property
-    def device_info(self) -> DeviceInfo | None:
-        client = self.coordinator.get_client(self.client_id)
-        if not client:
-            return None
-
-        return client.device_info
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:

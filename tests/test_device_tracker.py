@@ -31,6 +31,7 @@ class TestUnifiClientTracker:
         tracker = UnifiClientTracker(client_coordinator, client_id, None)
 
         assert tracker.hostname == "laptop-01"
+        assert tracker.unique_id == "unifi_client_client_123_device_tracker"
 
     def test_hostname_returns_none_when_client_missing(self):
         """Return None hostname when coordinator cannot resolve client."""
@@ -43,6 +44,46 @@ class TestUnifiClientTracker:
         tracker = UnifiClientTracker(client_coordinator, client_id, None)
 
         assert tracker.hostname is None
+        assert tracker.unique_id == "unifi_client_client_123_device_tracker"
+
+    def test_tracker_with_missing_mac_still_reports_connection_state(self):
+        """Clients without a MAC should still be tracked via BaseScannerEntity."""
+        client_id = "client_no_mac"
+
+        client = Mock()
+        client.mac = None
+        client.ip = "192.168.1.55"
+        client.name = "tablet-no-mac"
+
+        client_coordinator = Mock()
+        client_coordinator.data = {client_id: client}
+        client_coordinator.get_client.return_value = client
+
+        tracker = UnifiClientTracker(client_coordinator, client_id, None)
+
+        assert tracker.mac_address is None
+        assert tracker.ip_address == "192.168.1.55"
+        assert tracker.hostname == "tablet-no-mac"
+        assert tracker.is_connected is True
+
+    def test_tracker_with_missing_mac_reports_disconnected_when_client_removed(self):
+        """No-MAC clients should become not connected when absent from data."""
+        client_id = "client_no_mac"
+
+        client = Mock()
+        client.mac = None
+        client.ip = "192.168.1.55"
+        client.name = "tablet-no-mac"
+
+        client_coordinator = Mock()
+        client_coordinator.data = {client_id: client}
+        client_coordinator.get_client.return_value = client
+
+        tracker = UnifiClientTracker(client_coordinator, client_id, None)
+        assert tracker.is_connected is True
+
+        client_coordinator.data = {}
+        assert tracker.is_connected is False
 
     def test_extra_state_attributes_with_resolved_uplink_device(self):
         """Expose resolved uplink MAC and name when lookup succeeds."""

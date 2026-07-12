@@ -86,6 +86,7 @@ Current implementation focuses on core monitoring and basic device control funct
 
 ## Requirements
 
+- **Home Assistant Core**: 2026.6.0 or newer for integration version 0.7.0 and later (required for `BaseScannerEntity` support used by client trackers)
 - **UniFi Network Application**: UniFi OS / Network Application version that supports the Integration API
   - Must have "Integrations" feature available in Network settings
   - API Key generation capability (see Configuration section below for version-specific instructions)

@@ -26,7 +26,7 @@ _LOGGER = logging.getLogger(__name__)
 class UnifiNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
     """Config flow for Unifi Network integration."""
 
-    VERSION = 2
+    VERSION = 1
 
     @staticmethod
     @callback
