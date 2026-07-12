@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.device_tracker import SourceType, TrackerEntity
+from homeassistant.components.device_tracker import BaseScannerEntity, SourceType
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
@@ -48,16 +48,17 @@ async def async_setup_entry(
     _discover_new_clients()
 
     # Add new clients whenever coordinator updates
-    coordinator.async_add_listener(_discover_new_clients)
+    entry.async_on_unload(coordinator.async_add_listener(_discover_new_clients))
 
 
-class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
+class UnifiClientTracker(CoordinatorEntity, BaseScannerEntity):
     """Represents a Unifi client tracker (state based on client connection status)."""
 
     _attr_has_entity_name = True
     _attr_name = None
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_source_type = SourceType.ROUTER
+    _attr_entity_registry_enabled_default = True
 
     def __init__(
         self,
@@ -71,15 +72,34 @@ class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
         self._attr_unique_id = f"unifi_client_{client_id}_device_tracker"
 
     @property
-    def entity_registry_enabled_default(self) -> bool:
-        """Enable new trackers by default."""
-        return True
+    def is_connected(self) -> bool:
+        """Return whether the client is currently connected."""
+        data = self.coordinator.data
+        return data is not None and self.client_id in data
 
     @property
-    def state(self) -> str:
-        # coordinator.data is a dict of client wrappers; presence implies connected
-        client = self.coordinator.data.get(self.client_id)
-        return "home" if client else "not_home"
+    def mac_address(self) -> str | None:
+        """Return the MAC address used for DHCP discovery."""
+        client = self.coordinator.get_client(self.client_id)
+        if not client:
+            return None
+        return client.mac
+
+    @property
+    def ip_address(self) -> str | None:
+        """Return the IP address used for DHCP discovery."""
+        client = self.coordinator.get_client(self.client_id)
+        if not client:
+            return None
+        return client.ip
+
+    @property
+    def hostname(self) -> str | None:
+        """Return the hostname/name if known."""
+        client = self.coordinator.get_client(self.client_id)
+        if not client:
+            return None
+        return client.name
 
     @property
     def device_info(self) -> DeviceInfo | None:
@@ -93,15 +113,13 @@ class UnifiClientTracker(CoordinatorEntity, TrackerEntity):
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return additional state attributes for the client tracker.
 
-        Include IP address, MAC and connected_at time.
+        Include dynamic connection metadata not exposed by scanner properties.
         """
         client = self.coordinator.get_client(self.client_id)
         if not client:
             return None
 
         attrs = {
-            "mac": client.mac,
-            "ip": client.ip,
             "last_seen": client.last_seen,
             "uplink_mac": None,
             "uplink_device_name": None,

@@ -96,9 +96,17 @@ class MockCoordinatorEntity:
     def __init__(self, coordinator):
         self.coordinator = coordinator
 
+    @property
+    def unique_id(self):
+        return getattr(self, "_attr_unique_id", None)
 
-class MockTrackerEntity:
-    """Mock TrackerEntity base class."""
+
+class MockScannerEntity:
+    """Mock ScannerEntity base class."""
+
+
+class MockBaseScannerEntity:
+    """Mock BaseScannerEntity base class."""
 
 
 class MockSourceType:
@@ -144,8 +152,11 @@ update_coordinator.UpdateFailed = UpdateFailed
 
 # Mock device tracker components
 device_tracker = Mock()
-device_tracker.TrackerEntity = MockTrackerEntity
 device_tracker.SourceType = MockSourceType
+device_tracker.BaseScannerEntity = MockBaseScannerEntity
+
+device_tracker_config_entry = Mock()
+device_tracker_config_entry.ScannerEntity = MockScannerEntity
 
 # Mock httpx_client helper
 httpx_client = Mock()
@@ -174,6 +185,9 @@ sys.modules["homeassistant.data_entry_flow"] = data_entry_flow
 sys.modules["homeassistant.components"] = Mock()
 sys.modules["homeassistant.components.sensor"] = sensor
 sys.modules["homeassistant.components.device_tracker"] = device_tracker
+sys.modules["homeassistant.components.device_tracker.config_entry"] = (
+    device_tracker_config_entry
+)
 sys.modules["homeassistant.helpers"] = Mock()
 sys.modules["homeassistant.helpers.entity"] = entity
 sys.modules["homeassistant.helpers.entity_platform"] = entity_platform
