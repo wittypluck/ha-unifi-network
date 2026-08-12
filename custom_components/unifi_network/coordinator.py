@@ -34,6 +34,7 @@ class UnifiCoordinator(DataUpdateCoordinator):
         hass: HomeAssistant,
         client: Client,
         site_id: str,
+        *,
         filter_: str | None,
         name: str,
         update_method: Callable[[], Coroutine[Any, Any, Any]],
