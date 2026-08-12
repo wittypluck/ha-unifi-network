@@ -120,6 +120,9 @@ class UnifiClientTracker(CoordinatorEntity, BaseScannerEntity):
             return None
 
         attrs = {
+            "mac": client.mac,
+            "ip": client.ip,
+            "hostname": client.name,
             "last_seen": client.last_seen,
             "uplink_mac": None,
             "uplink_device_name": None,
