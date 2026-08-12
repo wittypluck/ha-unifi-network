@@ -17,6 +17,7 @@ class UnifiNetworkCore:
         hass: HomeAssistant,
         base_url: str,
         site_id: str,
+        *,
         api_key: str | None = None,
         enable_devices: bool = True,
         enable_clients: bool = True,

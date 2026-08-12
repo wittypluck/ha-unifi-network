@@ -7,6 +7,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from custom_components.unifi_network.api_client.types import UNSET
 from custom_components.unifi_network.const import DOMAIN
 from custom_components.unifi_network.device_tracker import (
     UnifiClientTracker,
@@ -119,6 +120,57 @@ class TestUnifiClientTracker:
         assert attrs["uplink_mac"] == "11:22:33:44:55:66"
         assert attrs["uplink_device_name"] == "Core Switch"
         device_coordinator.get_device.assert_called_once_with("device_1")
+
+    def test_extra_state_attributes_exposes_base_client_fields(self):
+        """Expose client identity fields in tracker attributes."""
+        client_id = "client_123"
+
+        client = Mock()
+        client.mac = "aa:bb:cc:dd:ee:ff"
+        client.ip = "192.168.1.10"
+        client.name = "laptop-01"
+        client.last_seen = None
+        client.uplink_device_id = None
+        client.overview = Mock()
+        client.overview.connected_at = None
+
+        client_coordinator = Mock()
+        client_coordinator.data = {client_id: client}
+        client_coordinator.get_client.return_value = client
+
+        tracker = UnifiClientTracker(client_coordinator, client_id, None)
+
+        attrs = tracker.extra_state_attributes
+
+        assert attrs is not None
+        assert attrs["mac"] == "aa:bb:cc:dd:ee:ff"
+        assert attrs["ip"] == "192.168.1.10"
+        assert attrs["hostname"] == "laptop-01"
+        assert attrs["last_seen"] is None
+
+    def test_extra_state_attributes_omits_connected_at_when_unset(self):
+        """Do not include connected_at when API returns UNSET."""
+        client_id = "client_123"
+
+        client = Mock()
+        client.mac = "aa:bb:cc:dd:ee:ff"
+        client.ip = "192.168.1.10"
+        client.name = "laptop-01"
+        client.last_seen = None
+        client.uplink_device_id = None
+        client.overview = Mock()
+        client.overview.connected_at = UNSET
+
+        client_coordinator = Mock()
+        client_coordinator.data = {client_id: client}
+        client_coordinator.get_client.return_value = client
+
+        tracker = UnifiClientTracker(client_coordinator, client_id, None)
+
+        attrs = tracker.extra_state_attributes
+
+        assert attrs is not None
+        assert "connected_at" not in attrs
 
     def test_extra_state_attributes_without_device_coordinator(self):
         """Keep uplink keys with None values when devices are disabled."""
